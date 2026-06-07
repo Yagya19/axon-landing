@@ -84,3 +84,63 @@ export default function UseCases() {
           <div key={i} style={{
             border: i === 0 ? '0.5px solid rgba(212,160,23,0.3)' : '0.5px solid rgba(255,255,255,0.08)',
             borderRadius: '8px',
+            padding: '24px',
+            background: i === 0 ? '#0c0c0c' : '#0a0a0a',
+            position: 'relative'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '9px',
+              color: 'rgba(255,255,255,0.2)',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase'
+            }}>{c.industry}</div>
+            <div style={{
+              display: 'inline-block',
+              background: c.tagBg,
+              border: `0.5px solid ${c.tagBorder}`,
+              borderRadius: '2px',
+              padding: '3px 10px',
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '9px',
+              color: c.tagColor,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              marginBottom: '12px'
+            }}>{c.tag}</div>
+            <div style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '15px',
+              fontWeight: 700,
+              color: '#fff',
+              marginBottom: '10px',
+              lineHeight: 1.3
+            }}>{c.title}</div>
+            <div style={{
+              fontSize: '12px',
+              color: 'rgba(255,255,255,0.45)',
+              lineHeight: 1.7,
+              fontWeight: 300,
+              marginBottom: '12px'
+            }}>{c.story}</div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px',
+              background: 'rgba(212,160,23,0.06)',
+              border: '0.5px solid rgba(212,160,23,0.15)',
+              borderRadius: '4px',
+              padding: '10px 12px'
+            }}>
+              <span style={{ color: '#D4A017', fontFamily: "'DM Mono', monospace", fontSize: '12px', flexShrink: 0 }}>→</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: '#D4A017', lineHeight: 1.5 }}>{c.result}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
