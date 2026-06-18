@@ -8,8 +8,15 @@ import UseCases from './components/UseCases';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
+import Signup from './components/Signup';
 
 export default function App() {
+  const path = window.location.pathname;
+
+  if (path === '/signup') {
+    return <Signup />;
+  }
+
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>
       <Navbar />
