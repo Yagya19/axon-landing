@@ -53,7 +53,9 @@ export default function Navbar() {
       </div>
 
       {/* CTA */}
-      <button style={{
+      <button 
+        onClick={() => window.location.href = '/signup'}
+        style={{
         background: '#D4A017',
         color: '#080808',
         border: 'none',
