@@ -195,7 +195,9 @@ export default function Pricing() {
                 {f}
               </div>
             ))}
-            <button style={{
+            <button 
+              onClick={() => window.location.href = '/signup'}
+              style={{
               width: '100%',
               padding: '10px',
               borderRadius: '4px',
