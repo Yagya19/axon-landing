@@ -171,7 +171,11 @@ export default function Signup() {
           textAlign: 'center'
         }}>
           Already have an account?{' '}
-          <span style={{ color: '#D4A017', cursor: 'pointer' }}>Sign in</span>
+         <span 
+            onClick={() => window.location.href = '/login'}
+            style={{ color: '#D4A017', cursor: 'pointer' }}>
+            Sign in
+        </span>
         </p>
       </div>
     </div>
