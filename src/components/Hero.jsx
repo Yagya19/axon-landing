@@ -108,7 +108,9 @@ export default function Hero() {
           </p>
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '32px', flexWrap: 'wrap' }}>
-            <button style={{
+            <button 
+              onClick={() => window.location.href = '/signup'}
+              style={{
               background: '#D4A017',
               color: '#080808',
               border: 'none',
