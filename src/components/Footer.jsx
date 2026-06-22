@@ -40,7 +40,9 @@ export default function Footer() {
           Join 73 founding members already watching their competitive landscape with AXON. 27 lifetime spots remaining.
         </p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button style={{
+          <button 
+            onClick={() => window.location.href = '/signup'}
+            style={{
             background: '#D4A017',
             color: '#080808',
             border: 'none',
