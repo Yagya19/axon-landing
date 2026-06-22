@@ -1,5 +1,4 @@
 import React from 'react';
-
 export default function Navbar() {
   return (
     <nav style={{
@@ -35,7 +34,6 @@ export default function Navbar() {
           AXON<span style={{ color: '#D4A017' }}>.</span>
         </span>
       </div>
-
       {/* Links */}
       <div style={{ display: 'flex', gap: '28px' }}>
         {['How it works', 'Results', 'Pricing'].map(link => (
@@ -51,23 +49,36 @@ export default function Navbar() {
           </span>
         ))}
       </div>
-
-      {/* CTA */}
-      <button 
-        onClick={() => window.location.href = '/signup'}
-        style={{
-        background: '#D4A017',
-        color: '#080808',
-        border: 'none',
-        padding: '9px 20px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        fontWeight: 500,
-        cursor: 'pointer',
-        fontFamily: "'DM Sans', sans-serif"
-      }}>
-        Start free trial
-      </button>
+      {/* Sign in + CTA */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <span 
+          onClick={() => window.location.href = '/login'}
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '11px',
+            color: 'rgba(255,255,255,0.5)',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}>
+          Sign in
+        </span>
+        <button 
+          onClick={() => window.location.href = '/signup'}
+          style={{
+            background: '#D4A017',
+            color: '#080808',
+            border: 'none',
+            padding: '9px 20px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif"
+          }}>
+          Start free trial
+        </button>
+      </div>
     </nav>
   );
 }
