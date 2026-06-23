@@ -18,7 +18,7 @@ export default function Login() {
     if (error) {
       setMessage(error.message);
     } else {
-      window.location.href = '/dashboard';
+      window.location.href = '/competitors';
     }
     setLoading(false);
   };
