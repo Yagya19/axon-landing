@@ -18,7 +18,16 @@ export default function Login() {
     if (error) {
       setMessage(error.message);
     } else {
+      const { data: existing } = await supabase
+  .from('competitors')
+  .select('id')
+  .eq('user_email', data.user.email);
+    
+    if (existing && existing.length > 0) {
+      window.location.href = '/dashboard';
+    } else {
       window.location.href = '/competitors';
+    };
     }
     setLoading(false);
   };
