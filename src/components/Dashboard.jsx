@@ -109,9 +109,25 @@ export default function Dashboard() {
                     Added {new Date(comp.created_at).toLocaleDateString()}
                   </span>
                 </div>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>
-                  No signals detected yet — first scan in progress.
-                </p>
+                
+               {comp.last_snapshot ? (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '4px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF0000', flexShrink: 0 }} />
+                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>
+                        {comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong>
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, paddingLeft: '15px' }}>
+                      <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Current price tracked.</strong> You'll be alerted when this changes.
+                    </p>
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>
+                    No signals detected yet — first scan in progress.
+                  </p>
+                )}
+  
               </div>
             ))}
 
