@@ -50,8 +50,7 @@ export default function CompetitorSelector() {
   const removeCompetitor = (index) => {
     setCompetitors(competitors.filter((_, i) => i !== index));
   };
-
-  const handleSubmit = async () => {
+const handleSubmit = async () => {
     setLoading(true);
     const validUrls = competitors.filter(url => url.trim() !== '');
 
@@ -62,7 +61,23 @@ export default function CompetitorSelector() {
     }
 
     try {
-      for (const url of validUrls) {
+      const { data: existing } = await supabase
+        .from('competitors')
+        .select('id')
+        .eq('user_email', user.email);
+
+      const currentCount = existing?.length || 0;
+
+      if (currentCount >= maxCompetitors) {
+        setMessage(`You've already reached your limit of ${maxCompetitors} competitors.`);
+        setLoading(false);
+        return;
+      }
+
+      const remainingSlots = maxCompetitors - currentCount;
+      const urlsToAdd = validUrls.slice(0, remainingSlots);
+
+      for (const url of urlsToAdd) {
         await supabase.from('competitors').insert({
           url: url.trim(),
           user_email: user.email,
@@ -75,7 +90,6 @@ export default function CompetitorSelector() {
     }
     setLoading(false);
   };
-
   return (
     <div style={{
       background: '#080808',
