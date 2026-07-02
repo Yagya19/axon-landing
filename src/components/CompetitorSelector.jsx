@@ -6,6 +6,24 @@ const supabase = createClient(
   'sb_publishable_ifLgjBC5vTtV7BJBfCNmyA_Sm54QueW'
 );
 
+function extractStoreAndHandle(inputUrl) {
+  try {
+    const url = new URL(inputUrl);
+    const storeUrl = `${url.protocol}//${url.hostname}`;
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const productsIndex = pathParts.indexOf('products');
+    
+    if (productsIndex !== -1 && pathParts[productsIndex + 1]) {
+      const handle = pathParts[productsIndex + 1];
+      return { storeUrl, handle, isProductUrl: true };
+    }
+    
+    return { storeUrl, handle: null, isProductUrl: false };
+  } catch {
+    return null;
+  }
+}
+
 export default function CompetitorSelector() {
   const [competitors, setCompetitors] = useState(['']);
   const [maxCompetitors, setMaxCompetitors] = useState(2);
@@ -50,12 +68,22 @@ export default function CompetitorSelector() {
   const removeCompetitor = (index) => {
     setCompetitors(competitors.filter((_, i) => i !== index));
   };
-const handleSubmit = async () => {
+
+  const handleSubmit = async () => {
     setLoading(true);
     const validUrls = competitors.filter(url => url.trim() !== '');
 
     if (validUrls.length === 0) {
-      setMessage('Please add at least one competitor URL.');
+      setMessage('Please add at least one competitor product URL.');
+      setLoading(false);
+      return;
+    }
+
+    // Validate all URLs are product URLs
+    const parsed = validUrls.map(url => extractStoreAndHandle(url));
+    const invalid = parsed.findIndex(p => !p || !p.isProductUrl);
+    if (invalid !== -1) {
+      setMessage(`Please enter a full product page URL — e.g. https://store.com/products/product-name`);
       setLoading(false);
       return;
     }
@@ -75,11 +103,12 @@ const handleSubmit = async () => {
       }
 
       const remainingSlots = maxCompetitors - currentCount;
-      const urlsToAdd = validUrls.slice(0, remainingSlots);
+      const urlsToAdd = parsed.slice(0, remainingSlots);
 
-      for (const url of urlsToAdd) {
+      for (const { storeUrl, handle } of urlsToAdd) {
         await supabase.from('competitors').insert({
-          url: url.trim(),
+          url: storeUrl,
+          product_handle: handle,
           user_email: user.email,
           last_snapshot: null
         });
@@ -90,6 +119,7 @@ const handleSubmit = async () => {
     }
     setLoading(false);
   };
+
   return (
     <div style={{
       background: '#080808',
@@ -140,9 +170,15 @@ const handleSubmit = async () => {
         <p style={{
           fontSize: '12px',
           color: 'rgba(255,255,255,0.45)',
-          marginBottom: '24px',
+          marginBottom: '6px',
           fontWeight: 300
-        }}>Add up to {maxCompetitors} competitor store URLs.</p>
+        }}>Paste a product page URL from your competitor's store.</p>
+        <p style={{
+          fontSize: '11px',
+          color: 'rgba(212,160,23,0.7)',
+          marginBottom: '24px',
+          fontFamily: "'DM Mono', monospace"
+        }}>e.g. https://allbirds.com/products/mens-tree-runner</p>
 
         {competitors.map((url, index) => (
           <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
@@ -150,7 +186,7 @@ const handleSubmit = async () => {
               type="text"
               value={url}
               onChange={e => updateCompetitor(index, e.target.value)}
-              placeholder="https://competitorstore.com"
+              placeholder="https://store.com/products/product-name"
               style={{
                 flex: 1,
                 background: '#080808',
