@@ -14,20 +14,20 @@ export default function Login() {
 
   const handleLogin = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(error.message);
     } else {
       const { data: existing } = await supabase
-  .from('competitors')
-  .select('id')
-  .eq('user_email', data.user.email);
-    
-    if (existing && existing.length > 0) {
-      window.location.href = '/dashboard';
-    } else {
-      window.location.href = '/competitors';
-    };
+        .from('competitors')
+        .select('id')
+        .eq('user_email', email);
+
+      if (existing && existing.length > 0) {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.href = '/competitors';
+      }
     }
     setLoading(false);
   };
