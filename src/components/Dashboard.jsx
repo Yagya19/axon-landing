@@ -1,5 +1,4 @@
-Let's update Dashboard.jsx with all three fixes. Replace the entire file with this:
-jsximport React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -48,14 +47,13 @@ export default function Dashboard() {
   }
 
   const maxAllowed = isPremium ? 7 : 2;
-  const trackedWithPrice = competitors.filter(c => c.last_snapshot?.price);
-  const heroComp = trackedWithPrice[0];
+  const trackedWithPrice = competitors.filter(c => c.last_snapshot && c.last_snapshot.price);
+  const heroComp = trackedWithPrice.length > 0 ? trackedWithPrice[0] : null;
 
   return (
     <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
-        {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
           <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff' }}>
             AXON<span style={{ color: '#D4A017' }}>.</span>
@@ -68,7 +66,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Hero card */}
         {heroComp && (
           <div style={{
             background: 'radial-gradient(ellipse at top left, rgba(255,0,0,0.07), transparent 60%)',
@@ -99,7 +96,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Three counters */}
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
           This week, at a glance
         </div>
@@ -121,7 +117,6 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* By competitor */}
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
           By competitor
         </div>
@@ -146,11 +141,11 @@ export default function Dashboard() {
                   {comp.url.replace('https://', '').replace('www.', '')}
                 </span>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
-                  {comp.last_snapshot ? '1 signal tracked' : '0 signals yet'}
+                  {comp.last_snapshot && comp.last_snapshot.price ? '1 signal tracked' : '0 signals yet'}
                 </span>
               </div>
 
-              {comp.last_snapshot ? (
+              {comp.last_snapshot && comp.last_snapshot.price ? (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '4px' }}>
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF0000', flexShrink: 0 }} />
@@ -171,7 +166,6 @@ export default function Dashboard() {
           ))
         )}
 
-        {/* Upgrade bar */}
         {!isPremium && (
           <div style={{
             marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
