@@ -3,103 +3,91 @@ import React from 'react';
 export default function Footer() {
   return (
     <>
+      <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
+
       {/* Final CTA */}
       <div style={{
-        padding: '60px 32px',
+        padding: '52px 32px',
         textAlign: 'center',
         position: 'relative',
-        background: 'radial-gradient(ellipse at center, rgba(212,160,23,0.08), transparent 60%)',
-        fontFamily: "'DM Sans', sans-serif"
+        maxWidth: '1100px',
+        margin: '0 auto'
       }}>
         <div style={{
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '9px',
-          color: '#D4A017',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginBottom: '16px'
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at 50% 60%, rgba(212,160,23,0.05), transparent 65%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{
+          fontFamily: "'DM Mono', monospace", fontSize: '9px',
+          color: '#D4A017', letterSpacing: '0.12em',
+          textTransform: 'uppercase', marginBottom: '14px'
         }}>The signal reaches you first</div>
-        <h2 style={{
-          fontFamily: "'Syne', sans-serif",
-          fontSize: '34px',
-          fontWeight: 800,
-          lineHeight: 1.1,
-          letterSpacing: '-0.02em',
-          marginBottom: '12px',
-          color: '#fff'
+
+        <div style={{
+          fontFamily: "'Syne', sans-serif", fontSize: '28px', fontWeight: 800,
+          color: '#fff', lineHeight: 1.15, marginBottom: '10px'
         }}>
           Your competitors aren't waiting.<br />
-          <em style={{ color: '#D4A017', fontStyle: 'normal' }}>Neither should you.</em>
-        </h2>
+          <span style={{ color: '#D4A017' }}>Neither should you.</span>
+        </div>
+
         <p style={{
-          fontSize: '14px',
-          color: 'rgba(255,255,255,0.45)',
-          marginBottom: '28px',
-          fontWeight: 300
+          fontSize: '13px', color: 'rgba(255,255,255,0.35)', marginBottom: '28px',
+          fontWeight: 300, lineHeight: 1.75, maxWidth: '420px',
+          margin: '0 auto 28px'
         }}>
-          Join 73 founding members already watching their competitive landscape with AXON. 27 lifetime spots remaining.
+          Every day without AXON is a day your competitors could be moving without you knowing. Start watching today — free, no card needed.
         </p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button 
-            onClick={() => window.location.href = '/signup'}
-            style={{
-            background: '#D4A017',
-            color: '#080808',
-            border: 'none',
-            padding: '12px 24px',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: 500,
-            cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif"
-          }}>Start your free 14-day trial</button>
-          <button style={{
-            background: 'transparent',
-            color: 'rgba(255,255,255,0.7)',
-            border: '0.5px solid rgba(255,255,255,0.15)',
-            padding: '12px 24px',
-            borderRadius: '4px',
-            fontSize: '13px',
-            cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif"
-          }}>Watch a live demo first</button>
+
+        <button
+          onClick={() => window.location.href = '/signup'}
+          style={{
+            background: '#D4A017', color: '#080808', border: 'none',
+            padding: '14px 32px', borderRadius: '4px', fontSize: '13px',
+            fontWeight: 500, fontFamily: "'DM Sans', sans-serif",
+            cursor: 'pointer', display: 'block', margin: '0 auto 12px'
+          }}>
+          Start your free 14-day trial
+        </button>
+
+        <div style={{
+          fontFamily: "'DM Mono', monospace", fontSize: '9px',
+          color: 'rgba(255,255,255,0.2)', textAlign: 'center'
+        }}>
+          No credit card · cancel anytime · takes 2 minutes
         </div>
       </div>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: '0.5px solid rgba(255,255,255,0.08)',
-        padding: '20px 32px',
+      {/* Footer bar */}
+      <div style={{
+        borderTop: '0.5px solid rgba(255,255,255,0.05)',
+        padding: '18px 32px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        fontFamily: "'DM Sans', sans-serif"
+        justifyContent: 'space-between'
       }}>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
-          fontWeight: 800,
-          fontSize: '13px',
-          letterSpacing: '0.2em',
-          color: 'rgba(255,255,255,0.4)'
-        }}>
-          AXON<span style={{ color: 'rgba(212,160,23,0.5)' }}>.</span>
-        </span>
+          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontSize: '12px', letterSpacing: '0.2em',
+          color: 'rgba(255,255,255,0.25)'
+        }}>AXON<span style={{ color: 'rgba(212,160,23,0.35)' }}>.</span></span>
+
         <span style={{
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '9px',
-          color: 'rgba(255,255,255,0.2)'
+          fontFamily: "'DM Mono', monospace", fontSize: '9px',
+          color: 'rgba(255,255,255,0.18)'
         }}>© 2026 AXON — The signal reaches you first</span>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          {['Privacy', 'Security', 'Terms'].map(link => (
+
+        <div style={{ display: 'flex', gap: '16px' }}>
+          {['Privacy', 'Terms'].map(link => (
             <span key={link} style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '9px',
-              color: 'rgba(255,255,255,0.2)',
-              cursor: 'pointer'
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer'
             }}>{link}</span>
           ))}
         </div>
-      </footer>
+      </div>
     </>
   );
 }
