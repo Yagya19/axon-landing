@@ -111,7 +111,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeCounter, setActiveCounter] = useState('price');
   const [focusedId, setFocusedId] = useState(null);
-  const [focusType, setFocusType] = useState(null); // 'competitor' | 'signal'
+  const [focusType, setFocusType] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -140,10 +140,9 @@ export default function Dashboard() {
   const categorySignals = signals.filter(s => s.signal_type === 'new_category');
   const trackedWithPrice = competitors.filter(c => c.last_snapshot && c.last_snapshot.price);
 
-  const getCompName = (url) => url.replace('https://', '').replace('www.', '');
+  const getCompName = (url) => url ? url.replace('https://', '').replace('www.', '') : '';
   const getCompById = (id) => competitors.find(c => c.id === id);
 
-  // Focused signal or competitor
   const focusedPriceComp = activeCounter === 'price' && focusedId
     ? trackedWithPrice.find(c => c.id === focusedId) || trackedWithPrice[0]
     : trackedWithPrice[0];
@@ -163,7 +162,6 @@ export default function Dashboard() {
   const topPriceChange = focusedPriceSignal ? parsePriceChange(focusedPriceSignal.detail) : null;
   const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
 
-  // For product/category intel — based on how many that specific competitor launched
   const focusedProductComp = focusedProductSignal ? getCompById(focusedProductSignal.competitor_id) : null;
   const compProductCount = focusedProductComp ? productSignals.filter(s => s.competitor_id === focusedProductComp.id).length : productSignals.length;
   const productIntel = getProductIntel(compProductCount);
@@ -177,21 +175,19 @@ export default function Dashboard() {
     : COLORS.price;
   const activeColor = activeCounter === 'price' ? activePriceColor : COLORS[activeCounter];
 
-  const handleCounterClick = (type) => {
-    setActiveCounter(type);
-    setFocusedId(null);
-    setFocusType(null);
-  };
+  const focusedPriceIndex = trackedWithPrice.findIndex(c => c.id === (focusedId || trackedWithPrice[0]?.id));
+  const focusedProductIndex = productSignals.findIndex(s => s.id === (focusedProductSignal?.id));
+  const focusedCategoryIndex = categorySignals.findIndex(s => s.id === (focusedCategorySignal?.id));
 
-  const handlePriceCompClick = (comp) => {
-    setFocusedId(focusedId === comp.id ? null : comp.id);
-    setFocusType('competitor');
-  };
+  const counterBadge = activeCounter === 'price'
+    ? `${focusedPriceIndex + 1} of ${trackedWithPrice.length} tracked`
+    : activeCounter === 'product'
+      ? `${focusedProductIndex + 1} of ${productSignals.length} launch${productSignals.length !== 1 ? 'es' : ''}`
+      : `${focusedCategoryIndex + 1} of ${categorySignals.length} categor${categorySignals.length !== 1 ? 'ies' : 'y'}`;
 
-  const handleSignalClick = (sig) => {
-    setFocusedId(focusedId === sig.id ? null : sig.id);
-    setFocusType('signal');
-  };
+  const handleCounterClick = (type) => { setActiveCounter(type); setFocusedId(null); setFocusType(null); };
+  const handlePriceCompClick = (comp) => { setFocusedId(focusedId === comp.id ? null : comp.id); setFocusType('competitor'); };
+  const handleSignalClick = (sig) => { setFocusedId(focusedId === sig.id ? null : sig.id); setFocusType('signal'); };
 
   const counterStyle = (type) => ({
     background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : '#0a0a0a',
@@ -199,7 +195,6 @@ export default function Dashboard() {
     borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
   });
 
-  // Group signals by competitor
   const groupByCompetitor = (sigs) => {
     const groups = {};
     competitors.forEach(c => { groups[c.id] = { comp: c, signals: [] }; });
@@ -210,11 +205,17 @@ export default function Dashboard() {
   const productGroups = groupByCompetitor(productSignals);
   const categoryGroups = groupByCompetitor(categorySignals);
 
+  const heroStrategic = activeCounter === 'price' ? (priceIntel?.strategic || "Baseline prices set. Alerts fire when prices change.") : activeCounter === 'product' ? productIntel.strategic : categoryIntel.strategic;
+  const heroStrategicNote = activeCounter === 'price' ? (priceIntel?.strategicNote || "AXON monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote;
+  const heroTactical = activeCounter === 'price' ? (priceIntel?.tactical || "No action needed yet — monitoring is active.") : activeCounter === 'product' ? productIntel.tactical : categoryIntel.tactical;
+  const heroTacticalNote = activeCounter === 'price' ? (priceIntel?.tacticalNote || "Price baselines refreshed every 24 hours.") : activeCounter === 'product' ? productIntel.tacticalNote : categoryIntel.tacticalNote;
+  const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
+  const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
+
   return (
     <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
-        {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
           <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff' }}>
             AXON<span style={{ color: '#D4A017' }}>.</span>
@@ -236,7 +237,6 @@ export default function Dashboard() {
             {focusedId && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
           </div>
 
-          {/* Hero number / name */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div style={{ flex: 1 }}>
               {activeCounter === 'price' ? (
@@ -253,36 +253,29 @@ export default function Dashboard() {
                 </div>
               ) : activeCounter === 'product' ? (
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.product, lineHeight: 1.2 }}>
-                  {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : productSignals.length > 0 ? productSignals[0].title.replace('New product launched: ', '') : '—'}
+                  {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : '—'}
                 </div>
               ) : (
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.category, lineHeight: 1.2 }}>
-                  {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : categorySignals.length > 0 ? categorySignals[0].title.replace('New category launched: ', '') : '—'}
+                  {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : '—'}
                 </div>
               )}
             </div>
 
-            {/* Counter badge */}
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
-              {activeCounter === 'price'
-                ? `${trackedWithPrice.length} tracked`
-                : activeCounter === 'product'
-                  ? `${productSignals.indexOf(focusedProductSignal) + 1 || 1} of ${productSignals.length} launch${productSignals.length !== 1 ? 'es' : ''}`
-                  : `${categorySignals.indexOf(focusedCategorySignal) + 1 || 1} of ${categorySignals.length} categor${categorySignals.length !== 1 ? 'ies' : 'y'}`
-              }
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
+              {counterBadge}
             </div>
           </div>
 
-          {/* Context line */}
           <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '5px' }}>
             {activeCounter === 'price' && topPriceChange ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url || '')} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
+              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
             ) : activeCounter === 'price' && focusedPriceComp ? (
               <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceComp.last_snapshot.product_title}</strong> — ${focusedPriceComp.last_snapshot.price} tracked on {getCompName(focusedPriceComp.url)}</>
             ) : activeCounter === 'product' && focusedProductSignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url || '')}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
+              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url)}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
             ) : activeCounter === 'category' && focusedCategorySignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url || '')}</strong> — their first move into this segment</>
+              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url)}</strong> — their first move into this segment</>
             ) : 'No signals detected yet — monitoring is active.'}
           </div>
 
@@ -292,36 +285,28 @@ export default function Dashboard() {
 
           <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
 
-          {/* Strategic and tactical */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
             <div style={{ background: '#0a0a0a', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>
-                {activeCounter === 'price' ? (priceIntel?.strategic || "Baseline prices set. Alerts fire when prices change.") : activeCounter === 'product' ? productIntel.strategic : categoryIntel.strategic}
-              </div>
-              <NoteBox text={activeCounter === 'price' ? (priceIntel?.strategicNote || "AXON monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote} color={activeColor} />
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
+              <NoteBox text={heroStrategicNote} color={activeColor} />
             </div>
             <div style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>
-                {activeCounter === 'price' ? (priceIntel?.tactical || "No action needed yet — monitoring is active.") : activeCounter === 'product' ? productIntel.tactical : categoryIntel.tactical}
-              </div>
-              <NoteBox text={activeCounter === 'price' ? (priceIntel?.tacticalNote || "Price baselines refreshed every 24 hours.") : activeCounter === 'product' ? productIntel.tacticalNote : categoryIntel.tacticalNote} color={activeColor} />
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
+              <NoteBox text={heroTacticalNote} color={activeColor} />
             </div>
           </div>
 
-          {/* Action */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${activeColor}33`, borderRadius: '6px', marginBottom: '12px' }}>
             <span style={{ color: activeColor, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
-              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>
-              {activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action}
+              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{heroAction}
             </span>
           </div>
 
-          {/* Tags */}
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {(activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags).map((tag, i) => (
+            {heroTags.map((tag, i) => (
               <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em', background: i === 0 ? `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)', color: i === 0 ? activeColor : 'rgba(255,255,255,0.5)', border: `0.5px solid ${i === 0 ? activeColor + '44' : 'rgba(255,255,255,0.1)'}` }}>{tag}</span>
             ))}
           </div>
@@ -344,7 +329,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* By competitor — grouped */}
+        {/* By competitor */}
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
           By competitor
         </div>
@@ -393,7 +378,7 @@ export default function Dashboard() {
           );
         })}
 
-        {/* PRODUCT VIEW — grouped */}
+        {/* PRODUCT VIEW */}
         {activeCounter === 'product' && productGroups.map((group, i) => (
           <div key={i} style={{ marginBottom: '10px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
@@ -419,7 +404,7 @@ export default function Dashboard() {
           </div>
         ))}
 
-        {/* CATEGORY VIEW — grouped */}
+        {/* CATEGORY VIEW */}
         {activeCounter === 'category' && categoryGroups.map((group, i) => (
           <div key={i} style={{ marginBottom: '10px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
