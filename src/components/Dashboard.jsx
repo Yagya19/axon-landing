@@ -81,7 +81,7 @@ export default function Dashboard() {
       num: categorySignals.length,
       context: categorySignals.length > 0
         ? <>{categorySignals.length} new categor{categorySignals.length !== 1 ? 'ies' : 'y'} detected across your competitors.</>
-        : 'No new categories detected yet. You'll be alerted when competitors expand.',
+        : "No new categories detected yet. You'll be alerted when competitors expand.",
       action: "A new category means they just proved demand exists. Check if you can enter faster than they can establish it."
     }
   };
