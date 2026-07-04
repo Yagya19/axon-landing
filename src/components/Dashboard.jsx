@@ -77,6 +77,7 @@ export default function Dashboard() {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeCounter, setActiveCounter] = useState('price');
+  const [selectedCompId, setSelectedCompId] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -113,7 +114,14 @@ export default function Dashboard() {
   const categorySignals = signals.filter(s => s.signal_type === 'new_category');
   const trackedWithPrice = competitors.filter(c => c.last_snapshot && c.last_snapshot.price);
 
-  const topPriceSignal = pricingSignals[0];
+  const heroComp = selectedCompId
+    ? trackedWithPrice.find(c => c.id === selectedCompId) || trackedWithPrice[0]
+    : trackedWithPrice[0];
+
+  const topPriceSignal = selectedCompId
+    ? pricingSignals.find(s => s.competitor_id === selectedCompId) || pricingSignals[0]
+    : pricingSignals[0];
+
   const topPriceChange = topPriceSignal ? parsePriceChange(topPriceSignal?.detail) : null;
   const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
 
@@ -193,6 +201,11 @@ export default function Dashboard() {
     cursor: 'pointer', transition: 'all 0.15s'
   });
 
+  const handleCompClick = (comp) => {
+    if (activeCounter !== 'price') return;
+    setSelectedCompId(selectedCompId === comp.id ? null : comp.id);
+  };
+
   return (
     <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
@@ -224,7 +237,7 @@ export default function Dashboard() {
               {activeCounter === 'price' && topPriceChange
                 ? `${topPriceChange.pct > 0 ? '+' : ''}${topPriceChange.pct}%`
                 : activeCounter === 'price'
-                  ? trackedWithPrice[0] ? `$${trackedWithPrice[0].last_snapshot.price}` : '—'
+                  ? heroComp ? `$${heroComp.last_snapshot.price}` : '—'
                   : activeCounter === 'product'
                     ? productSignals.length || trackedWithPrice.length
                     : categorySignals.length
@@ -248,8 +261,8 @@ export default function Dashboard() {
           <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '14px' }}>
             {activeCounter === 'price' && topPriceChange ? (
               <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{topPriceSignal.title.replace(' price changed', '')}</strong> on {getCompetitorName(topPriceSignal.competitor_id)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: topPriceChange.pct < 0 ? '#E85D24' : '#00C896' }}>${topPriceChange.newPrice}</strong></>
-            ) : activeCounter === 'price' && trackedWithPrice[0] ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{trackedWithPrice[0].last_snapshot.product_title}</strong> — ${trackedWithPrice[0].last_snapshot.price} tracked on {trackedWithPrice[0].url.replace('https://', '').replace('www.', '')}</>
+            ) : activeCounter === 'price' && heroComp ? (
+              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{heroComp.last_snapshot.product_title}</strong> — ${heroComp.last_snapshot.price} tracked on {heroComp.url.replace('https://', '').replace('www.', '')}</>
             ) : activeCounter === 'product' ? (
               productSignals.length > 0
                 ? <>{productSignals.length} new product{productSignals.length !== 1 ? 's' : ''} detected across your competitors this week</>
@@ -305,7 +318,7 @@ export default function Dashboard() {
             { type: 'product', num: productSignals.length, label: 'new products' },
             { type: 'category', num: categorySignals.length, label: 'new categories' }
           ].map(item => (
-            <div key={item.type} style={counterStyle(item.type)} onClick={() => setActiveCounter(item.type)}>
+            <div key={item.type} style={counterStyle(item.type)} onClick={() => { setActiveCounter(item.type); setSelectedCompId(null); }}>
               <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '24px', fontWeight: 800, color: COLORS[item.type], lineHeight: 1, marginBottom: '5px' }}>
                 {item.num}
               </div>
@@ -314,20 +327,36 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
           By competitor
         </div>
+        {activeCounter === 'price' && (
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '10px' }}>
+            Tap a competitor to focus it in the hero card
+          </p>
+        )}
 
         {competitors.map((comp, i) => {
           const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
           const compProductSignals = productSignals.filter(s => s.competitor_id === comp.id);
           const compCategorySignals = categorySignals.filter(s => s.competitor_id === comp.id);
+          const isSelected = selectedCompId === comp.id;
 
           return (
-            <div key={i} style={{ marginBottom: '10px', padding: '13px 14px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
+            <div
+              key={i}
+              onClick={() => handleCompClick(comp)}
+              style={{
+                marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : '#0a0a0a',
+                borderRadius: '8px',
+                border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`,
+                cursor: activeCounter === 'price' ? 'pointer' : 'default',
+                transition: 'all 0.15s'
+              }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
                   {comp.url.replace('https://', '').replace('www.', '')}
+                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
                 </span>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
                   {activeCounter === 'price'
