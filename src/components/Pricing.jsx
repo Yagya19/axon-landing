@@ -1,220 +1,103 @@
 import React from 'react';
 
-const plans = [
-  {
-    name: 'Starter',
-    price: '$59',
-    sub: '/month founding price',
-    founding: 'Standard $99 — save 40% forever',
-    featured: false,
-    features: [
-      '3 competitors tracked',
-      'Weekly Monday digest',
-      'Pricing and product monitoring',
-      'Email alerts',
-      '14-day free trial'
-    ]
-  },
-  {
-    name: 'Growth',
-    price: '$119',
-    sub: '/month founding price',
-    founding: 'Standard $199 — save 40% forever',
-    featured: true,
-    features: [
-      '7 competitors tracked',
-      'Real-time instant alerts',
-      'Full 12-layer signal monitoring',
-      'AI insight and action engine',
-      'Shareable PDF reports'
-    ]
-  },
-  {
-    name: 'Pro',
-    price: '$239',
-    sub: '/month founding price',
-    founding: 'Standard $399 — save 40% forever',
-    featured: false,
-    features: [
-      '15 competitors tracked',
-      'Ad creative monitoring',
-      '12-month history timeline',
-      'White-label reports',
-      'Priority support'
-    ]
-  },
-];
-
 export default function Pricing() {
   return (
-    <section style={{
-      padding: '48px 32px',
-      borderBottom: '0.5px solid rgba(255,255,255,0.05)',
-      fontFamily: "'DM Sans', sans-serif"
-    }}>
-      <div style={{
-        fontFamily: "'DM Mono', monospace",
-        fontSize: '9px',
-        color: '#D4A017',
-        letterSpacing: '0.12em',
-        textTransform: 'uppercase',
-        marginBottom: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <span style={{ display: 'inline-block', width: '16px', height: '0.5px', background: '#D4A017' }} />
-        Pricing
-      </div>
-      <h2 style={{
-        fontFamily: "'Syne', sans-serif",
-        fontWeight: 800,
-        fontSize: '28px',
-        letterSpacing: '-0.02em',
-        lineHeight: 1.1,
-        marginBottom: '24px',
-        color: '#fff'
-      }}>
-        Simple pricing.<br />Extraordinary intelligence.
-      </h2>
+    <>
+      <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
 
-      {/* Founding bar */}
-      <div style={{
-        border: '0.5px solid rgba(212,160,23,0.2)',
-        background: 'rgba(212,160,23,0.05)',
-        borderRadius: '6px',
-        padding: '14px 16px',
-        marginBottom: '20px'
-      }}>
+      <div style={{ padding: '40px 32px', maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '8px'
-        }}>
-          <span style={{
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '10px',
-            color: '#D4A017',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase'
-          }}>Founding member spots</span>
-          <span style={{
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '10px',
-            color: 'rgba(255,255,255,0.4)'
-          }}>73 of 100 taken — 27 remaining</span>
-        </div>
-        <div style={{
-          height: '3px',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: '2px',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            height: '100%',
-            width: '73%',
-            background: '#D4A017',
-            borderRadius: '2px'
-          }} />
-        </div>
-      </div>
+          fontFamily: "'DM Mono', monospace", fontSize: '9px',
+          color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em',
+          textTransform: 'uppercase', marginBottom: '8px'
+        }}>Pricing</div>
 
-      {/* Plans */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '10px'
-      }}>
-        {plans.map((plan) => (
-          <div key={plan.name} style={{
-            border: plan.featured ? '0.5px solid #D4A017' : '0.5px solid rgba(255,255,255,0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-            background: plan.featured ? '#0d0d0d' : '#0a0a0a'
-          }}>
-            {plan.featured && (
-              <div style={{
-                display: 'inline-block',
-                background: '#D4A017',
-                color: '#080808',
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '8px',
-                fontWeight: 500,
-                padding: '3px 10px',
-                borderRadius: '2px',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                marginBottom: '12px'
-              }}>Most popular</div>
-            )}
-            <div style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '16px',
-              fontWeight: 800,
-              color: '#fff',
-              marginBottom: '4px'
-            }}>{plan.name}</div>
-            <div style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '32px',
-              fontWeight: 800,
-              color: '#fff',
-              lineHeight: 1,
-              marginBottom: '4px'
-            }}>{plan.price}</div>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '9px',
-              color: 'rgba(255,255,255,0.3)',
-              letterSpacing: '0.06em',
-              marginBottom: '8px'
-            }}>{plan.sub}</div>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '9px',
-              color: '#D4A017',
-              letterSpacing: '0.04em',
-              marginBottom: '14px'
-            }}>{plan.founding}</div>
-            <div style={{
-              height: '0.5px',
-              background: 'rgba(255,255,255,0.08)',
-              marginBottom: '12px'
-            }} />
-            {plan.features.map(f => (
-              <div key={f} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '7px',
-                fontSize: '11px',
-                color: 'rgba(255,255,255,0.5)',
-                marginBottom: '7px',
-                fontWeight: 300
-              }}>
-                <span style={{ color: '#00C896', fontFamily: "'DM Mono', monospace", fontSize: '10px' }}>✓</span>
-                {f}
-              </div>
-            ))}
-            <button 
-              onClick={() => window.location.href = '/signup'}
-              style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '4px',
-              fontSize: '12px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              marginTop: '14px',
-              fontFamily: "'DM Sans', sans-serif",
-              border: 'none',
-              background: plan.featured ? '#D4A017' : 'rgba(255,255,255,0.05)',
-              color: plan.featured ? '#080808' : 'rgba(255,255,255,0.6)'
+        <div style={{
+          fontFamily: "'Syne', sans-serif", fontSize: '22px', fontWeight: 800,
+          color: '#fff', marginBottom: '24px', lineHeight: 1.2
+        }}>
+          No commitment.<br />
+          <span style={{ color: '#D4A017' }}>Full intelligence.</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.15fr', gap: '10px', maxWidth: '540px' }}>
+          {[
+            {
+              name: 'Free trial',
+              price: '$0',
+              period: '/14 days',
+              desc: 'See if AXON works for your store — no card, no commitment.',
+              features: ['2 competitors tracked', 'All 3 signals active', 'Email alerts', 'Full dashboard access'],
+              btnText: 'Start free trial',
+              btnStyle: { background: 'transparent', border: '0.5px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)' },
+              featured: false
+            },
+            {
+              name: 'Premium',
+              price: '$119',
+              period: '/month',
+              desc: 'For founders who are serious about staying ahead of the market.',
+              features: ['7 competitors tracked', 'All signals including coming soon', 'Full dashboard + weekly report', 'Priority alerts'],
+              btnText: 'Upgrade to Premium',
+              btnStyle: { background: '#D4A017', color: '#080808' },
+              featured: true,
+              badge: 'Most popular'
+            }
+          ].map((plan, i) => (
+            <div key={i} style={{
+              background: plan.featured ? 'rgba(212,160,23,0.02)' : '#0a0a0a',
+              border: `0.5px solid ${plan.featured ? 'rgba(212,160,23,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              borderRadius: '10px',
+              padding: '20px'
             }}>
-              {plan.featured ? 'Start free trial' : 'Get started free'}
-            </button>
-          </div>
-        ))}
+              {plan.badge && (
+                <div style={{
+                  fontFamily: "'DM Mono', monospace", fontSize: '8px',
+                  color: '#D4A017', border: '0.5px solid rgba(212,160,23,0.3)',
+                  background: 'rgba(212,160,23,0.08)', padding: '2px 8px',
+                  borderRadius: '99px', display: 'inline-block', marginBottom: '10px'
+                }}>{plan.badge}</div>
+              )}
+              <div style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '9px',
+                color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em',
+                textTransform: 'uppercase', marginBottom: '6px'
+              }}>{plan.name}</div>
+              <div style={{
+                fontFamily: "'Syne', sans-serif", fontSize: '26px',
+                fontWeight: 800, color: '#fff', marginBottom: '3px'
+              }}>
+                {plan.price}
+                <span style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>{plan.period}</span>
+              </div>
+              <div style={{
+                fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginBottom: '14px',
+                fontWeight: 300, lineHeight: 1.5
+              }}>{plan.desc}</div>
+              {plan.features.map((f, j) => (
+                <div key={j} style={{
+                  fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300,
+                  marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '7px'
+                }}>
+                  <div style={{
+                    width: '3px', height: '3px', borderRadius: '50%', flexShrink: 0,
+                    background: plan.featured ? 'rgba(212,160,23,0.5)' : 'rgba(255,255,255,0.25)'
+                  }} />
+                  {f}
+                </div>
+              ))}
+              <button
+                onClick={() => window.location.href = '/signup'}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: '4px',
+                  fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 500, border: 'none', marginTop: '14px',
+                  cursor: 'pointer', ...plan.btnStyle
+                }}>{plan.btnText}</button>
+            </div>
+          ))}
+        </div>
       </div>
-    </section>
+    </>
   );
 }
