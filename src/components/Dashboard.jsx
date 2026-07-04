@@ -7,10 +7,47 @@ const supabase = createClient(
 );
 
 const COLORS = {
-  price: '#FF0000',
+  price: '#E85D24',
   product: '#378ADD',
   category: '#D4A017'
 };
+
+function getPriceIntel(pct) {
+  if (pct <= -20) return {
+    strategic: "An aggressive drop of this size signals either a major clearance event or a competitive attack. They are sacrificing margin deliberately — this is not routine.",
+    tactical: "Do not match immediately. Run a value-focused campaign in the next 48 hours reminding customers why your product justifies full price.",
+    action: "Launch a value campaign now. Do not match their price — you will lose margin for nothing.",
+    tags: ["High urgency", "Likely clearance", "Respond in 48h"]
+  };
+  if (pct <= -10) return {
+    strategic: "A drop of this size typically signals end-of-season inventory clearance, not a permanent reprice. They need cash flow before the next collection drops.",
+    tactical: "Hold your price for 14 days. If they revert, you maintained margin. If they hold the cut, reassess then — not now.",
+    action: "Hold your price. Monitor for 14 days before deciding.",
+    tags: ["Likely temporary", "Monitor 14 days", "Hold price"]
+  };
+  if (pct < 0) return {
+    strategic: "A minor price adjustment — likely testing price elasticity or running a quiet promotional test. Not a signal of strategic repositioning.",
+    tactical: "No action needed yet. Watch whether this spreads to other products in their catalog.",
+    action: "No action needed. Watch if this spreads across their catalog.",
+    tags: ["Low urgency", "Testing elasticity", "Watch only"]
+  };
+  return {
+    strategic: "A price increase signals confidence in demand or rising costs being passed to customers. This is an opportunity for you to compete on value.",
+    tactical: "If your price is now lower, highlight it. Run a targeted comparison campaign while the gap exists.",
+    action: "Opportunity — their price is now higher than yours. Highlight your value.",
+    tags: ["Opportunity", "Compete on value", "Act now"]
+  };
+}
+
+function parsePriceChange(detail) {
+  if (!detail) return null;
+  const match = detail.match(/From \$?([\d.]+) to \$?([\d.]+)/i);
+  if (!match) return null;
+  const oldPrice = parseFloat(match[1]);
+  const newPrice = parseFloat(match[2]);
+  const pct = ((newPrice - oldPrice) / oldPrice) * 100;
+  return { oldPrice, newPrice, pct: Math.round(pct) };
+}
 
 export default function Dashboard() {
   const [competitors, setCompetitors] = useState([]);
@@ -43,11 +80,9 @@ export default function Dashboard() {
   }, []);
 
   if (loading) return (
-    <div style={{
-      background: '#080808', minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace", fontSize: '12px'
-    }}>Loading your dashboard...</div>
+    <div style={{ background: '#080808', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace", fontSize: '12px' }}>
+      Loading your dashboard...
+    </div>
   );
 
   const maxAllowed = isPremium ? 7 : 2;
@@ -56,48 +91,81 @@ export default function Dashboard() {
   const categorySignals = signals.filter(s => s.signal_type === 'new_category');
   const trackedWithPrice = competitors.filter(c => c.last_snapshot?.price);
 
+  const topPriceSignal = pricingSignals[0];
+  const topPriceChange = topPriceSignal ? parsePriceChange(topPriceSignal?.detail) : null;
+  const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
+
+  const topProductSignal = productSignals[0];
+  const topCategorySignal = categorySignals[0];
+
+  const getCompetitorName = (id) => {
+    const comp = competitors.find(c => c.id === id);
+    return comp ? comp.url.replace('https://', '').replace('www.', '') : 'Unknown';
+  };
+
   const heroContent = {
     price: {
       color: COLORS.price,
-      label: 'Latest price tracked',
-      num: trackedWithPrice[0] ? `$${trackedWithPrice[0].last_snapshot.price}` : '—',
-      context: trackedWithPrice[0]
-        ? <><strong style={{ color: 'rgba(255,255,255,0.75)' }}>{trackedWithPrice[0].last_snapshot.product_title}</strong> — tracked on {trackedWithPrice[0].url.replace('https://', '').replace('www.', '')}</>
-        : 'No prices tracked yet.',
-      action: "You'll be alerted the moment this price changes — before your customers notice."
+      label: 'Price movement detected',
+      num: topPriceChange ? `${topPriceChange.pct}%` : trackedWithPrice.length > 0 ? `$${trackedWithPrice[0].last_snapshot.price}` : '—',
+      context: topPriceChange
+        ? <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{topPriceSignal.title.replace(' price changed', '')}</strong> on {getCompetitorName(topPriceSignal.competitor_id)} — was ${topPriceChange.oldPrice}, now ${topPriceChange.newPrice}</>
+        : trackedWithPrice[0]
+          ? <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{trackedWithPrice[0].last_snapshot.product_title}</strong> — ${trackedWithPrice[0].last_snapshot.price} tracked on {trackedWithPrice[0].url.replace('https://', '').replace('www.', '')}</>
+          : 'No prices tracked yet.',
+      strategic: priceIntel?.strategic || "Baseline prices set. You'll be alerted the moment any price changes.",
+      tactical: priceIntel?.tactical || "No action needed yet — monitoring is active.",
+      action: priceIntel?.action || "Monitoring active. Alerts fire automatically when prices change.",
+      tags: priceIntel?.tags || ["Monitoring active", "No changes yet"]
     },
     product: {
       color: COLORS.product,
-      label: 'New products detected',
+      label: 'New products launched',
       num: productSignals.length || trackedWithPrice.length,
       context: productSignals.length > 0
-        ? <>{productSignals.length} new product{productSignals.length !== 1 ? 's' : ''} launched by your competitors this week.</>
-        : <>Competitors have <strong style={{ color: 'rgba(255,255,255,0.75)' }}>{trackedWithPrice.length} products</strong> being monitored. New launches will appear here.</>,
-      action: "Watch for paid ad spend to follow in 2 weeks — that confirms these are real launches, not tests."
+        ? <>{productSignals.length} new product{productSignals.length !== 1 ? 's' : ''} detected across your competitors this week</>
+        : <>Monitoring <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{trackedWithPrice.length} product{trackedWithPrice.length !== 1 ? 's' : ''}</strong> across your competitors. New launches appear here instantly.</>,
+      strategic: productSignals.length > 0
+        ? "Multiple new launches in one week suggests a planned collection drop. They are building momentum toward a campaign — this is coordinated, not ad hoc."
+        : "Product catalog baselines are set. Any new product your competitors add will appear here within 24 hours of launch.",
+      tactical: productSignals.length > 0
+        ? "Watch their ad spend over the next 2 weeks. If paid campaigns follow these launches, it confirms a full push — and tells you which products they are betting on."
+        : "No action needed yet. You will be notified immediately when a competitor adds new products.",
+      action: productSignals.length > 0
+        ? "Check if any new products overlap with your catalog. Prepare a response before their ads run."
+        : "Monitoring active. New product alerts fire within 24 hours of launch.",
+      tags: productSignals.length > 0
+        ? ["Watch closely", "Ads likely in 2 weeks", "Check overlap"]
+        : ["Monitoring active", "No new products yet"]
     },
     category: {
       color: COLORS.category,
       label: 'New categories detected',
       num: categorySignals.length,
       context: categorySignals.length > 0
-        ? <>{categorySignals.length} new categor{categorySignals.length !== 1 ? 'ies' : 'y'} detected across your competitors.</>
-        : "No new categories detected yet. You'll be alerted when competitors expand.",
-      action: "A new category means they just proved demand exists. Check if you can enter faster than they can establish it."
+        ? <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{categorySignals[0].title.replace('New category launched: ', '')}</strong> — new category launched by {getCompetitorName(categorySignals[0].competitor_id)}</>
+        : 'No new categories detected yet. You will be alerted when competitors expand into new territory.',
+      strategic: categorySignals.length > 0
+        ? "A new category is a long-term bet on a customer segment. They have built inventory and committed budget. This is not a test — it is a strategic move into new territory."
+        : "Category baselines are set across all competitors. Any new category expansion will appear here within 24 hours.",
+      tactical: categorySignals.length > 0
+        ? "You have a narrow window before they establish authority in this category. If it overlaps with your strengths, move now. If not, watch and learn from their approach."
+        : "No action needed yet. You will be notified immediately when a competitor launches a new category.",
+      action: categorySignals.length > 0
+        ? "Decide fast. They just proved demand exists. The question is whether you move first or let them own it."
+        : "Monitoring active. Category alerts fire within 24 hours of launch.",
+      tags: categorySignals.length > 0
+        ? ["Strategic move", "Narrow window", "Decide fast"]
+        : ["Monitoring active", "No new categories yet"]
     }
   };
 
   const active = heroContent[activeCounter];
 
-  const getCompSignals = (comp, type) => {
-    if (type === 'price') return null;
-    return signals.filter(s =>
-      s.competitor_id === comp.id &&
-      s.signal_type === (type === 'product' ? 'new_product' : 'new_category')
-    );
-  };
-
   const counterStyle = (type) => ({
-    background: activeCounter === type ? `rgba(${type === 'price' ? '255,0,0' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : '#0a0a0a',
+    background: activeCounter === type
+      ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)`
+      : '#0a0a0a',
     border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
     borderRadius: '8px', padding: '13px 10px', textAlign: 'center',
     cursor: 'pointer', transition: 'all 0.15s'
@@ -132,15 +200,42 @@ export default function Dashboard() {
           <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '38px', fontWeight: 800, color: active.color, lineHeight: 1, marginBottom: '4px' }}>
             {active.num}
           </div>
-          <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '12px' }}>
+          <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '14px' }}>
             {active.context}
           </div>
-          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '12px' }} />
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#D4A017', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
-            What to watch for
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
+
+          {/* Strategic and tactical */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+            <div style={{ background: '#0a0a0a', border: `0.5px solid ${active.color}33`, borderRadius: '8px', padding: '12px' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: active.color, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{active.strategic}</div>
+            </div>
+            <div style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{active.tactical}</div>
+            </div>
           </div>
-          <div style={{ fontSize: '12.5px', color: '#fff', fontWeight: 500, lineHeight: 1.5 }}>
-            {active.action}
+
+          {/* Action */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? '232,93,36' : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${active.color}33`, borderRadius: '6px', marginBottom: '12px' }}>
+            <span style={{ color: active.color, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
+              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{active.action}
+            </span>
+          </div>
+
+          {/* Tags */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {active.tags.map((tag, i) => (
+              <span key={i} style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '9px',
+                padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em',
+                background: i === 0 ? `rgba(${activeCounter === 'price' ? '232,93,36' : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)',
+                color: i === 0 ? active.color : 'rgba(255,255,255,0.5)',
+                border: `0.5px solid ${i === 0 ? active.color + '44' : 'rgba(255,255,255,0.1)'}`
+              }}>{tag}</span>
+            ))}
           </div>
         </div>
 
@@ -150,7 +245,7 @@ export default function Dashboard() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
           {[
-            { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
+            { type: 'price', num: pricingSignals.length || trackedWithPrice.length, label: 'prices tracked' },
             { type: 'product', num: productSignals.length, label: 'new products' },
             { type: 'category', num: categorySignals.length, label: 'new categories' }
           ].map(item => (
@@ -169,7 +264,10 @@ export default function Dashboard() {
         </div>
 
         {competitors.map((comp, i) => {
-          const compSignals = getCompSignals(comp, activeCounter);
+          const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
+          const compProductSignals = productSignals.filter(s => s.competitor_id === comp.id);
+          const compCategorySignals = categorySignals.filter(s => s.competitor_id === comp.id);
+
           return (
             <div key={i} style={{ marginBottom: '10px', padding: '13px 14px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -177,49 +275,81 @@ export default function Dashboard() {
                   {comp.url.replace('https://', '').replace('www.', '')}
                 </span>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
-                  {activeCounter === 'price' ? (comp.last_snapshot?.price ? '1 signal tracked' : '0 signals yet') : `${compSignals?.length || 0} signal${compSignals?.length !== 1 ? 's' : ''}`}
+                  {activeCounter === 'price'
+                    ? (comp.last_snapshot?.price ? '1 price tracked' : '0 signals yet')
+                    : activeCounter === 'product'
+                      ? `${compProductSignals.length} new product${compProductSignals.length !== 1 ? 's' : ''}`
+                      : `${compCategorySignals.length} new categor${compCategorySignals.length !== 1 ? 'ies' : 'y'}`
+                  }
                 </span>
               </div>
 
-              {activeCounter === 'price' ? (
+              {activeCounter === 'price' && (
                 comp.last_snapshot?.price ? (
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '4px' }}>
-                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
-                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>
-                        {comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong>
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, paddingLeft: '15px' }}>
-                      <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Likely:</strong> baseline set. You'll be alerted when this price changes.
-                    </p>
+                    {compPriceSignals.length > 0 ? compPriceSignals.map((sig, j) => {
+                      const change = parsePriceChange(sig.detail);
+                      return (
+                        <div key={j} style={{ marginBottom: j < compPriceSignals.length - 1 ? '8px' : 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
+                            <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>
+                              {sig.title} {change && <strong style={{ color: COLORS.price }}>({change.pct}%)</strong>}
+                            </span>
+                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
+                              {new Date(sig.detected_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {change && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>Was ${change.oldPrice} → now ${change.newPrice}</p>}
+                        </div>
+                      );
+                    }) : (
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
+                          <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>
+                            {comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong>
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>
+                          <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Baseline set.</strong> Alert fires when price changes.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No price tracked yet.</p>
                 )
-              ) : compSignals?.length > 0 ? (
-                compSignals.map((sig, j) => (
+              )}
+
+              {activeCounter === 'product' && (
+                compProductSignals.length > 0 ? compProductSignals.map((sig, j) => (
                   <div key={j} style={{ padding: j > 0 ? '7px 0 0' : '0', borderTop: j > 0 ? '0.5px solid rgba(255,255,255,0.05)' : 'none' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '4px' }}>
-                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS[activeCounter], flexShrink: 0 }} />
-                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>
-                        {sig.title}
-                      </span>
-                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
-                        {new Date(sig.detected_at).toLocaleDateString()}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.product, flexShrink: 0 }} />
+                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title}</span>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
                     </div>
-                    {sig.detail && (
-                      <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, paddingLeft: '15px' }}>
-                        {sig.detail}
-                      </p>
-                    )}
+                    {sig.detail && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>{sig.detail}</p>}
                   </div>
-                ))
-              ) : (
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>
-                  No {activeCounter === 'product' ? 'new products' : 'new categories'} detected yet.
-                </p>
+                )) : (
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No new products detected yet.</p>
+                )
+              )}
+
+              {activeCounter === 'category' && (
+                compCategorySignals.length > 0 ? compCategorySignals.map((sig, j) => (
+                  <div key={j} style={{ padding: j > 0 ? '7px 0 0' : '0', borderTop: j > 0 ? '0.5px solid rgba(255,255,255,0.05)' : 'none' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.category, flexShrink: 0 }} />
+                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title}</span>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                    </div>
+                    {sig.detail && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>{sig.detail}</p>}
+                  </div>
+                )) : (
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No new categories detected yet.</p>
+                )
               )}
             </div>
           );
