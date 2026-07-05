@@ -42,7 +42,7 @@ export default function Navbar() {
         <div style={{
           fontFamily: "'DM Mono', monospace",
           fontSize: '8px',
-          color: 'rgba(255,255,255,0.25)',
+          color: 'rgba(0,200,150,0.7)',
           letterSpacing: '0.08em',
           marginTop: '4px'
         }}>
