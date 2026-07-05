@@ -104,6 +104,163 @@ const NoteBox = ({ text, color }) => (
   </div>
 );
 
+const DashboardBackground = () => (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    pointerEvents: 'none',
+    zIndex: 0,
+    overflow: 'hidden'
+  }}>
+    <svg
+      style={{ width: '100%', height: '100%' }}
+      viewBox="0 0 1400 900"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <defs>
+        <radialGradient id="gL" cx="15%" cy="40%" r="40%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gR" cx="85%" cy="35%" r="40%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gC" cx="50%" cy="60%" r="35%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.06)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gAmberL" cx="10%" cy="50%" r="30%">
+          <stop offset="0%" stopColor="rgba(212,160,23,0.06)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gAmberR" cx="90%" cy="50%" r="30%">
+          <stop offset="0%" stopColor="rgba(212,160,23,0.05)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+      </defs>
+
+      {/* Full coverage glows */}
+      <rect width="1400" height="900" fill="url(#gL)" />
+      <rect width="1400" height="900" fill="url(#gR)" />
+      <rect width="1400" height="900" fill="url(#gC)" />
+      <rect width="1400" height="900" fill="url(#gAmberL)" />
+      <rect width="1400" height="900" fill="url(#gAmberR)" />
+
+      {/* LEFT SIDE — network cluster */}
+      <line x1="80" y1="200" x2="180" y2="320" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
+      <line x1="180" y1="320" x2="120" y2="450" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="80" y1="200" x2="200" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="200" y1="180" x2="280" y2="300" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="280" y1="300" x2="180" y2="320" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="120" y1="450" x2="220" y2="520" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="220" y1="520" x2="300" y2="420" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="300" y1="420" x2="280" y2="300" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="60" y1="600" x2="150" y2="650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="150" y1="650" x2="220" y2="720" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="220" y1="720" x2="100" y2="780" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="150" y1="650" x2="280" y2="600" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+
+      {/* LEFT nodes */}
+      <circle cx="80" cy="200" r="4" fill="#E85D24" opacity="0.85" />
+      <circle cx="80" cy="200" r="10" fill="rgba(232,93,36,0.15)" />
+      <circle cx="180" cy="320" r="5" fill="rgba(60,120,255,0.6)" />
+      <circle cx="180" cy="320" r="12" fill="rgba(60,120,255,0.1)" />
+      <circle cx="200" cy="180" r="3.5" fill="#378ADD" opacity="0.85" />
+      <circle cx="200" cy="180" r="9" fill="rgba(55,138,221,0.12)" />
+      <circle cx="280" cy="300" r="3" fill="rgba(60,120,255,0.5)" />
+      <circle cx="120" cy="450" r="3.5" fill="#D4A017" opacity="0.85" />
+      <circle cx="120" cy="450" r="9" fill="rgba(212,160,23,0.12)" />
+      <circle cx="220" cy="520" r="2.5" fill="rgba(60,120,255,0.4)" />
+      <circle cx="300" cy="420" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="60" cy="600" r="3" fill="rgba(60,120,255,0.45)" />
+      <circle cx="150" cy="650" r="4" fill="rgba(60,120,255,0.5)" />
+      <circle cx="150" cy="650" r="10" fill="rgba(60,120,255,0.08)" />
+      <circle cx="220" cy="720" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="100" cy="780" r="2" fill="rgba(60,120,255,0.25)" />
+      <circle cx="280" cy="600" r="2" fill="rgba(60,120,255,0.3)" />
+
+      {/* LEFT pulse rings */}
+      <circle cx="180" cy="320" r="40" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
+      <circle cx="180" cy="320" r="75" stroke="rgba(60,120,255,0.08)" strokeWidth="0.8" fill="none" />
+      <circle cx="150" cy="650" r="35" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
+      <circle cx="150" cy="650" r="65" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
+
+      {/* RIGHT SIDE — network cluster */}
+      <line x1="1200" y1="150" x2="1300" y2="280" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
+      <line x1="1300" y1="280" x2="1350" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="1300" y1="280" x2="1250" y2="400" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="1200" y1="150" x2="1120" y2="260" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="1120" y1="260" x2="1250" y2="400" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1250" y1="400" x2="1320" y2="500" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1320" y1="500" x2="1380" y2="420" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1100" y1="550" x2="1200" y2="620" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="1200" y1="620" x2="1320" y2="580" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1320" y1="580" x2="1350" y2="700" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1200" y1="620" x2="1150" y2="720" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1150" y1="720" x2="1280" y2="780" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" />
+
+      {/* RIGHT nodes */}
+      <circle cx="1200" cy="150" r="4" fill="#E85D24" opacity="0.85" />
+      <circle cx="1200" cy="150" r="10" fill="rgba(232,93,36,0.15)" />
+      <circle cx="1300" cy="280" r="5" fill="rgba(60,120,255,0.6)" />
+      <circle cx="1300" cy="280" r="12" fill="rgba(60,120,255,0.1)" />
+      <circle cx="1350" cy="180" r="3" fill="rgba(60,120,255,0.4)" />
+      <circle cx="1120" cy="260" r="3.5" fill="#378ADD" opacity="0.85" />
+      <circle cx="1120" cy="260" r="9" fill="rgba(55,138,221,0.12)" />
+      <circle cx="1250" cy="400" r="4" fill="rgba(60,120,255,0.5)" />
+      <circle cx="1320" cy="500" r="3" fill="#D4A017" opacity="0.85" />
+      <circle cx="1320" cy="500" r="8" fill="rgba(212,160,23,0.12)" />
+      <circle cx="1380" cy="420" r="2" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1100" cy="550" r="3" fill="rgba(60,120,255,0.4)" />
+      <circle cx="1200" cy="620" r="4.5" fill="rgba(60,120,255,0.55)" />
+      <circle cx="1200" cy="620" r="11" fill="rgba(60,120,255,0.08)" />
+      <circle cx="1320" cy="580" r="3" fill="rgba(60,120,255,0.35)" />
+      <circle cx="1350" cy="700" r="2.5" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1150" cy="720" r="2.5" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1280" cy="780" r="2" fill="rgba(60,120,255,0.2)" />
+
+      {/* RIGHT pulse rings */}
+      <circle cx="1300" cy="280" r="50" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
+      <circle cx="1300" cy="280" r="95" stroke="rgba(60,120,255,0.09)" strokeWidth="0.8" fill="none" />
+      <circle cx="1300" cy="280" r="140" stroke="rgba(60,120,255,0.05)" strokeWidth="0.8" fill="none" />
+      <circle cx="1200" cy="620" r="40" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
+      <circle cx="1200" cy="620" r="75" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
+
+      {/* BOTTOM — signal streams flowing across */}
+      <path d="M0 750 Q200 700 350 720 Q500 740 650 700 Q800 660 950 680 Q1100 700 1250 660 Q1350 640 1400 650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.8" fill="none" />
+      <path d="M0 800 Q200 760 350 780 Q500 800 650 760 Q800 720 950 740 Q1100 760 1250 720 Q1350 700 1400 710" stroke="rgba(60,120,255,0.12)" strokeWidth="0.6" fill="none" />
+      <path d="M0 850 Q200 820 400 840 Q600 860 800 830 Q1000 800 1200 820 Q1350 835 1400 830" stroke="rgba(212,160,23,0.08)" strokeWidth="0.5" fill="none" />
+
+      {/* BOTTOM scattered nodes */}
+      <circle cx="350" cy="720" r="2.5" fill="rgba(60,120,255,0.4)" />
+      <circle cx="650" cy="700" r="2" fill="rgba(60,120,255,0.35)" />
+      <circle cx="950" cy="680" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="1250" cy="660" r="2" fill="rgba(60,120,255,0.3)" />
+      <circle cx="500" cy="840" r="1.5" fill="rgba(60,120,255,0.25)" />
+      <circle cx="800" cy="830" r="1.5" fill="rgba(60,120,255,0.2)" />
+      <circle cx="1100" cy="820" r="1.5" fill="rgba(60,120,255,0.2)" />
+
+      {/* CENTER scattered ambient dots */}
+      <circle cx="450" cy="200" r="1.5" fill="rgba(60,120,255,0.25)" />
+      <circle cx="600" cy="150" r="1" fill="rgba(60,120,255,0.2)" />
+      <circle cx="750" cy="250" r="1.5" fill="rgba(60,120,255,0.2)" />
+      <circle cx="900" cy="180" r="1" fill="rgba(60,120,255,0.18)" />
+      <circle cx="550" cy="400" r="1" fill="rgba(60,120,255,0.18)" />
+      <circle cx="700" cy="500" r="1.5" fill="rgba(60,120,255,0.15)" />
+      <circle cx="850" cy="450" r="1" fill="rgba(60,120,255,0.15)" />
+      <circle cx="650" cy="600" r="1" fill="rgba(60,120,255,0.15)" />
+      <circle cx="750" cy="700" r="1.5" fill="rgba(60,120,255,0.12)" />
+
+      {/* Dashed cross connections left to right */}
+      <line x1="280" y1="300" x2="500" y2="250" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="300" y1="420" x2="550" y2="380" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="1100" y1="550" x2="900" y2="500" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="1120" y1="260" x2="900" y2="220" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
+    </svg>
+  </div>
+);
+
 export default function Dashboard() {
   const [competitors, setCompetitors] = useState([]);
   const [signals, setSignals] = useState([]);
@@ -190,9 +347,10 @@ export default function Dashboard() {
   const handleSignalClick = (sig) => { setFocusedId(focusedId === sig.id ? null : sig.id); setFocusType('signal'); };
 
   const counterStyle = (type) => ({
-    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(10,10,10,0.8)',
+    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(8,8,8,0.7)',
     border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
-    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
+    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
+    backdropFilter: 'blur(8px)'
   });
 
   const groupByCompetitor = (sigs) => {
@@ -213,82 +371,9 @@ export default function Dashboard() {
   const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
 
   return (
-    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative' }}>
 
-      {/* SVG Background — Template D */}
-      <svg
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}
-        viewBox="0 0 1400 900"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <defs>
-          <radialGradient id="dashAmber" cx="12%" cy="50%" r="30%">
-            <stop offset="0%" stopColor="rgba(212,160,23,0.04)" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-          <radialGradient id="dashBlue" cx="85%" cy="35%" r="40%">
-            <stop offset="0%" stopColor="rgba(40,80,255,0.08)" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-        </defs>
-
-        <rect width="1400" height="900" fill="url(#dashAmber)" />
-        <rect width="1400" height="900" fill="url(#dashBlue)" />
-
-        {/* Pulse rings */}
-        <circle cx="1250" cy="280" r="70" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
-        <circle cx="1250" cy="280" r="130" stroke="rgba(60,120,255,0.09)" strokeWidth="0.8" fill="none" />
-        <circle cx="1250" cy="280" r="190" stroke="rgba(60,120,255,0.06)" strokeWidth="0.8" fill="none" />
-        <circle cx="1250" cy="280" r="250" stroke="rgba(60,120,255,0.04)" strokeWidth="0.8" fill="none" />
-
-        {/* Signal streams */}
-        <path d="M600 900 Q800 700 900 500 Q1000 300 1150 150" stroke="rgba(60,120,255,0.1)" strokeWidth="0.8" fill="none" />
-        <path d="M650 900 Q840 720 940 530 Q1040 340 1200 180" stroke="rgba(60,120,255,0.07)" strokeWidth="0.5" fill="none" />
-        <path d="M550 900 Q740 680 860 480 Q960 280 1100 120" stroke="rgba(212,160,23,0.05)" strokeWidth="0.5" fill="none" />
-
-        {/* Network lines */}
-        <line x1="980" y1="200" x2="1080" y2="320" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-        <line x1="1080" y1="320" x2="1050" y2="480" stroke="rgba(60,120,255,0.14)" strokeWidth="0.5" />
-        <line x1="980" y1="200" x2="900" y2="360" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-        <line x1="900" y1="360" x2="1050" y2="480" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" />
-        <line x1="1080" y1="320" x2="1250" y2="280" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" strokeDasharray="3 3" />
-        <line x1="1050" y1="480" x2="1250" y2="280" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" strokeDasharray="3 3" />
-        <line x1="900" y1="360" x2="820" y2="500" stroke="rgba(60,120,255,0.08)" strokeWidth="0.5" />
-        <line x1="820" y1="500" x2="1050" y2="480" stroke="rgba(60,120,255,0.08)" strokeWidth="0.5" />
-
-        {/* Signal nodes */}
-        <circle cx="1080" cy="320" r="5" fill="#E85D24" opacity="0.9" />
-        <circle cx="1080" cy="320" r="12" fill="rgba(232,93,36,0.12)" />
-        <circle cx="1080" cy="320" r="20" fill="rgba(232,93,36,0.04)" />
-
-        <circle cx="980" cy="200" r="4.5" fill="#378ADD" opacity="0.9" />
-        <circle cx="980" cy="200" r="11" fill="rgba(55,138,221,0.12)" />
-        <circle cx="980" cy="200" r="18" fill="rgba(55,138,221,0.04)" />
-
-        <circle cx="1050" cy="480" r="4.5" fill="#D4A017" opacity="0.9" />
-        <circle cx="1050" cy="480" r="11" fill="rgba(212,160,23,0.12)" />
-        <circle cx="1050" cy="480" r="18" fill="rgba(212,160,23,0.04)" />
-
-        {/* Hub node */}
-        <circle cx="1250" cy="280" r="5" fill="rgba(60,120,255,0.6)" />
-        <circle cx="1250" cy="280" r="10" fill="rgba(60,120,255,0.1)" />
-
-        {/* Supporting nodes */}
-        <circle cx="900" cy="360" r="3" fill="rgba(60,120,255,0.4)" />
-        <circle cx="900" cy="360" r="7" fill="rgba(60,120,255,0.08)" />
-        <circle cx="820" cy="500" r="2.5" fill="rgba(60,120,255,0.3)" />
-        <circle cx="820" cy="500" r="6" fill="rgba(60,120,255,0.06)" />
-
-        {/* Ambient dots */}
-        <circle cx="1150" cy="420" r="1.5" fill="rgba(60,120,255,0.3)" />
-        <circle cx="1180" cy="180" r="1.5" fill="rgba(60,120,255,0.25)" />
-        <circle cx="1300" cy="350" r="1" fill="rgba(60,120,255,0.2)" />
-        <circle cx="850" cy="280" r="1" fill="rgba(60,120,255,0.2)" />
-        <circle cx="1100" cy="550" r="1.5" fill="rgba(60,120,255,0.2)" />
-        <circle cx="950" cy="150" r="1" fill="rgba(60,120,255,0.15)" />
-        <circle cx="1350" cy="200" r="1" fill="rgba(60,120,255,0.15)" />
-        <circle cx="780" cy="420" r="1" fill="rgba(60,120,255,0.15)" />
-      </svg>
+      <DashboardBackground />
 
       <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
@@ -311,7 +396,7 @@ export default function Dashboard() {
         </div>
 
         {/* Hero card */}
-        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(4px)' }}>
+        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
             {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
@@ -342,7 +427,6 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
               {counterBadge}
             </div>
@@ -367,12 +451,12 @@ export default function Dashboard() {
           <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-            <div style={{ background: 'rgba(10,10,10,0.8)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px' }}>
+            <div style={{ background: 'rgba(8,8,8,0.6)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
               <NoteBox text={heroStrategicNote} color={activeColor} />
             </div>
-            <div style={{ background: 'rgba(10,10,10,0.8)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ background: 'rgba(8,8,8,0.6)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
               <NoteBox text={heroTacticalNote} color={activeColor} />
@@ -423,7 +507,7 @@ export default function Dashboard() {
           const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
           const isSelected = focusedId === comp.id;
           return (
-            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(10,10,10,0.8)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(4px)' }}>
+            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
                   {getCompName(comp.url)}
@@ -461,7 +545,7 @@ export default function Dashboard() {
 
         {/* PRODUCT VIEW */}
         {activeCounter === 'product' && productGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(10,10,10,0.8)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(4px)' }}>
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
               <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
@@ -487,7 +571,7 @@ export default function Dashboard() {
 
         {/* CATEGORY VIEW */}
         {activeCounter === 'category' && categoryGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(10,10,10,0.8)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(4px)' }}>
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
               <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
@@ -513,7 +597,7 @@ export default function Dashboard() {
 
         {/* Upgrade bar */}
         {!isPremium && (
-          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(4px)' }}>
+          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(8px)' }}>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
               Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
             </span>
