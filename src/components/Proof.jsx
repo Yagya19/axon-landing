@@ -3,31 +3,31 @@ import React from 'react';
 export default function Proof() {
   const testimonials = [
     {
-      quote: "I have been in this business for 40 years. I thought I knew my competitors better than anyone. Then AXON showed me a price drop on a product I sell — one I had been pricing higher for three months without knowing. Three months of lost sales. Three months of customers choosing them over me for a reason I could not see. The moment I saw that signal, I understood. I was not losing because my product was worse. I was losing because I was blind. I am not blind anymore.",
+      quote: "40 years in this business. I thought I knew everything. Turns out I had been pricing one of my best sellers higher than my competitor for three whole months and had no idea. Three months. Customers were walking past me every single day and I could not figure out why. When AXON showed me that price gap I just sat there. It was not my product. It was never my product. I just could not see what was happening. Now I can.",
       author: "Shopify founder",
       detail: "Ethnic clothing · 40 years in the business",
-      highlight: "Three months of lost sales.",
+      highlight: "Three months. I had no idea.",
       color: '#E85D24'
     },
     {
-      quote: "My biggest competitor dropped their bestselling hoodie by 22% on a Friday night. By Monday morning they had taken the weekend's sales that should have been mine. I found out on Tuesday — when a customer messaged asking why I was so much more expensive. That Tuesday feeling — that is what I was trying to avoid. AXON tells me on Friday night. Now I am the one making moves on the weekend, not finding out about them on Tuesday.",
+      quote: "Friday night my competitor dropped their hoodie price by 22%. I found out Tuesday morning because a customer texted me asking why mine was so much more expensive. The whole weekend gone. That text message was the worst part honestly. Not the lost sales, just knowing I could have done something if I had known sooner. AXON sends me that information on Friday night now. The weekend feels very different when you are the one who knows first.",
       author: "Shopify founder",
       detail: "Streetwear · London",
-      highlight: "That Tuesday feeling.",
+      highlight: "I found out from a customer text.",
       color: '#378ADD'
     },
     {
-      quote: "She launched a vitamin C serum in the same week I was planning my launch. Same price point. Same claims. I had no idea it was coming. By the time I launched, she already had 200 reviews and owned the category in my customers' minds. I spent six months building back authority she established in 30 days. AXON would have shown me the launch the day it happened. That six months of rebuilding — that is what AXON costs you if you do not have it.",
+      quote: "We were planning our vitamin C serum launch for weeks. Did all the prep, the photos, the copy. Then she launched hers the same week. Same price, same claims, everything. By our launch day she already had reviews and we had nothing. Took us six months to catch up on something that took her 30 days to establish. If I had known even a week earlier I would have moved our launch date. One week would have changed everything.",
       author: "Shopify founder",
       detail: "Skincare · Sydney",
-      highlight: "Six months rebuilding.",
+      highlight: "One week would have changed everything.",
       color: '#D4A017'
     },
     {
-      quote: "I built my entire store around sustainable home goods. It was my niche — nobody else was doing it the way I was. Then one morning I searched my category and found three competitors had launched sustainable collections in the same month. AXON watches them so I do not have to. Last month it flagged a competitor entering my exact niche two weeks before their launch campaign hit. Two weeks. That is enough time to be ready.",
+      quote: "Sustainable home goods was my thing. Built the whole store around it, spent years on it. Then somehow three competitors all launched sustainable ranges in the same month and I missed all of it because I was busy actually running my store. Last month AXON flagged someone moving into my exact niche. Flagged it two weeks before their campaign went live. Two weeks is a lot of time when you know how to use it.",
       author: "Shopify founder",
       detail: "Sustainable home goods · Toronto",
-      highlight: "Two weeks. Enough time to be ready.",
+      highlight: "Two weeks before their campaign hit.",
       color: '#00C896'
     }
   ];
