@@ -21,10 +21,10 @@ export default function App() {
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>
       <Navbar />
-      <div id="hero"><Hero /></div>
-      <div id="proof"><Proof /></div>
-      <div id="signals"><Signals /></div>
-      <div id="pricing"><Pricing /></div>
+      <div id="hero" style={{ scrollMarginTop: '64px' }}><Hero /></div>
+      <div id="proof" style={{ scrollMarginTop: '64px' }}><Proof /></div>
+      <div id="signals" style={{ scrollMarginTop: '64px' }}><Signals /></div>
+      <div id="pricing" style={{ scrollMarginTop: '64px' }}><Pricing /></div>
       <Footer />
     </div>
   );
