@@ -15,7 +15,7 @@ export default function Navbar() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '18px 32px',
+      padding: '16px 32px',
       borderBottom: '0.5px solid rgba(255,255,255,0.06)',
       position: 'sticky',
       top: 0,
@@ -25,31 +25,40 @@ export default function Navbar() {
       WebkitBackdropFilter: 'blur(12px)'
     }}>
 
-      {/* Logo */}
-      <span
+      {/* Logo + Slogan */}
+      <div
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        style={{
+        style={{ cursor: 'pointer' }}>
+        <div style={{
           fontFamily: "'Syne', sans-serif",
           fontWeight: 800,
           fontSize: '15px',
           letterSpacing: '0.2em',
           color: '#fff',
-          cursor: 'pointer'
+          lineHeight: 1
         }}>
-        AXON<span style={{ color: '#D4A017' }}>.</span>
-      </span>
+          FARWATCH<span style={{ color: '#D4A017' }}>.</span>
+        </div>
+        <div style={{
+          fontFamily: "'DM Mono', monospace",
+          fontSize: '8px',
+          color: 'rgba(255,255,255,0.25)',
+          letterSpacing: '0.08em',
+          marginTop: '4px'
+        }}>
+          See further. Move first.
+        </div>
+      </div>
 
       {/* Right side links */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
-
         <button
           onClick={() => scrollTo('signals')}
           style={{
             background: 'transparent', border: 'none',
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
-            textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0
+            textTransform: 'uppercase', cursor: 'pointer', padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -63,8 +72,7 @@ export default function Navbar() {
             background: 'transparent', border: 'none',
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
-            textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0
+            textTransform: 'uppercase', cursor: 'pointer', padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -78,8 +86,7 @@ export default function Navbar() {
             background: 'transparent', border: 'none',
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
-            textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0
+            textTransform: 'uppercase', cursor: 'pointer', padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -93,8 +100,7 @@ export default function Navbar() {
             background: 'transparent', border: 'none',
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
-            textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0
+            textTransform: 'uppercase', cursor: 'pointer', padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -115,7 +121,6 @@ export default function Navbar() {
         >
           Get early access
         </button>
-
       </div>
     </div>
   );
