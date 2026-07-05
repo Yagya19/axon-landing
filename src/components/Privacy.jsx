@@ -23,7 +23,7 @@ export default function Privacy() {
           </div>
           <div style={{
             fontFamily: "'DM Mono', monospace", fontSize: '8px',
-            color: 'rgba(255,255,255,0.25)', letterSpacing: '0.07em',
+            color: 'rgba(0,200,150,0.7)', letterSpacing: '0.07em',
             marginTop: '4px'
           }}>
             See further. Move first.
