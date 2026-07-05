@@ -22,7 +22,7 @@ export default function Footer() {
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
           color: '#D4A017', letterSpacing: '0.12em',
           textTransform: 'uppercase', marginBottom: '14px'
-        }}>The signal reaches you first</div>
+        }}>See further. Move first.</div>
         <div style={{
           fontFamily: "'Syne', sans-serif", fontSize: '28px', fontWeight: 800,
           color: '#fff', lineHeight: 1.15, marginBottom: '10px'
@@ -35,7 +35,7 @@ export default function Footer() {
           fontWeight: 300, lineHeight: 1.75, maxWidth: '420px',
           margin: '0 auto 28px'
         }}>
-          Every day without AXON is a day your competitors could be moving without you knowing. Start watching today — free, no card needed.
+          Every day without FARWATCH is a day your competitors could be moving without you knowing. Start watching today — free, no card needed.
         </p>
         <button
           onClick={() => window.location.href = '/signup'}
@@ -63,20 +63,27 @@ export default function Footer() {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        <span
+        <div
           onClick={() => window.location.href = '/'}
-          style={{
+          style={{ cursor: 'pointer' }}>
+          <div style={{
             fontFamily: "'Syne', sans-serif", fontWeight: 800,
             fontSize: '12px', letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.25)', cursor: 'pointer'
+            color: 'rgba(255,255,255,0.25)', lineHeight: 1
           }}>
-          AXON<span style={{ color: 'rgba(212,160,23,0.35)' }}>.</span>
-        </span>
+            FARWATCH<span style={{ color: 'rgba(212,160,23,0.35)' }}>.</span>
+          </div>
+          <div style={{
+            fontFamily: "'DM Mono', monospace", fontSize: '7px',
+            color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em',
+            marginTop: '3px'
+          }}>See further. Move first.</div>
+        </div>
 
         <span style={{
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
           color: 'rgba(255,255,255,0.18)'
-        }}>© 2026 AXON — The signal reaches you first</span>
+        }}>© 2026 FARWATCH — See further. Move first.</span>
 
         <div style={{ display: 'flex', gap: '16px' }}>
           <span
@@ -89,12 +96,10 @@ export default function Footer() {
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
           >Privacy</span>
-          <span
-            style={{
-              fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)'
-            }}
-          >Terms</span>
+          <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: '9px',
+            color: 'rgba(255,255,255,0.18)'
+          }}>Terms</span>
         </div>
       </div>
     </>
