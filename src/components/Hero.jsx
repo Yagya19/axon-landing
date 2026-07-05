@@ -123,7 +123,7 @@ export default function Hero() {
           }}>
             Most Shopify founders find out about competitor moves{' '}
             <strong style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>weeks too late</strong>
-            {' '}— after their customers already noticed. AXON tells you the moment it happens.
+            {' '}— after their customers already noticed. FARWATCH tells you the moment it happens.
           </p>
 
           <p style={{
