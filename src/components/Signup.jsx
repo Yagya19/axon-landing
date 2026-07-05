@@ -56,7 +56,7 @@ export default function Signup() {
           <div style={{
             fontFamily: "'DM Mono', monospace",
             fontSize: '8px',
-            color: 'rgba(255,255,255,0.25)',
+            color: 'rgba(0,200,150,0.7)',
             letterSpacing: '0.07em',
             marginTop: '4px'
           }}>
@@ -71,6 +71,7 @@ export default function Signup() {
           color: '#fff',
           marginBottom: '8px'
         }}>Start your free trial</h2>
+
         <p style={{
           fontSize: '13px',
           color: 'rgba(255,255,255,0.45)',
@@ -158,7 +159,6 @@ export default function Signup() {
           {loading ? 'Creating account...' : 'Start free trial'}
         </button>
 
-        {/* GDPR consent line */}
         <p style={{
           fontFamily: "'DM Mono', monospace",
           fontSize: '10px',
