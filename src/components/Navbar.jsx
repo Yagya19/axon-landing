@@ -3,7 +3,11 @@ import React from 'react';
 export default function Navbar() {
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      const navHeight = 64;
+      const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -23,7 +27,7 @@ export default function Navbar() {
 
       {/* Logo */}
       <span
-        onClick={() => window.location.href = '/'}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         style={{
           fontFamily: "'Syne', sans-serif",
           fontWeight: 800,
@@ -45,7 +49,7 @@ export default function Navbar() {
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
             textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0, transition: 'color 0.15s'
+            padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -60,7 +64,7 @@ export default function Navbar() {
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
             textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0, transition: 'color 0.15s'
+            padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -75,7 +79,7 @@ export default function Navbar() {
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
             textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0, transition: 'color 0.15s'
+            padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -90,7 +94,7 @@ export default function Navbar() {
             fontFamily: "'DM Mono', monospace", fontSize: '10px',
             color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
             textTransform: 'uppercase', cursor: 'pointer',
-            padding: 0, transition: 'color 0.15s'
+            padding: 0
           }}
           onMouseEnter={e => e.target.style.color = '#fff'}
           onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
@@ -104,7 +108,7 @@ export default function Navbar() {
             background: '#D4A017', color: '#080808', border: 'none',
             padding: '9px 20px', borderRadius: '4px', fontSize: '11px',
             fontWeight: 500, fontFamily: "'DM Sans', sans-serif",
-            cursor: 'pointer', letterSpacing: '0.02em', transition: 'opacity 0.15s'
+            cursor: 'pointer', letterSpacing: '0.02em'
           }}
           onMouseEnter={e => e.target.style.opacity = '0.85'}
           onMouseLeave={e => e.target.style.opacity = '1'}
