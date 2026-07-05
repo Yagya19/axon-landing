@@ -21,10 +21,10 @@ export default function App() {
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>
       <Navbar />
-      <Hero />
-      <Proof />
-      <Signals />
-      <Pricing />
+      <div id="hero"><Hero /></div>
+      <div id="proof"><Proof /></div>
+      <div id="signals"><Signals /></div>
+      <div id="pricing"><Pricing /></div>
       <Footer />
     </div>
   );
