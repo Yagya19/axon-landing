@@ -222,7 +222,7 @@ export default function Dashboard() {
             <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff', lineHeight: 1 }}>
               FARWATCH<span style={{ color: '#D4A017' }}>.</span>
             </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.07em', marginTop: '3px' }}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(0,200,150,0.7)', letterSpacing: '0.07em', marginTop: '3px' }}>
               See further. Move first.
             </div>
           </div>
@@ -236,7 +236,6 @@ export default function Dashboard() {
 
         {/* Hero card */}
         <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s' }}>
-
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
             {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
