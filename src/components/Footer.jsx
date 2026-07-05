@@ -75,7 +75,7 @@ export default function Footer() {
           </div>
           <div style={{
             fontFamily: "'DM Mono', monospace", fontSize: '7px',
-            color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em',
+            color: 'rgba(0,200,150,0.7)', letterSpacing: '0.06em',
             marginTop: '3px'
           }}>See further. Move first.</div>
         </div>
