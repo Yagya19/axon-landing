@@ -190,7 +190,7 @@ export default function Dashboard() {
   const handleSignalClick = (sig) => { setFocusedId(focusedId === sig.id ? null : sig.id); setFocusType('signal'); };
 
   const counterStyle = (type) => ({
-    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : '#0a0a0a',
+    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(10,10,10,0.8)',
     border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
     borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
   });
@@ -213,8 +213,84 @@ export default function Dashboard() {
   const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
 
   return (
-    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px' }}>
-      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative', overflow: 'hidden' }}>
+
+      {/* SVG Background — Template D */}
+      <svg
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}
+        viewBox="0 0 1400 900"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <radialGradient id="dashAmber" cx="12%" cy="50%" r="30%">
+            <stop offset="0%" stopColor="rgba(212,160,23,0.04)" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+          <radialGradient id="dashBlue" cx="85%" cy="35%" r="40%">
+            <stop offset="0%" stopColor="rgba(40,80,255,0.08)" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+        </defs>
+
+        <rect width="1400" height="900" fill="url(#dashAmber)" />
+        <rect width="1400" height="900" fill="url(#dashBlue)" />
+
+        {/* Pulse rings */}
+        <circle cx="1250" cy="280" r="70" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
+        <circle cx="1250" cy="280" r="130" stroke="rgba(60,120,255,0.09)" strokeWidth="0.8" fill="none" />
+        <circle cx="1250" cy="280" r="190" stroke="rgba(60,120,255,0.06)" strokeWidth="0.8" fill="none" />
+        <circle cx="1250" cy="280" r="250" stroke="rgba(60,120,255,0.04)" strokeWidth="0.8" fill="none" />
+
+        {/* Signal streams */}
+        <path d="M600 900 Q800 700 900 500 Q1000 300 1150 150" stroke="rgba(60,120,255,0.1)" strokeWidth="0.8" fill="none" />
+        <path d="M650 900 Q840 720 940 530 Q1040 340 1200 180" stroke="rgba(60,120,255,0.07)" strokeWidth="0.5" fill="none" />
+        <path d="M550 900 Q740 680 860 480 Q960 280 1100 120" stroke="rgba(212,160,23,0.05)" strokeWidth="0.5" fill="none" />
+
+        {/* Network lines */}
+        <line x1="980" y1="200" x2="1080" y2="320" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+        <line x1="1080" y1="320" x2="1050" y2="480" stroke="rgba(60,120,255,0.14)" strokeWidth="0.5" />
+        <line x1="980" y1="200" x2="900" y2="360" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+        <line x1="900" y1="360" x2="1050" y2="480" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" />
+        <line x1="1080" y1="320" x2="1250" y2="280" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" strokeDasharray="3 3" />
+        <line x1="1050" y1="480" x2="1250" y2="280" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" strokeDasharray="3 3" />
+        <line x1="900" y1="360" x2="820" y2="500" stroke="rgba(60,120,255,0.08)" strokeWidth="0.5" />
+        <line x1="820" y1="500" x2="1050" y2="480" stroke="rgba(60,120,255,0.08)" strokeWidth="0.5" />
+
+        {/* Signal nodes */}
+        <circle cx="1080" cy="320" r="5" fill="#E85D24" opacity="0.9" />
+        <circle cx="1080" cy="320" r="12" fill="rgba(232,93,36,0.12)" />
+        <circle cx="1080" cy="320" r="20" fill="rgba(232,93,36,0.04)" />
+
+        <circle cx="980" cy="200" r="4.5" fill="#378ADD" opacity="0.9" />
+        <circle cx="980" cy="200" r="11" fill="rgba(55,138,221,0.12)" />
+        <circle cx="980" cy="200" r="18" fill="rgba(55,138,221,0.04)" />
+
+        <circle cx="1050" cy="480" r="4.5" fill="#D4A017" opacity="0.9" />
+        <circle cx="1050" cy="480" r="11" fill="rgba(212,160,23,0.12)" />
+        <circle cx="1050" cy="480" r="18" fill="rgba(212,160,23,0.04)" />
+
+        {/* Hub node */}
+        <circle cx="1250" cy="280" r="5" fill="rgba(60,120,255,0.6)" />
+        <circle cx="1250" cy="280" r="10" fill="rgba(60,120,255,0.1)" />
+
+        {/* Supporting nodes */}
+        <circle cx="900" cy="360" r="3" fill="rgba(60,120,255,0.4)" />
+        <circle cx="900" cy="360" r="7" fill="rgba(60,120,255,0.08)" />
+        <circle cx="820" cy="500" r="2.5" fill="rgba(60,120,255,0.3)" />
+        <circle cx="820" cy="500" r="6" fill="rgba(60,120,255,0.06)" />
+
+        {/* Ambient dots */}
+        <circle cx="1150" cy="420" r="1.5" fill="rgba(60,120,255,0.3)" />
+        <circle cx="1180" cy="180" r="1.5" fill="rgba(60,120,255,0.25)" />
+        <circle cx="1300" cy="350" r="1" fill="rgba(60,120,255,0.2)" />
+        <circle cx="850" cy="280" r="1" fill="rgba(60,120,255,0.2)" />
+        <circle cx="1100" cy="550" r="1.5" fill="rgba(60,120,255,0.2)" />
+        <circle cx="950" cy="150" r="1" fill="rgba(60,120,255,0.15)" />
+        <circle cx="1350" cy="200" r="1" fill="rgba(60,120,255,0.15)" />
+        <circle cx="780" cy="420" r="1" fill="rgba(60,120,255,0.15)" />
+      </svg>
+
+      <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
@@ -235,7 +311,7 @@ export default function Dashboard() {
         </div>
 
         {/* Hero card */}
-        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s' }}>
+        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(4px)' }}>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
             {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
@@ -291,12 +367,12 @@ export default function Dashboard() {
           <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-            <div style={{ background: '#0a0a0a', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px' }}>
+            <div style={{ background: 'rgba(10,10,10,0.8)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
               <NoteBox text={heroStrategicNote} color={activeColor} />
             </div>
-            <div style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ background: 'rgba(10,10,10,0.8)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
               <NoteBox text={heroTacticalNote} color={activeColor} />
@@ -347,7 +423,7 @@ export default function Dashboard() {
           const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
           const isSelected = focusedId === comp.id;
           return (
-            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : '#0a0a0a', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(10,10,10,0.8)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(4px)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
                   {getCompName(comp.url)}
@@ -385,7 +461,7 @@ export default function Dashboard() {
 
         {/* PRODUCT VIEW */}
         {activeCounter === 'product' && productGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(10,10,10,0.8)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(4px)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
               <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
@@ -411,7 +487,7 @@ export default function Dashboard() {
 
         {/* CATEGORY VIEW */}
         {activeCounter === 'category' && categoryGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: '#0a0a0a', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(10,10,10,0.8)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(4px)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
               <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
@@ -437,7 +513,7 @@ export default function Dashboard() {
 
         {/* Upgrade bar */}
         {!isPremium && (
-          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px' }}>
+          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(4px)' }}>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
               Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
             </span>
