@@ -206,7 +206,7 @@ export default function Dashboard() {
   const categoryGroups = groupByCompetitor(categorySignals);
 
   const heroStrategic = activeCounter === 'price' ? (priceIntel?.strategic || "Baseline prices set. Alerts fire when prices change.") : activeCounter === 'product' ? productIntel.strategic : categoryIntel.strategic;
-  const heroStrategicNote = activeCounter === 'price' ? (priceIntel?.strategicNote || "AXON monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote;
+  const heroStrategicNote = activeCounter === 'price' ? (priceIntel?.strategicNote || "FARWATCH monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote;
   const heroTactical = activeCounter === 'price' ? (priceIntel?.tactical || "No action needed yet — monitoring is active.") : activeCounter === 'product' ? productIntel.tactical : categoryIntel.tactical;
   const heroTacticalNote = activeCounter === 'price' ? (priceIntel?.tacticalNote || "Price baselines refreshed every 24 hours.") : activeCounter === 'product' ? productIntel.tacticalNote : categoryIntel.tacticalNote;
   const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
@@ -216,10 +216,16 @@ export default function Dashboard() {
     <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
+        {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
-          <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff' }}>
-            AXON<span style={{ color: '#D4A017' }}>.</span>
-          </span>
+          <div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff', lineHeight: 1 }}>
+              FARWATCH<span style={{ color: '#D4A017' }}>.</span>
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.07em', marginTop: '3px' }}>
+              See further. Move first.
+            </div>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#00C896' }}>
