@@ -9,6 +9,7 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import CompetitorSelector from './components/CompetitorSelector';
+import Privacy from './components/Privacy';
 
 export default function App() {
   const path = window.location.pathname;
@@ -17,6 +18,7 @@ export default function App() {
   if (path === '/login') return <Login />;
   if (path === '/competitors') return <CompetitorSelector />;
   if (path === '/dashboard') return <Dashboard />;
+  if (path === '/privacy') return <Privacy />;
 
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>
