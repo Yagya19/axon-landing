@@ -18,13 +18,11 @@ export default function Footer() {
           background: 'radial-gradient(ellipse at 50% 60%, rgba(212,160,23,0.05), transparent 65%)',
           pointerEvents: 'none'
         }} />
-
         <div style={{
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
           color: '#D4A017', letterSpacing: '0.12em',
           textTransform: 'uppercase', marginBottom: '14px'
         }}>The signal reaches you first</div>
-
         <div style={{
           fontFamily: "'Syne', sans-serif", fontSize: '28px', fontWeight: 800,
           color: '#fff', lineHeight: 1.15, marginBottom: '10px'
@@ -32,7 +30,6 @@ export default function Footer() {
           Your competitors aren't waiting.<br />
           <span style={{ color: '#D4A017' }}>Neither should you.</span>
         </div>
-
         <p style={{
           fontSize: '13px', color: 'rgba(255,255,255,0.35)', marginBottom: '28px',
           fontWeight: 300, lineHeight: 1.75, maxWidth: '420px',
@@ -40,7 +37,6 @@ export default function Footer() {
         }}>
           Every day without AXON is a day your competitors could be moving without you knowing. Start watching today — free, no card needed.
         </p>
-
         <button
           onClick={() => window.location.href = '/signup'}
           style={{
@@ -51,7 +47,6 @@ export default function Footer() {
           }}>
           Start your free 14-day trial
         </button>
-
         <div style={{
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
           color: 'rgba(255,255,255,0.2)', textAlign: 'center'
@@ -68,11 +63,15 @@ export default function Footer() {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        <span style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
-          fontSize: '12px', letterSpacing: '0.2em',
-          color: 'rgba(255,255,255,0.25)'
-        }}>AXON<span style={{ color: 'rgba(212,160,23,0.35)' }}>.</span></span>
+        <span
+          onClick={() => window.location.href = '/'}
+          style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 800,
+            fontSize: '12px', letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.25)', cursor: 'pointer'
+          }}>
+          AXON<span style={{ color: 'rgba(212,160,23,0.35)' }}>.</span>
+        </span>
 
         <span style={{
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
@@ -80,12 +79,22 @@ export default function Footer() {
         }}>© 2026 AXON — The signal reaches you first</span>
 
         <div style={{ display: 'flex', gap: '16px' }}>
-          {['Privacy', 'Terms'].map(link => (
-            <span key={link} style={{
+          <span
+            onClick={() => window.location.href = '/privacy'}
+            style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer'
-            }}>{link}</span>
-          ))}
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+              transition: 'color 0.15s'
+            }}
+            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+          >Privacy</span>
+          <span
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)'
+            }}
+          >Terms</span>
         </div>
       </div>
     </>
