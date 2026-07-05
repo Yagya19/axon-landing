@@ -100,7 +100,8 @@ export default function Signup() {
               color: '#fff',
               fontSize: '13px',
               fontFamily: "'DM Sans', sans-serif",
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
           />
         </div>
@@ -129,7 +130,8 @@ export default function Signup() {
               color: '#fff',
               fontSize: '13px',
               fontFamily: "'DM Sans', sans-serif",
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
           />
         </div>
@@ -154,6 +156,18 @@ export default function Signup() {
           {loading ? 'Creating account...' : 'Start free trial'}
         </button>
 
+        {/* GDPR consent line */}
+        <p style={{
+          fontFamily: "'DM Mono', monospace",
+          fontSize: '10px',
+          color: 'rgba(255,255,255,0.25)',
+          textAlign: 'center',
+          marginTop: '12px',
+          lineHeight: 1.6
+        }}>
+          Your email is used to access your dashboard and receive competitor alerts. Nothing else.
+        </p>
+
         {message && (
           <p style={{
             marginTop: '16px',
@@ -171,11 +185,11 @@ export default function Signup() {
           textAlign: 'center'
         }}>
           Already have an account?{' '}
-         <span 
+          <span
             onClick={() => window.location.href = '/login'}
             style={{ color: '#D4A017', cursor: 'pointer' }}>
             Sign in
-        </span>
+          </span>
         </p>
       </div>
     </div>
