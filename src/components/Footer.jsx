@@ -85,21 +85,40 @@ export default function Footer() {
           color: 'rgba(255,255,255,0.18)'
         }}>© 2026 FARWATCH — See further. Move first.</span>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <span
-            onClick={() => window.location.href = '/privacy'}
-            style={{
-              fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
-            }}
-            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
-            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-          >Privacy</span>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {[
+            { label: 'Privacy', path: '/privacy' },
+            { label: 'Terms', path: '/terms' },
+            { label: 'Refund Policy', path: '/refund' },
+          ].map(link => (
+            <span
+              key={link.label}
+              onClick={() => window.location.href = link.path}
+              style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '9px',
+                color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+                transition: 'color 0.15s'
+              }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+            >{link.label}</span>
+          ))}
+
           <span style={{
             fontFamily: "'DM Mono', monospace", fontSize: '9px',
             color: 'rgba(255,255,255,0.18)'
-          }}>Terms</span>
+          }}>
+            
+              href="mailto:yagya@farwatchsignals.com"
+              style={{
+                color: 'rgba(255,255,255,0.18)',
+                textDecoration: 'none',
+                transition: 'color 0.15s'
+              }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+            >Contact</a>
+          </span>
         </div>
       </div>
     </>
