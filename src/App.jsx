@@ -10,6 +10,8 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import CompetitorSelector from './components/CompetitorSelector';
 import Privacy from './components/Privacy';
+import Terms from './components/Terms';
+import Refund from './components/Refund';
 
 export default function App() {
   const path = window.location.pathname;
@@ -19,6 +21,8 @@ export default function App() {
   if (path === '/competitors') return <CompetitorSelector />;
   if (path === '/dashboard') return <Dashboard />;
   if (path === '/privacy') return <Privacy />;
+  if (path === '/terms') return <Terms />;
+  if (path === '/refund') return <Refund />;
 
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>
