@@ -31,7 +31,7 @@ export default function Footer() {
           <span style={{ color: '#D4A017' }}>Neither should you.</span>
         </div>
         <p style={{
-          fontSize: '13px', color: 'rgba(255,255,255,0.35)', marginBottom: '28px',
+          fontSize: '13px', color: 'rgba(255,255,255,0.35)',
           fontWeight: 300, lineHeight: 1.75, maxWidth: '420px',
           margin: '0 auto 28px'
         }}>
@@ -103,22 +103,16 @@ export default function Footer() {
               onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
             >{link.label}</span>
           ))}
-
-          <span style={{
-            fontFamily: "'DM Mono', monospace", fontSize: '9px',
-            color: 'rgba(255,255,255,0.18)'
-          }}>
-            
-              href="mailto:yagya@farwatchsignals.com"
-              style={{
-                color: 'rgba(255,255,255,0.18)',
-                textDecoration: 'none',
-                transition: 'color 0.15s'
-              }}
-              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-            >Contact</a>
-          </span>
+          <span
+            onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com'}
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+              transition: 'color 0.15s'
+            }}
+            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+          >Contact</span>
         </div>
       </div>
     </>
