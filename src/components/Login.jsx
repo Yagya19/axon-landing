@@ -5,7 +5,6 @@ const supabase = createClient(
   'https://bnristmagxfutjgthgpd.supabase.co',
   'sb_publishable_ifLgjBC5vTtV7BJBfCNmyA_Sm54QueW'
 );
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
