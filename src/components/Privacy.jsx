@@ -51,7 +51,7 @@ export default function Privacy() {
         {[
           {
             title: 'Who we are',
-            content: 'FARWATCH is a competitor intelligence platform for Shopify founders. We monitor competitor prices, product launches, and category changes and deliver that intelligence directly to your dashboard and inbox. FARWATCH is operated as an independent product. For any privacy-related questions, contact us at yagyadeepsharma19@gmail.com.'
+            content: 'FARWATCH is a competitor intelligence platform for Shopify founders. We monitor competitor prices, product launches, and category changes and deliver that intelligence directly to your dashboard and inbox. FARWATCH is operated as an independent product. For any privacy-related questions, contact us at yagya@farwatchsignals.com.'
           },
           {
             title: 'What data we collect',
@@ -71,11 +71,11 @@ export default function Privacy() {
           },
           {
             title: 'How long we keep your data',
-            content: 'We keep your data for as long as your account is active. If you delete your account, your email, competitor data, and signal history will be permanently deleted within 30 days. To request account deletion, email us at yagyadeepsharma19@gmail.com.'
+            content: 'We keep your data for as long as your account is active. If you delete your account, your email, competitor data, and signal history will be permanently deleted within 30 days. To request account deletion, email us at yagya@farwatchsignals.com.'
           },
           {
             title: 'Your rights',
-            content: 'You have the right to access the data we hold about you, correct any inaccuracies, request deletion of your data, and withdraw from the service at any time. To exercise any of these rights, email us at yagyadeepsharma19@gmail.com. We will respond within 7 days.'
+            content: 'You have the right to access the data we hold about you, correct any inaccuracies, request deletion of your data, and withdraw from the service at any time. To exercise any of these rights, email us at yagya@farwatchsignals.com. We will respond within 7 days.'
           },
           {
             title: 'Cookies',
@@ -91,7 +91,7 @@ export default function Privacy() {
           },
           {
             title: 'Contact',
-            content: 'For any privacy-related questions or requests, contact us at yagyadeepsharma19@gmail.com. We aim to respond within 7 business days.'
+            content: 'For any privacy-related questions or requests, contact us at yagya@farwatchsignals.com. We aim to respond within 7 business days.'
           }
         ].map((section, i) => (
           <div key={i} style={{ marginBottom: '32px' }}>
