@@ -5,7 +5,6 @@ const supabase = createClient(
   'https://bnristmagxfutjgthgpd.supabase.co',
   'sb_publishable_ifLgjBC5vTtV7BJBfCNmyA_Sm54QueW'
 );
-
 function extractStoreAndHandle(inputUrl) {
   try {
     const url = new URL(inputUrl);
