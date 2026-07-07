@@ -1,6 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { initializePaddle } from '@paddle/paddle-js';
+
+let paddleInstance;
 
 export default function Pricing() {
+  useEffect(() => {
+    initializePaddle({
+      environment: 'production',
+      token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN,
+    }).then((paddle) => {
+      paddleInstance = paddle;
+    });
+  }, []);
+
+  const openCheckout = (priceId) => {
+    if (!paddleInstance) return;
+    paddleInstance.Checkout.open({
+      items: [{ priceId, quantity: 1 }],
+    });
+  };
+
   return (
     <>
       <div id="pricing" style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
@@ -36,7 +55,8 @@ export default function Pricing() {
               btnText: 'Start free trial',
               btnStyle: { background: 'transparent', border: '0.5px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)' },
               featured: false,
-              badge: null
+              badge: null,
+              priceId: null
             },
             {
               name: 'Growth',
@@ -52,7 +72,8 @@ export default function Pricing() {
               btnText: 'Get started',
               btnStyle: { background: 'transparent', border: '0.5px solid rgba(212,160,23,0.4)', color: '#D4A017' },
               featured: false,
-              badge: 'Most popular'
+              badge: 'Most popular',
+              priceId: 'pri_01kwyfyjxvx0ya5trxm0qez4y0'
             },
             {
               name: 'Premium',
@@ -68,7 +89,8 @@ export default function Pricing() {
               btnText: 'Upgrade to Premium',
               btnStyle: { background: '#D4A017', color: '#080808' },
               featured: true,
-              badge: null
+              badge: null,
+              priceId: 'pri_01kwyg1tkd105cqxnq07bqnaej'
             }
           ].map((plan, i) => (
             <div key={i} style={{
@@ -121,7 +143,7 @@ export default function Pricing() {
               ))}
 
               <button
-                onClick={() => window.location.href = plan.name === 'Free trial' ? '/signup' : '/signup'}
+                onClick={() => plan.priceId ? openCheckout(plan.priceId) : window.location.href = '/signup'}
                 style={{
                   width: '100%', padding: '10px', borderRadius: '4px',
                   fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
