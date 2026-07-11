@@ -118,144 +118,58 @@ const DashboardBackground = () => (
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <radialGradient id="gL" cx="15%" cy="40%" r="40%">
-          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
+        <radialGradient id="focalAmber" cx="28%" cy="50%" r="45%">
+          <stop offset="0%" stopColor="rgba(212,160,23,0.09)" />
+          <stop offset="60%" stopColor="rgba(40,80,220,0.03)" />
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
-        <radialGradient id="gR" cx="85%" cy="35%" r="40%">
-          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
-          <stop offset="100%" stopColor="transparent" />
-        </radialGradient>
-        <radialGradient id="gC" cx="50%" cy="60%" r="35%">
-          <stop offset="0%" stopColor="rgba(40,80,255,0.06)" />
-          <stop offset="100%" stopColor="transparent" />
-        </radialGradient>
-        <radialGradient id="gAmberL" cx="10%" cy="50%" r="30%">
-          <stop offset="0%" stopColor="rgba(212,160,23,0.06)" />
-          <stop offset="100%" stopColor="transparent" />
-        </radialGradient>
-        <radialGradient id="gAmberR" cx="90%" cy="50%" r="30%">
-          <stop offset="0%" stopColor="rgba(212,160,23,0.05)" />
+        <radialGradient id="blueRight" cx="78%" cy="38%" r="38%">
+          <stop offset="0%" stopColor="rgba(40,80,220,0.07)" />
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
       </defs>
 
-      <rect width="1400" height="900" fill="url(#gL)" />
-      <rect width="1400" height="900" fill="url(#gR)" />
-      <rect width="1400" height="900" fill="url(#gC)" />
-      <rect width="1400" height="900" fill="url(#gAmberL)" />
-      <rect width="1400" height="900" fill="url(#gAmberR)" />
+      {/* Glows */}
+      <rect width="1400" height="900" fill="url(#focalAmber)" />
+      <rect width="1400" height="900" fill="url(#blueRight)" />
 
-      {/* LEFT network */}
-      <line x1="80" y1="200" x2="180" y2="320" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
-      <line x1="180" y1="320" x2="120" y2="450" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
-      <line x1="80" y1="200" x2="200" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
-      <line x1="200" y1="180" x2="280" y2="300" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-      <line x1="280" y1="300" x2="180" y2="320" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-      <line x1="120" y1="450" x2="220" y2="520" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="220" y1="520" x2="300" y2="420" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="300" y1="420" x2="280" y2="300" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-      <line x1="60" y1="600" x2="150" y2="650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-      <line x1="150" y1="650" x2="220" y2="720" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="220" y1="720" x2="100" y2="780" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-      <line x1="150" y1="650" x2="280" y2="600" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      {/* Contour lines — flowing full width organic terrain */}
+      <path d="M-40 860 Q180 848 360 854 Q540 860 720 850 Q900 840 1080 846 Q1240 851 1440 847" stroke="rgba(40,80,220,0.1)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 830 Q160 817 338 823 Q515 829 692 818 Q868 807 1044 813 Q1210 818 1440 813" stroke="rgba(40,80,220,0.12)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 798 Q148 784 322 791 Q495 798 668 786 Q840 774 1012 780 Q1180 786 1440 780" stroke="rgba(40,80,220,0.14)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 764 Q140 749 310 756 Q478 763 646 750 Q812 737 978 744 Q1148 751 1440 744" stroke="rgba(40,80,220,0.16)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 728 Q132 712 298 719 Q463 726 628 712 Q792 698 956 706 Q1128 713 1440 706" stroke="rgba(40,80,220,0.18)" strokeWidth="0.8" fill="none" />
+      <path d="M-40 690 Q124 673 286 681 Q447 689 608 674 Q768 659 928 667 Q1102 675 1440 667" stroke="rgba(40,80,220,0.2)" strokeWidth="0.8" fill="none" />
+      <path d="M-40 650 Q116 632 274 640 Q431 648 588 632 Q744 616 900 625 Q1076 633 1440 625" stroke="rgba(40,80,220,0.2)" strokeWidth="0.8" fill="none" />
+      <path d="M-40 608 Q108 589 262 597 Q415 605 568 588 Q720 571 872 580 Q1050 589 1440 580" stroke="rgba(40,80,220,0.18)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 564 Q100 544 250 552 Q399 560 548 542 Q696 524 844 534 Q1024 543 1440 534" stroke="rgba(40,80,220,0.16)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 518 Q92 497 238 505 Q383 513 528 494 Q672 475 816 486 Q998 496 1440 486" stroke="rgba(40,80,220,0.14)" strokeWidth="0.7" fill="none" />
+      <path d="M-40 470 Q84 448 226 456 Q367 464 508 444 Q648 424 788 435 Q972 446 1440 435" stroke="rgba(40,80,220,0.12)" strokeWidth="0.6" fill="none" />
+      <path d="M-40 420 Q76 397 214 406 Q351 415 488 394 Q624 373 760 384 Q946 396 1440 384" stroke="rgba(40,80,220,0.1)" strokeWidth="0.6" fill="none" />
+      <path d="M-40 368 Q68 344 202 353 Q335 362 468 340 Q600 318 732 330 Q920 343 1440 330" stroke="rgba(40,80,220,0.08)" strokeWidth="0.6" fill="none" />
+      <path d="M-40 314 Q60 289 190 298 Q319 307 448 284 Q576 261 704 274 Q894 288 1440 274" stroke="rgba(40,80,220,0.07)" strokeWidth="0.5" fill="none" />
+      <path d="M-40 258 Q52 232 178 241 Q303 250 428 226 Q552 202 676 216 Q868 231 1440 216" stroke="rgba(40,80,220,0.06)" strokeWidth="0.5" fill="none" />
+      <path d="M-40 200 Q44 173 166 182 Q287 191 408 166 Q528 141 648 156 Q842 172 1440 156" stroke="rgba(40,80,220,0.05)" strokeWidth="0.5" fill="none" />
+      <path d="M-40 140 Q36 113 154 122 Q271 131 388 106 Q504 81 620 96 Q816 113 1440 96" stroke="rgba(40,80,220,0.04)" strokeWidth="0.5" fill="none" />
 
-      {/* LEFT nodes */}
-      <circle cx="80" cy="200" r="4" fill="#E85D24" opacity="0.85" />
-      <circle cx="80" cy="200" r="10" fill="rgba(232,93,36,0.15)" />
-      <circle cx="180" cy="320" r="5" fill="rgba(60,120,255,0.6)" />
-      <circle cx="180" cy="320" r="12" fill="rgba(60,120,255,0.1)" />
-      <circle cx="200" cy="180" r="3.5" fill="#378ADD" opacity="0.85" />
-      <circle cx="200" cy="180" r="9" fill="rgba(55,138,221,0.12)" />
-      <circle cx="280" cy="300" r="3" fill="rgba(60,120,255,0.5)" />
-      <circle cx="120" cy="450" r="3.5" fill="#D4A017" opacity="0.85" />
-      <circle cx="120" cy="450" r="9" fill="rgba(212,160,23,0.12)" />
-      <circle cx="220" cy="520" r="2.5" fill="rgba(60,120,255,0.4)" />
-      <circle cx="300" cy="420" r="2.5" fill="rgba(60,120,255,0.35)" />
-      <circle cx="60" cy="600" r="3" fill="rgba(60,120,255,0.45)" />
-      <circle cx="150" cy="650" r="4" fill="rgba(60,120,255,0.5)" />
-      <circle cx="150" cy="650" r="10" fill="rgba(60,120,255,0.08)" />
-      <circle cx="220" cy="720" r="2.5" fill="rgba(60,120,255,0.35)" />
-      <circle cx="100" cy="780" r="2" fill="rgba(60,120,255,0.25)" />
-      <circle cx="280" cy="600" r="2" fill="rgba(60,120,255,0.3)" />
+      {/* Tighter contours right side — steep competitive terrain */}
+      <path d="M1100 900 Q1160 878 1220 862 Q1270 849 1320 838 Q1370 827 1440 820" stroke="rgba(40,80,220,0.22)" strokeWidth="0.7" fill="none" />
+      <path d="M1120 900 Q1178 880 1236 864 Q1284 851 1333 840 Q1382 829 1440 823" stroke="rgba(40,80,220,0.18)" strokeWidth="0.7" fill="none" />
+      <path d="M1140 900 Q1196 881 1252 866 Q1299 853 1347 842 Q1394 831 1440 826" stroke="rgba(40,80,220,0.14)" strokeWidth="0.6" fill="none" />
+      <path d="M1160 900 Q1214 883 1268 868 Q1314 856 1361 845 Q1406 834 1440 829" stroke="rgba(40,80,220,0.1)" strokeWidth="0.6" fill="none" />
 
-      {/* LEFT pulse rings */}
-      <circle cx="180" cy="320" r="40" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
-      <circle cx="180" cy="320" r="75" stroke="rgba(60,120,255,0.08)" strokeWidth="0.8" fill="none" />
-      <circle cx="150" cy="650" r="35" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
-      <circle cx="150" cy="650" r="65" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
+      {/* Signal marker dots — sitting on terrain */}
+      <circle cx="1150" cy="340" r="6" fill="#E85D24" opacity="0.9" />
+      <circle cx="1150" cy="340" r="16" fill="rgba(232,93,36,0.14)" />
+      <circle cx="1150" cy="340" r="28" fill="rgba(232,93,36,0.05)" />
 
-      {/* RIGHT network */}
-      <line x1="1200" y1="150" x2="1300" y2="280" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
-      <line x1="1300" y1="280" x2="1350" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
-      <line x1="1300" y1="280" x2="1250" y2="400" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
-      <line x1="1200" y1="150" x2="1120" y2="260" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-      <line x1="1120" y1="260" x2="1250" y2="400" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="1250" y1="400" x2="1320" y2="500" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="1320" y1="500" x2="1380" y2="420" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-      <line x1="1100" y1="550" x2="1200" y2="620" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
-      <line x1="1200" y1="620" x2="1320" y2="580" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
-      <line x1="1320" y1="580" x2="1350" y2="700" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-      <line x1="1200" y1="620" x2="1150" y2="720" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
-      <line x1="1150" y1="720" x2="1280" y2="780" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" />
+      <circle cx="1060" cy="520" r="5.5" fill="#378ADD" opacity="0.9" />
+      <circle cx="1060" cy="520" r="14" fill="rgba(55,138,221,0.14)" />
+      <circle cx="1060" cy="520" r="25" fill="rgba(55,138,221,0.05)" />
 
-      {/* RIGHT nodes */}
-      <circle cx="1200" cy="150" r="4" fill="#E85D24" opacity="0.85" />
-      <circle cx="1200" cy="150" r="10" fill="rgba(232,93,36,0.15)" />
-      <circle cx="1300" cy="280" r="5" fill="rgba(60,120,255,0.6)" />
-      <circle cx="1300" cy="280" r="12" fill="rgba(60,120,255,0.1)" />
-      <circle cx="1350" cy="180" r="3" fill="rgba(60,120,255,0.4)" />
-      <circle cx="1120" cy="260" r="3.5" fill="#378ADD" opacity="0.85" />
-      <circle cx="1120" cy="260" r="9" fill="rgba(55,138,221,0.12)" />
-      <circle cx="1250" cy="400" r="4" fill="rgba(60,120,255,0.5)" />
-      <circle cx="1320" cy="500" r="3" fill="#D4A017" opacity="0.85" />
-      <circle cx="1320" cy="500" r="8" fill="rgba(212,160,23,0.12)" />
-      <circle cx="1380" cy="420" r="2" fill="rgba(60,120,255,0.3)" />
-      <circle cx="1100" cy="550" r="3" fill="rgba(60,120,255,0.4)" />
-      <circle cx="1200" cy="620" r="4.5" fill="rgba(60,120,255,0.55)" />
-      <circle cx="1200" cy="620" r="11" fill="rgba(60,120,255,0.08)" />
-      <circle cx="1320" cy="580" r="3" fill="rgba(60,120,255,0.35)" />
-      <circle cx="1350" cy="700" r="2.5" fill="rgba(60,120,255,0.3)" />
-      <circle cx="1150" cy="720" r="2.5" fill="rgba(60,120,255,0.3)" />
-      <circle cx="1280" cy="780" r="2" fill="rgba(60,120,255,0.2)" />
-
-      {/* RIGHT pulse rings */}
-      <circle cx="1300" cy="280" r="50" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
-      <circle cx="1300" cy="280" r="95" stroke="rgba(60,120,255,0.09)" strokeWidth="0.8" fill="none" />
-      <circle cx="1300" cy="280" r="140" stroke="rgba(60,120,255,0.05)" strokeWidth="0.8" fill="none" />
-      <circle cx="1200" cy="620" r="40" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
-      <circle cx="1200" cy="620" r="75" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
-
-      {/* BOTTOM streams */}
-      <path d="M0 750 Q200 700 350 720 Q500 740 650 700 Q800 660 950 680 Q1100 700 1250 660 Q1350 640 1400 650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.8" fill="none" />
-      <path d="M0 800 Q200 760 350 780 Q500 800 650 760 Q800 720 950 740 Q1100 760 1250 720 Q1350 700 1400 710" stroke="rgba(60,120,255,0.12)" strokeWidth="0.6" fill="none" />
-      <path d="M0 850 Q200 820 400 840 Q600 860 800 830 Q1000 800 1200 820 Q1350 835 1400 830" stroke="rgba(212,160,23,0.08)" strokeWidth="0.5" fill="none" />
-
-      {/* BOTTOM nodes */}
-      <circle cx="350" cy="720" r="2.5" fill="rgba(60,120,255,0.4)" />
-      <circle cx="650" cy="700" r="2" fill="rgba(60,120,255,0.35)" />
-      <circle cx="950" cy="680" r="2.5" fill="rgba(60,120,255,0.35)" />
-      <circle cx="1250" cy="660" r="2" fill="rgba(60,120,255,0.3)" />
-      <circle cx="500" cy="840" r="1.5" fill="rgba(60,120,255,0.25)" />
-      <circle cx="800" cy="830" r="1.5" fill="rgba(60,120,255,0.2)" />
-      <circle cx="1100" cy="820" r="1.5" fill="rgba(60,120,255,0.2)" />
-
-      {/* CENTER ambient dots */}
-      <circle cx="450" cy="200" r="1.5" fill="rgba(60,120,255,0.25)" />
-      <circle cx="600" cy="150" r="1" fill="rgba(60,120,255,0.2)" />
-      <circle cx="750" cy="250" r="1.5" fill="rgba(60,120,255,0.2)" />
-      <circle cx="900" cy="180" r="1" fill="rgba(60,120,255,0.18)" />
-      <circle cx="550" cy="400" r="1" fill="rgba(60,120,255,0.18)" />
-      <circle cx="700" cy="500" r="1.5" fill="rgba(60,120,255,0.15)" />
-      <circle cx="850" cy="450" r="1" fill="rgba(60,120,255,0.15)" />
-      <circle cx="650" cy="600" r="1" fill="rgba(60,120,255,0.15)" />
-      <circle cx="750" cy="700" r="1.5" fill="rgba(60,120,255,0.12)" />
-
-      {/* Dashed cross connections */}
-      <line x1="280" y1="300" x2="500" y2="250" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
-      <line x1="300" y1="420" x2="550" y2="380" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
-      <line x1="1100" y1="550" x2="900" y2="500" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
-      <line x1="1120" y1="260" x2="900" y2="220" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <circle cx="1240" cy="440" r="5.5" fill="#D4A017" opacity="0.9" />
+      <circle cx="1240" cy="440" r="14" fill="rgba(212,160,23,0.14)" />
+      <circle cx="1240" cy="440" r="25" fill="rgba(212,160,23,0.05)" />
     </svg>
   </div>
 );
