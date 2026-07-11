@@ -1,542 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React, { useMemo } from "react";
 
-const supabase = createClient(
-  'https://bnristmagxfutjgthgpd.supabase.co',
-  'sb_publishable_ifLgjBC5vTtV7BJBfCNmyA_Sm54QueW'
-);
+/**
+ * DashboardBackground
+ * ---------------------------------------------------------------
+ * Full-bleed, fixed, hand-coded dotted world map for the FARWATCH
+ * dashboard. No external map assets, no built-in color gradients —
+ * just a monochrome dot field shaped like continents at low opacity,
+ * sitting behind the dashboard content.
+ *
+ * Drop this in once, mount it at the top of your dashboard layout,
+ * and make the dashboard's own root background transparent (see
+ * bottom of this file for the one-line change).
+ * ---------------------------------------------------------------
+ */
 
-const COLORS = {
-  price: '#E85D24',
-  product: '#378ADD',
-  category: '#D4A017'
-};
+// Simplified, hand-coded continent outlines (lon/lat degrees).
+// These are deliberately rough — the goal is a map that's "felt, not
+// seen," not cartographic accuracy.
+const CONTINENTS = [
+  // North America
+  [
+    [-160, 70], [-140, 72], [-100, 75], [-80, 72], [-60, 60], [-55, 50],
+    [-65, 45], [-75, 35], [-80, 25], [-97, 18], [-105, 20], [-115, 30],
+    [-125, 40], [-130, 50], [-140, 55], [-150, 60], [-160, 65],
+  ],
+  // South America
+  [
+    [-80, 10], [-70, 10], [-60, 5], [-50, 0], [-35, -5], [-35, -15],
+    [-40, -25], [-55, -35], [-65, -40], [-70, -45], [-73, -50], [-70, -55],
+    [-65, -50], [-60, -40], [-58, -30], [-60, -20], [-65, -10], [-75, 0],
+    [-80, 5],
+  ],
+  // Europe
+  [
+    [-10, 60], [0, 62], [20, 65], [30, 60], [40, 55], [35, 48], [20, 45],
+    [10, 45], [0, 43], [-5, 45], [-10, 50],
+  ],
+  // Africa
+  [
+    [-15, 35], [0, 37], [10, 33], [20, 32], [35, 30], [40, 15], [50, 10],
+    [45, 0], [40, -10], [35, -25], [25, -34], [18, -34], [12, -18],
+    [10, -5], [0, 5], [-10, 10], [-17, 15], [-15, 25],
+  ],
+  // Asia
+  [
+    [40, 55], [60, 60], [90, 70], [130, 72], [150, 65], [160, 60],
+    [170, 65], [180, 68], [180, 50], [150, 45], [140, 40], [130, 35],
+    [122, 30], [110, 20], [105, 10], [100, 5], [95, 15], [90, 22],
+    [80, 10], [75, 15], [70, 25], [60, 25], [55, 30], [45, 35], [35, 40],
+    [30, 45], [40, 50],
+  ],
+  // Australia
+  [
+    [113, -22], [120, -18], [130, -12], [140, -11], [145, -15],
+    [150, -25], [145, -38], [138, -35], [130, -32], [120, -34], [113, -30],
+  ],
+];
 
-function getPriceIntel(pct) {
-  if (pct <= -20) return {
-    strategic: "An aggressive drop of this size signals either a major clearance event or a competitive attack. They are sacrificing margin deliberately — this is not routine.",
-    strategicNote: "Based on e-commerce patterns — drops over 20% on hero products typically precede collection changes, not permanent repositioning.",
-    tactical: "Do not match immediately. Run a value-focused campaign in the next 48 hours reminding customers why your product justifies full price.",
-    tacticalNote: "Matching a competitor price cut costs margin immediately. Most cuts under 25% reverse within 14 days in fashion and apparel.",
-    action: "Launch a value campaign now. Do not match their price — you will lose margin for nothing.",
-    tags: ["High urgency", "Likely clearance", "Respond in 48h"]
-  };
-  if (pct <= -10) return {
-    strategic: "A drop of this size typically signals end-of-season inventory clearance, not a permanent reprice. They need cash flow before the next collection drops.",
-    strategicNote: "Based on seasonal pricing patterns — mid-range drops of 10–20% most commonly occur 4–6 weeks before a new collection launch.",
-    tactical: "Hold your price for 14 days. If they revert, you maintained margin. If they hold the cut, reassess then — not now.",
-    tacticalNote: "Historical data shows 68% of seasonal price cuts in apparel reverse within 21 days. Patience protects margin.",
-    action: "Hold your price. Monitor for 14 days before deciding.",
-    tags: ["Likely temporary", "Monitor 14 days", "Hold price"]
-  };
-  if (pct < 0) return {
-    strategic: "A minor price adjustment — likely testing price elasticity or running a quiet promotional test. Not a signal of strategic repositioning.",
-    strategicNote: "Small adjustments under 10% are consistent with A/B price testing — a common practice among Shopify stores optimising conversion.",
-    tactical: "No action needed yet. Watch whether this spreads to other products in their catalog.",
-    tacticalNote: "Price elasticity tests rarely spread across a full catalog. If it stays isolated to one product, it is not a strategic signal.",
-    action: "No action needed. Watch if this spreads across their catalog.",
-    tags: ["Low urgency", "Testing elasticity", "Watch only"]
-  };
-  return {
-    strategic: "A price increase signals confidence in demand or rising costs being passed to customers. This is an opportunity for you to compete on value.",
-    strategicNote: "Price increases on established products signal brand confidence. Customers who stay despite the rise are high-loyalty — worth targeting.",
-    tactical: "If your price is now lower, highlight it. Run a targeted comparison campaign while the gap exists.",
-    tacticalNote: "Price gaps between competitors typically last 30–60 days before the market adjusts. Act while the window is open.",
-    action: "Opportunity — their price is now higher than yours. Highlight your value immediately.",
-    tags: ["Opportunity", "Compete on value", "Act now"]
-  };
+const VIEW_W = 1000;
+const VIEW_H = 500;
+const GRID_SPACING = 9; // density of the dot field, in viewBox units
+const DOT_RADIUS = 1.1;
+const DOT_OPACITY = 0.12;
+
+function lonLatToXY([lon, lat]) {
+  const x = ((lon + 180) / 360) * VIEW_W;
+  const y = ((90 - lat) / 180) * VIEW_H;
+  return [x, y];
 }
 
-function getProductIntel(count) {
-  if (count >= 3) return {
-    strategic: "Multiple new launches in one week signals a coordinated collection drop — building momentum toward a paid campaign. This is deliberate, not ad hoc.",
-    strategicNote: "Coordinated multi-product launches typically precede paid ad campaigns by 10–14 days. Watch for ad spend to follow.",
-    tactical: "Watch their ad spend over the next 2 weeks. Multi-product drops backed by ads confirm a real strategic push.",
-    tacticalNote: "New products without immediate ad support are usually tests. Products backed by ads within 14 days are real strategic bets.",
-    action: "Check if any new products overlap your catalog. Prepare a response before their ads run.",
-    tags: ["Watch closely", "Ads likely in 2 weeks", `${count}-product drop`]
-  };
-  return {
-    strategic: "A single new launch suggests a targeted addition rather than a collection push. Lower urgency than a multi-product drop.",
-    strategicNote: "Solo product launches are often tests of demand before committing to a full collection. Watch for follow-up launches.",
-    tactical: "Monitor whether they follow with ads or more products in the next 7 days. One product alone is a test, not a commitment.",
-    tacticalNote: "If no follow-up products or ads appear within 7 days, this is likely a demand test — no response needed yet.",
-    action: "Watch for 7 days. If no follow-up appears, this is likely a test — no response needed yet.",
-    tags: ["Low urgency", "Likely a test", "Watch 7 days"]
-  };
+// Ray-casting point-in-polygon test.
+function pointInPolygon(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    const intersect =
+      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
 }
 
-function getCategoryIntel(count) {
-  if (count >= 2) return {
-    strategic: "Multiple new categories in one week signals a major strategic pivot. They are betting on several new customer segments simultaneously.",
-    strategicNote: "Multiple category launches require significant inventory and budget commitment — a signal of aggressive expansion, not experimentation.",
-    tactical: "Prioritise which category overlaps most with your strengths. You cannot respond to all of them — pick the highest threat.",
-    tacticalNote: "Category authority sets within 60–90 days. Focus your response on the category where you have the strongest existing position.",
-    action: "Identify which new category threatens you most. Move into it first or cede the ground entirely.",
-    tags: ["High urgency", "Multiple bets", "Prioritise response"]
-  };
-  return {
-    strategic: "A new category is a long-term bet on a customer segment. They have committed inventory and budget — this is not a test, it is a deliberate strategic move.",
-    strategicNote: "New category launches require inventory investment and catalog restructuring — a signal of deliberate strategic commitment.",
-    tactical: "You have a narrow window before they establish authority. Category dominance sets within 60–90 days. Acting in the first 30 days maximises your position.",
-    tacticalNote: "Category authority is typically established within 60–90 days of launch. Acting in the first 30 days maximises your competitive position.",
-    action: "Decide fast. They just proved demand exists. Move first or let them own it.",
-    tags: ["Strategic move", "Narrow window", "30 days to act"]
-  };
-}
+const POLYGONS = CONTINENTS.map((poly) => poly.map(lonLatToXY));
 
-function parsePriceChange(detail) {
-  if (!detail) return null;
-  const match = detail.match(/From \$?([\d.]+) to \$?([\d.]+)/i);
-  if (!match) return null;
-  const oldPrice = parseFloat(match[1]);
-  const newPrice = parseFloat(match[2]);
-  const pct = ((newPrice - oldPrice) / oldPrice) * 100;
-  return { oldPrice, newPrice, pct: Math.round(pct) };
-}
-
-const NoteBox = ({ text, color }) => (
-  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '7px 9px', background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '5px', marginTop: '8px' }}>
-    <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: `0.5px solid ${color ? color + '44' : 'rgba(255,255,255,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
-      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: color ? color + '88' : 'rgba(255,255,255,0.3)', lineHeight: 1 }}>i</span>
-    </div>
-    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>{text}</span>
-  </div>
-);
-
-const DashboardBackground = () => (
-  <div style={{
-    position: 'fixed',
-    inset: 0,
-    pointerEvents: 'none',
-    zIndex: 0,
-    overflow: 'hidden',
-    background: '#07090c'
-  }}>
-    <svg aria-hidden="true" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"
-      style={{ width: '100%', height: '100%', display: 'block' }}>
-      <defs>
-        <radialGradient id="fwAmbient" cx="48%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#142033" stopOpacity="0.16" />
-          <stop offset="55%" stopColor="#0b1018" stopOpacity="0.05" />
-          <stop offset="100%" stopColor="#07090c" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="fwMapGlow" cx="25%" cy="37%" r="28%">
-          <stop offset="0%" stopColor="#E85D24" stopOpacity="0.13" />
-          <stop offset="45%" stopColor="#D4A017" stopOpacity="0.035" />
-          <stop offset="100%" stopColor="#07090c" stopOpacity="0" />
-        </radialGradient>
-        <pattern id="fwDots" width="5" height="5" patternUnits="userSpaceOnUse">
-          <circle cx="1.2" cy="1.2" r="0.8" fill="#D4A017" opacity="0.28" />
-        </pattern>
-        <filter id="fwGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="8" />
-        </filter>
-        <clipPath id="fwWorldClip">
-          <path d="M95 177 L116 151 148 145 169 126 207 119 235 129 252 151 279 157 294 180 286 199 261 205 249 224 228 232 217 253 202 260 193 286 179 298 171 329 158 351 145 348 140 322 127 301 121 274 105 257 111 235 96 218 82 207 83 189 Z
-                   M232 365 L250 375 266 396 273 425 286 449 282 478 269 500 263 532 247 558 236 592 222 612 212 596 207 565 195 540 188 507 177 478 181 448 193 424 198 397 214 378 Z
-                   M295 129 L323 113 357 114 380 128 399 127 418 141 447 143 465 160 454 177 428 181 410 196 390 191 372 202 349 195 330 181 311 179 299 161 Z
-                   M382 205 L407 198 431 209 451 229 459 255 476 278 471 307 455 326 447 351 431 374 414 365 402 339 388 321 379 294 366 274 369 247 Z
-                   M448 153 L486 134 525 132 559 143 594 139 628 151 665 150 699 164 730 169 751 190 739 207 705 213 680 229 650 225 624 242 598 235 574 249 551 237 529 243 506 224 479 220 463 199 443 187 Z
-                   M646 256 L674 248 699 260 718 280 741 287 757 307 744 326 718 331 700 349 678 343 660 326 640 314 628 291 Z
-                   M730 372 L756 359 786 365 807 383 828 397 822 419 798 429 776 424 756 438 735 427 718 407 Z" />
-        </clipPath>
-      </defs>
-
-      <rect width="1600" height="900" fill="#07090c" />
-      <rect width="1600" height="900" fill="url(#fwAmbient)" />
-
-      {/* Dotted world intelligence field, deliberately left of the dashboard */}
-      <g transform="translate(30 45) scale(0.82)" opacity="0.72">
-        <rect x="55" y="90" width="790" height="560" fill="url(#fwDots)" clipPath="url(#fwWorldClip)" />
-        <rect x="55" y="90" width="790" height="560" fill="url(#fwMapGlow)" clipPath="url(#fwWorldClip)" />
-        <g>
-          <circle cx="205" cy="300" r="30" fill="#E85D24" opacity="0.055" filter="url(#fwGlow)" />
-          <circle cx="205" cy="300" r="5" fill="#E85D24" opacity="0.95" />
-          <circle cx="205" cy="300" r="12" fill="#E85D24" opacity="0.14" />
-          <circle cx="350" cy="205" r="24" fill="#D4A017" opacity="0.045" filter="url(#fwGlow)" />
-          <circle cx="350" cy="205" r="3.5" fill="#D4A017" opacity="0.82" />
-          <circle cx="420" cy="295" r="24" fill="#E85D24" opacity="0.05" filter="url(#fwGlow)" />
-          <circle cx="420" cy="295" r="3.5" fill="#E85D24" opacity="0.8" />
-          <circle cx="265" cy="430" r="20" fill="#D4A017" opacity="0.045" filter="url(#fwGlow)" />
-          <circle cx="265" cy="430" r="3" fill="#D4A017" opacity="0.72" />
-        </g>
-      </g>
-
-      {/* Fine topographic contour field */}
-      <g fill="none" stroke="#D4A017" strokeLinecap="round">
-        <path d="M-90 545 C55 485 135 510 210 560 C282 608 330 700 424 716 C520 733 586 662 660 612" opacity="0.13" strokeWidth="0.8"/>
-        <path d="M-95 560 C48 502 129 525 201 574 C272 622 324 713 416 731 C510 749 580 682 653 629" opacity="0.105" strokeWidth="0.75"/>
-        <path d="M-100 576 C40 520 122 540 194 589 C264 637 318 728 408 747 C501 766 572 700 646 647" opacity="0.085" strokeWidth="0.7"/>
-        <path d="M-105 594 C34 539 115 558 187 607 C257 655 311 745 400 765 C492 784 565 719 639 666" opacity="0.07" strokeWidth="0.65"/>
-        <path d="M-110 614 C28 559 108 578 180 627 C250 675 305 764 392 784 C483 804 557 739 632 686" opacity="0.055" strokeWidth="0.6"/>
-
-        <path d="M1230 -80 C1290 5 1335 48 1410 72 C1490 98 1545 78 1665 30" opacity="0.08" strokeWidth="0.65"/>
-        <path d="M1212 -62 C1275 24 1322 68 1398 93 C1478 120 1538 100 1668 52" opacity="0.07" strokeWidth="0.65"/>
-        <path d="M1194 -44 C1260 43 1308 89 1386 114 C1468 141 1530 122 1670 74" opacity="0.06" strokeWidth="0.6"/>
-
-        <path d="M1260 180 C1335 120 1420 118 1488 165 C1556 212 1550 294 1600 330 C1645 362 1685 345 1720 320" opacity="0.13" strokeWidth="0.8"/>
-        <path d="M1243 198 C1322 139 1410 137 1478 183 C1546 230 1540 311 1590 348 C1638 382 1680 366 1720 340" opacity="0.105" strokeWidth="0.75"/>
-        <path d="M1227 217 C1308 158 1398 156 1468 202 C1536 249 1530 329 1580 366 C1630 402 1676 386 1720 360" opacity="0.085" strokeWidth="0.7"/>
-        <path d="M1212 237 C1294 178 1386 176 1458 222 C1526 269 1520 348 1570 385 C1622 422 1672 406 1720 380" opacity="0.065" strokeWidth="0.65"/>
-
-        <path d="M1110 700 C1195 655 1268 660 1340 708 C1410 755 1475 770 1540 730 C1600 694 1655 690 1720 718" opacity="0.08" strokeWidth="0.7"/>
-        <path d="M1092 720 C1180 675 1256 680 1328 728 C1398 775 1465 790 1532 750 C1594 714 1652 710 1720 738" opacity="0.065" strokeWidth="0.65"/>
-        <path d="M1075 741 C1165 696 1243 701 1316 749 C1386 796 1455 811 1524 771 C1588 735 1648 731 1720 759" opacity="0.05" strokeWidth="0.6"/>
-      </g>
-
-      <rect width="1600" height="900" fill="url(#fwAmbient)" opacity="0.45" />
-    </svg>
-  </div>
-);
-
-export default function Dashboard() {
-  const [competitors, setCompetitors] = useState([]);
-  const [signals, setSignals] = useState([]);
-  const [isPremium, setIsPremium] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [activeCounter, setActiveCounter] = useState('price');
-  const [focusedId, setFocusedId] = useState(null);
-  const [focusType, setFocusType] = useState(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { window.location.href = '/login'; return; }
-      const { data: profile } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
-      setIsPremium(profile?.is_premium || false);
-      const { data: comps } = await supabase.from('competitors').select('*').eq('user_email', user.email);
-      setCompetitors(comps || []);
-      const { data: sigs } = await supabase.from('signals').select('*').eq('user_email', user.email).order('detected_at', { ascending: false });
-      setSignals(sigs || []);
-      setLoading(false);
-    };
-    loadData();
+export default function DashboardBackground() {
+  const dots = useMemo(() => {
+    const pts = [];
+    for (let y = 0; y <= VIEW_H; y += GRID_SPACING) {
+      for (let x = 0; x <= VIEW_W; x += GRID_SPACING) {
+        for (const poly of POLYGONS) {
+          if (pointInPolygon(x, y, poly)) {
+            pts.push([x, y]);
+            break;
+          }
+        }
+      }
+    }
+    return pts;
   }, []);
 
-  if (loading) return (
-    <div style={{ background: '#080808', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace", fontSize: '12px' }}>
-      Loading your dashboard...
-    </div>
-  );
-
-  const maxAllowed = isPremium ? 7 : 2;
-  const pricingSignals = signals.filter(s => s.signal_type === 'pricing');
-  const productSignals = signals.filter(s => s.signal_type === 'new_product');
-  const categorySignals = signals.filter(s => s.signal_type === 'new_category');
-  const trackedWithPrice = competitors.filter(c => c.last_snapshot && c.last_snapshot.price);
-
-  const getCompName = (url) => url ? url.replace('https://', '').replace('www.', '') : '';
-  const getCompById = (id) => competitors.find(c => c.id === id);
-
-  const focusedPriceComp = activeCounter === 'price' && focusedId
-    ? trackedWithPrice.find(c => c.id === focusedId) || trackedWithPrice[0]
-    : trackedWithPrice[0];
-
-  const focusedPriceSignal = activeCounter === 'price' && focusedId
-    ? pricingSignals.find(s => s.competitor_id === focusedId) || pricingSignals[0]
-    : pricingSignals[0];
-
-  const focusedProductSignal = activeCounter === 'product' && focusedId && focusType === 'signal'
-    ? productSignals.find(s => s.id === focusedId)
-    : productSignals[0];
-
-  const focusedCategorySignal = activeCounter === 'category' && focusedId && focusType === 'signal'
-    ? categorySignals.find(s => s.id === focusedId)
-    : categorySignals[0];
-
-  const topPriceChange = focusedPriceSignal ? parsePriceChange(focusedPriceSignal.detail) : null;
-  const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
-
-  const focusedProductComp = focusedProductSignal ? getCompById(focusedProductSignal.competitor_id) : null;
-  const compProductCount = focusedProductComp ? productSignals.filter(s => s.competitor_id === focusedProductComp.id).length : productSignals.length;
-  const productIntel = getProductIntel(compProductCount);
-
-  const focusedCategoryComp = focusedCategorySignal ? getCompById(focusedCategorySignal.competitor_id) : null;
-  const compCategoryCount = focusedCategoryComp ? categorySignals.filter(s => s.competitor_id === focusedCategoryComp.id).length : categorySignals.length;
-  const categoryIntel = getCategoryIntel(compCategoryCount);
-
-  const activePriceColor = activeCounter === 'price' && topPriceChange
-    ? (topPriceChange.pct < 0 ? '#E85D24' : '#00C896')
-    : COLORS.price;
-  const activeColor = activeCounter === 'price' ? activePriceColor : COLORS[activeCounter];
-
-  const focusedPriceIndex = trackedWithPrice.findIndex(c => c.id === (focusedId || trackedWithPrice[0]?.id));
-  const focusedProductIndex = productSignals.findIndex(s => s.id === (focusedProductSignal?.id));
-  const focusedCategoryIndex = categorySignals.findIndex(s => s.id === (focusedCategorySignal?.id));
-
-  const counterBadge = activeCounter === 'price'
-    ? `${focusedPriceIndex + 1} of ${trackedWithPrice.length} tracked`
-    : activeCounter === 'product'
-      ? `${focusedProductIndex + 1} of ${productSignals.length} launch${productSignals.length !== 1 ? 'es' : ''}`
-      : `${focusedCategoryIndex + 1} of ${categorySignals.length} categor${categorySignals.length !== 1 ? 'ies' : 'y'}`;
-
-  const handleCounterClick = (type) => { setActiveCounter(type); setFocusedId(null); setFocusType(null); };
-  const handlePriceCompClick = (comp) => { setFocusedId(focusedId === comp.id ? null : comp.id); setFocusType('competitor'); };
-  const handleSignalClick = (sig) => { setFocusedId(focusedId === sig.id ? null : sig.id); setFocusType('signal'); };
-
-  const counterStyle = (type) => ({
-    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(8,8,8,0.7)',
-    border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
-    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
-    backdropFilter: 'blur(8px)'
-  });
-
-  const groupByCompetitor = (sigs) => {
-    const groups = {};
-    competitors.forEach(c => { groups[c.id] = { comp: c, signals: [] }; });
-    sigs.forEach(s => { if (groups[s.competitor_id]) groups[s.competitor_id].signals.push(s); });
-    return Object.values(groups);
-  };
-
-  const productGroups = groupByCompetitor(productSignals);
-  const categoryGroups = groupByCompetitor(categorySignals);
-
-  const heroStrategic = activeCounter === 'price' ? (priceIntel?.strategic || "Baseline prices set. Alerts fire when prices change.") : activeCounter === 'product' ? productIntel.strategic : categoryIntel.strategic;
-  const heroStrategicNote = activeCounter === 'price' ? (priceIntel?.strategicNote || "FARWATCH monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote;
-  const heroTactical = activeCounter === 'price' ? (priceIntel?.tactical || "No action needed yet — monitoring is active.") : activeCounter === 'product' ? productIntel.tactical : categoryIntel.tactical;
-  const heroTacticalNote = activeCounter === 'price' ? (priceIntel?.tacticalNote || "Price baselines refreshed every 24 hours.") : activeCounter === 'product' ? productIntel.tacticalNote : categoryIntel.tacticalNote;
-  const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
-  const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
-
   return (
-    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative' }}>
-
-      <DashboardBackground />
-
-      <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-
-        {/* Top bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
-          <div>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff', lineHeight: 1 }}>
-              FARWATCH<span style={{ color: '#D4A017' }}>.</span>
-            </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(0,200,150,0.7)', letterSpacing: '0.07em', marginTop: '3px' }}>
-              See further. Move first.
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#00C896' }}>
-              Watching {competitors.length} competitor{competitors.length !== 1 ? 's' : ''} live
-            </span>
-          </div>
-        </div>
-
-        {/* Hero card */}
-        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
-            {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
-            {focusedId && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <div style={{ flex: 1 }}>
-              {activeCounter === 'price' ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '38px', fontWeight: 800, color: activeColor, lineHeight: 1 }}>
-                    {topPriceChange ? `${topPriceChange.pct > 0 ? '+' : ''}${topPriceChange.pct}%` : focusedPriceComp ? `$${focusedPriceComp.last_snapshot.price}` : '—'}
-                  </div>
-                  {topPriceChange && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '6px', background: topPriceChange.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${topPriceChange.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '13px', fontWeight: 500, color: topPriceChange.pct < 0 ? '#E85D24' : '#00C896' }}>
-                      <span>{topPriceChange.pct < 0 ? '↓' : '↑'}</span>
-                      <span>{topPriceChange.pct < 0 ? 'Price dropped' : 'Price raised'}</span>
-                    </div>
-                  )}
-                </div>
-              ) : activeCounter === 'product' ? (
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.product, lineHeight: 1.2 }}>
-                  {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : '—'}
-                </div>
-              ) : (
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.category, lineHeight: 1.2 }}>
-                  {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : '—'}
-                </div>
-              )}
-            </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
-              {counterBadge}
-            </div>
-          </div>
-
-          <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '5px' }}>
-            {activeCounter === 'price' && topPriceChange ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
-            ) : activeCounter === 'price' && focusedPriceComp ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceComp.last_snapshot.product_title}</strong> — ${focusedPriceComp.last_snapshot.price} tracked on {getCompName(focusedPriceComp.url)}</>
-            ) : activeCounter === 'product' && focusedProductSignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url)}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
-            ) : activeCounter === 'category' && focusedCategorySignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url)}</strong> — their first move into this segment</>
-            ) : 'No signals detected yet — monitoring is active.'}
-          </div>
-
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '12px' }}>
-            {activeCounter === 'price' ? 'Tap a competitor below to focus its price here' : activeCounter === 'product' ? 'Tap any product below to focus it here' : 'Tap any category below to focus it here'}
-          </div>
-
-          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-            <div style={{ background: 'rgba(8,8,8,0.6)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
-              <NoteBox text={heroStrategicNote} color={activeColor} />
-            </div>
-            <div style={{ background: 'rgba(8,8,8,0.6)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
-              <NoteBox text={heroTacticalNote} color={activeColor} />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${activeColor}33`, borderRadius: '6px', marginBottom: '12px' }}>
-            <span style={{ color: activeColor, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
-              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{heroAction}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {heroTags.map((tag, i) => (
-              <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em', background: i === 0 ? `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)', color: i === 0 ? activeColor : 'rgba(255,255,255,0.5)', border: `0.5px solid ${i === 0 ? activeColor + '44' : 'rgba(255,255,255,0.1)'}` }}>{tag}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* Counters */}
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
-          This week, at a glance
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
-          {[
-            { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
-            { type: 'product', num: productSignals.length, label: 'new products' },
-            { type: 'category', num: categorySignals.length, label: 'new categories' }
-          ].map(item => (
-            <div key={item.type} style={counterStyle(item.type)} onClick={() => handleCounterClick(item.type)}>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '24px', fontWeight: 800, color: COLORS[item.type], lineHeight: 1, marginBottom: '5px' }}>{item.num}</div>
-              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}>{item.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* By competitor */}
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
-          By competitor
-        </div>
-        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '10px' }}>
-          {activeCounter === 'price' ? 'Tap a competitor to focus it in the hero card' : activeCounter === 'product' ? 'Tap any product to focus it in the hero card' : 'Tap any category to focus it in the hero card'}
-        </p>
-
-        {/* PRICE VIEW */}
-        {activeCounter === 'price' && competitors.map((comp, i) => {
-          const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
-          const isSelected = focusedId === comp.id;
-          return (
-            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  {getCompName(comp.url)}
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                </span>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
-                  {compPriceSignals.length > 0 ? `${compPriceSignals.length} price change${compPriceSignals.length !== 1 ? 's' : ''}` : comp.last_snapshot?.price ? '1 price tracked' : '0 signals yet'}
-                </span>
-              </div>
-              {comp.last_snapshot?.price ? (
-                compPriceSignals.length > 0 ? compPriceSignals.map((sig, j) => {
-                  const change = parsePriceChange(sig.detail);
-                  const sigColor = change ? (change.pct < 0 ? '#E85D24' : '#00C896') : COLORS.price;
-                  return (
-                    <div key={j} style={{ marginBottom: j < compPriceSignals.length - 1 ? '6px' : 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: sigColor, flexShrink: 0 }} />
-                        <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace(' price changed', '')}</span>
-                        {change && <span style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 7px', borderRadius: '4px', background: change.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${change.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '10px', fontWeight: 500, color: sigColor }}>{change.pct < 0 ? '↓' : '↑'}{Math.abs(change.pct)}%</span>}
-                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                      </div>
-                      {change && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>Was <span style={{ textDecoration: 'line-through' }}>${change.oldPrice}</span> → <strong style={{ color: sigColor }}>${change.newPrice}</strong></p>}
-                    </div>
-                  );
-                }) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
-                    <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong></span>
-                  </div>
-                )
-              ) : <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No price tracked yet.</p>}
-            </div>
-          );
-        })}
-
-        {/* PRODUCT VIEW */}
-        {activeCounter === 'product' && productGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
-            </div>
-            {group.signals.length > 0 ? group.signals.map((sig, j) => {
-              const isSelected = focusedId === sig.id;
-              return (
-                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(55,138,221,0.06)' : 'transparent', transition: 'background 0.1s' }}>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.product, flexShrink: 0 }} />
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New product launched: ', '')}</span>
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.product, border: '0.5px solid rgba(55,138,221,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.product : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
-                </div>
-              );
-            }) : (
-              <div style={{ padding: '9px 14px' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new products detected yet.</p>
-              </div>
-            )}
-          </div>
+    <div
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        inset: 0,
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "#080808",
+        zIndex: -1,
+        overflow: "hidden",
+        pointerEvents: "none",
+      }}
+    >
+      <svg
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio="xMidYMid slice"
+        style={{ width: "100%", height: "100%", display: "block" }}
+      >
+        <rect x="0" y="0" width={VIEW_W} height={VIEW_H} fill="#080808" />
+        {dots.map(([x, y], i) => (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={DOT_RADIUS}
+            fill="#ffffff"
+            opacity={DOT_OPACITY}
+          />
         ))}
-
-        {/* CATEGORY VIEW */}
-        {activeCounter === 'category' && categoryGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
-            </div>
-            {group.signals.length > 0 ? group.signals.map((sig, j) => {
-              const isSelected = focusedId === sig.id;
-              return (
-                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(212,160,23,0.06)' : 'transparent', transition: 'background 0.1s' }}>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.category, flexShrink: 0 }} />
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New category launched: ', '')}</span>
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.category, border: '0.5px solid rgba(212,160,23,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.category : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
-                </div>
-              );
-            }) : (
-              <div style={{ padding: '9px 14px' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new categories detected yet.</p>
-              </div>
-            )}
-          </div>
-        ))}
-
-        {/* Upgrade bar */}
-        {!isPremium && (
-          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(8px)' }}>
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
-              Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
-            </span>
-            <button style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
-              Upgrade
-            </button>
-          </div>
-        )}
-
-      </div>
+        {/*
+          Phase 2: real competitor-signal glow accents get rendered
+          here as extra <circle>/<radialGradient> elements at actual
+          lat/lon coordinates, using the same lonLatToXY() projection.
+          Colors: burnt orange #E85D24, blue #378ADD, amber #D4A017.
+          Left out for now per the "neutral ambient texture only" scope.
+        */}
+      </svg>
     </div>
   );
 }
+
+/**
+ * INTEGRATION — the only two changes needed on your existing dashboard
+ * ---------------------------------------------------------------
+ * 1. Mount the background once, as a sibling before your existing
+ *    dashboard content (position:fixed means DOM order doesn't affect
+ *    layout, but keep it first for clean stacking):
+ *
+ *      import DashboardBackground from "./DashboardBackground";
+ *
+ *      export default function Dashboard() {
+ *        return (
+ *          <>
+ *            <DashboardBackground />
+ *            <div className="dashboard-root"> ... your existing JSX ... </div>
+ *          </>
+ *        );
+ *      }
+ *
+ * 2. Make your existing dashboard root transparent so the new layer
+ *    shows through — this is the one-line change. Find wherever your
+ *    root container currently sets the dark background and swap it:
+ *
+ *      Before: <div className="min-h-screen bg-[#0a0a0a] ...">
+ *      After:  <div className="min-h-screen bg-transparent ...">
+ *
+ *    (Or if it's inline style: background: "#0a0a0a" -> background: "transparent")
+ *
+ * Cards floating above the map need backdrop blur to read cleanly.
+ * If you're on Tailwind, add to each card:
+ *
+ *      className="backdrop-blur-xl bg-black/40 border border-white/10"
+ *
+ * Plain CSS equivalent:
+ *
+ *      background: rgba(0, 0, 0, 0.4);
+ *      backdrop-filter: blur(20px);
+ *      -webkit-backdrop-filter: blur(20px);
+ *      border: 1px solid rgba(255, 255, 255, 0.1);
+ */
