@@ -111,78 +111,81 @@ const DashboardBackground = () => (
     pointerEvents: 'none',
     zIndex: 0,
     overflow: 'hidden',
-    background: '#080808'
+    background: '#07090c'
   }}>
-    <svg
-      aria-hidden="true"
-      style={{ width: '100%', height: '100%', display: 'block' }}
-      viewBox="0 0 1600 1000"
-      preserveAspectRatio="xMidYMid slice"
-    >
+    <svg aria-hidden="true" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"
+      style={{ width: '100%', height: '100%', display: 'block' }}>
       <defs>
-        <radialGradient id="terrainAmberGlow" cx="50%" cy="36%" r="58%">
-          <stop offset="0%" stopColor="#D4A017" stopOpacity="0.045" />
-          <stop offset="52%" stopColor="#E85D24" stopOpacity="0.018" />
-          <stop offset="100%" stopColor="#080808" stopOpacity="0" />
+        <radialGradient id="fwAmbient" cx="48%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#142033" stopOpacity="0.16" />
+          <stop offset="55%" stopColor="#0b1018" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#07090c" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="terrainBlueHaze" cx="50%" cy="62%" r="62%">
-          <stop offset="0%" stopColor="#17345F" stopOpacity="0.055" />
-          <stop offset="100%" stopColor="#080808" stopOpacity="0" />
+        <radialGradient id="fwMapGlow" cx="25%" cy="37%" r="28%">
+          <stop offset="0%" stopColor="#E85D24" stopOpacity="0.13" />
+          <stop offset="45%" stopColor="#D4A017" stopOpacity="0.035" />
+          <stop offset="100%" stopColor="#07090c" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="terrainFade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#080808" stopOpacity="0.12" />
-          <stop offset="48%" stopColor="#080808" stopOpacity="0" />
-          <stop offset="100%" stopColor="#080808" stopOpacity="0.76" />
-        </linearGradient>
-        <filter id="terrainSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="7" />
+        <pattern id="fwDots" width="5" height="5" patternUnits="userSpaceOnUse">
+          <circle cx="1.2" cy="1.2" r="0.8" fill="#D4A017" opacity="0.28" />
+        </pattern>
+        <filter id="fwGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="8" />
         </filter>
+        <clipPath id="fwWorldClip">
+          <path d="M95 177 L116 151 148 145 169 126 207 119 235 129 252 151 279 157 294 180 286 199 261 205 249 224 228 232 217 253 202 260 193 286 179 298 171 329 158 351 145 348 140 322 127 301 121 274 105 257 111 235 96 218 82 207 83 189 Z
+                   M232 365 L250 375 266 396 273 425 286 449 282 478 269 500 263 532 247 558 236 592 222 612 212 596 207 565 195 540 188 507 177 478 181 448 193 424 198 397 214 378 Z
+                   M295 129 L323 113 357 114 380 128 399 127 418 141 447 143 465 160 454 177 428 181 410 196 390 191 372 202 349 195 330 181 311 179 299 161 Z
+                   M382 205 L407 198 431 209 451 229 459 255 476 278 471 307 455 326 447 351 431 374 414 365 402 339 388 321 379 294 366 274 369 247 Z
+                   M448 153 L486 134 525 132 559 143 594 139 628 151 665 150 699 164 730 169 751 190 739 207 705 213 680 229 650 225 624 242 598 235 574 249 551 237 529 243 506 224 479 220 463 199 443 187 Z
+                   M646 256 L674 248 699 260 718 280 741 287 757 307 744 326 718 331 700 349 678 343 660 326 640 314 628 291 Z
+                   M730 372 L756 359 786 365 807 383 828 397 822 419 798 429 776 424 756 438 735 427 718 407 Z" />
+        </clipPath>
       </defs>
 
-      <rect width="1600" height="1000" fill="#080808" />
-      <rect width="1600" height="1000" fill="url(#terrainAmberGlow)" />
-      <rect width="1600" height="1000" fill="url(#terrainBlueHaze)" />
+      <rect width="1600" height="900" fill="#07090c" />
+      <rect width="1600" height="900" fill="url(#fwAmbient)" />
 
-      {/* Distant competitive landscape — contour/ridgeline layers */}
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M-80 430 C80 410 145 350 250 370 C350 390 410 315 515 345 C620 375 680 245 790 300 C900 355 955 275 1065 325 C1175 375 1250 285 1360 320 C1470 355 1540 300 1680 325"
-          stroke="rgba(212,160,23,0.105)" strokeWidth="1" />
-        <path d="M-90 448 C75 430 150 372 258 391 C365 410 425 338 525 366 C630 395 688 270 798 322 C905 373 970 298 1075 346 C1185 395 1260 310 1370 344 C1480 378 1550 325 1690 348"
-          stroke="rgba(212,160,23,0.085)" strokeWidth="0.9" />
-        <path d="M-100 468 C70 450 155 398 265 414 C375 430 438 365 538 390 C642 416 700 300 810 346 C920 392 982 326 1088 370 C1195 415 1272 338 1382 370 C1492 402 1560 350 1700 374"
-          stroke="rgba(212,160,23,0.07)" strokeWidth="0.8" />
-        <path d="M-110 492 C65 474 160 426 274 438 C388 450 450 395 552 416 C655 438 715 330 824 372 C935 415 998 355 1102 396 C1210 438 1285 368 1396 398 C1508 428 1572 378 1710 402"
-          stroke="rgba(232,93,36,0.055)" strokeWidth="0.75" />
-        <path d="M-120 520 C60 500 170 458 285 466 C400 474 465 425 568 444 C672 463 730 365 840 402 C950 440 1015 386 1120 424 C1228 463 1300 398 1412 426 C1525 454 1590 408 1720 432"
-          stroke="rgba(212,160,23,0.045)" strokeWidth="0.7" />
-
-        <path d="M-120 690 C85 620 230 655 370 610 C510 565 650 640 800 590 C950 540 1090 625 1240 575 C1390 525 1510 570 1720 515"
-          stroke="rgba(212,160,23,0.055)" strokeWidth="0.8" />
-        <path d="M-130 724 C80 652 235 690 380 644 C525 598 665 675 815 624 C965 573 1105 660 1255 610 C1405 560 1530 605 1730 550"
-          stroke="rgba(212,160,23,0.04)" strokeWidth="0.7" />
-        <path d="M-140 762 C75 690 240 728 392 682 C542 636 680 712 830 662 C980 612 1120 698 1270 648 C1420 598 1545 642 1740 590"
-          stroke="rgba(55,138,221,0.035)" strokeWidth="0.65" />
+      {/* Dotted world intelligence field, deliberately left of the dashboard */}
+      <g transform="translate(30 45) scale(0.82)" opacity="0.72">
+        <rect x="55" y="90" width="790" height="560" fill="url(#fwDots)" clipPath="url(#fwWorldClip)" />
+        <rect x="55" y="90" width="790" height="560" fill="url(#fwMapGlow)" clipPath="url(#fwWorldClip)" />
+        <g>
+          <circle cx="205" cy="300" r="30" fill="#E85D24" opacity="0.055" filter="url(#fwGlow)" />
+          <circle cx="205" cy="300" r="5" fill="#E85D24" opacity="0.95" />
+          <circle cx="205" cy="300" r="12" fill="#E85D24" opacity="0.14" />
+          <circle cx="350" cy="205" r="24" fill="#D4A017" opacity="0.045" filter="url(#fwGlow)" />
+          <circle cx="350" cy="205" r="3.5" fill="#D4A017" opacity="0.82" />
+          <circle cx="420" cy="295" r="24" fill="#E85D24" opacity="0.05" filter="url(#fwGlow)" />
+          <circle cx="420" cy="295" r="3.5" fill="#E85D24" opacity="0.8" />
+          <circle cx="265" cy="430" r="20" fill="#D4A017" opacity="0.045" filter="url(#fwGlow)" />
+          <circle cx="265" cy="430" r="3" fill="#D4A017" opacity="0.72" />
+        </g>
       </g>
 
-      {/* Sparse observation signals — intentionally minimal */}
-      <g>
-        <circle cx="250" cy="370" r="2.2" fill="#D4A017" opacity="0.42" />
-        <circle cx="250" cy="370" r="11" fill="#D4A017" opacity="0.025" filter="url(#terrainSoftGlow)" />
-        <circle cx="790" cy="300" r="2.5" fill="#E85D24" opacity="0.48" />
-        <circle cx="790" cy="300" r="14" fill="#E85D24" opacity="0.03" filter="url(#terrainSoftGlow)" />
-        <circle cx="1360" cy="320" r="2.2" fill="#D4A017" opacity="0.38" />
-        <circle cx="1360" cy="320" r="12" fill="#D4A017" opacity="0.025" filter="url(#terrainSoftGlow)" />
+      {/* Fine topographic contour field */}
+      <g fill="none" stroke="#D4A017" strokeLinecap="round">
+        <path d="M-90 545 C55 485 135 510 210 560 C282 608 330 700 424 716 C520 733 586 662 660 612" opacity="0.13" strokeWidth="0.8"/>
+        <path d="M-95 560 C48 502 129 525 201 574 C272 622 324 713 416 731 C510 749 580 682 653 629" opacity="0.105" strokeWidth="0.75"/>
+        <path d="M-100 576 C40 520 122 540 194 589 C264 637 318 728 408 747 C501 766 572 700 646 647" opacity="0.085" strokeWidth="0.7"/>
+        <path d="M-105 594 C34 539 115 558 187 607 C257 655 311 745 400 765 C492 784 565 719 639 666" opacity="0.07" strokeWidth="0.65"/>
+        <path d="M-110 614 C28 559 108 578 180 627 C250 675 305 764 392 784 C483 804 557 739 632 686" opacity="0.055" strokeWidth="0.6"/>
+
+        <path d="M1230 -80 C1290 5 1335 48 1410 72 C1490 98 1545 78 1665 30" opacity="0.08" strokeWidth="0.65"/>
+        <path d="M1212 -62 C1275 24 1322 68 1398 93 C1478 120 1538 100 1668 52" opacity="0.07" strokeWidth="0.65"/>
+        <path d="M1194 -44 C1260 43 1308 89 1386 114 C1468 141 1530 122 1670 74" opacity="0.06" strokeWidth="0.6"/>
+
+        <path d="M1260 180 C1335 120 1420 118 1488 165 C1556 212 1550 294 1600 330 C1645 362 1685 345 1720 320" opacity="0.13" strokeWidth="0.8"/>
+        <path d="M1243 198 C1322 139 1410 137 1478 183 C1546 230 1540 311 1590 348 C1638 382 1680 366 1720 340" opacity="0.105" strokeWidth="0.75"/>
+        <path d="M1227 217 C1308 158 1398 156 1468 202 C1536 249 1530 329 1580 366 C1630 402 1676 386 1720 360" opacity="0.085" strokeWidth="0.7"/>
+        <path d="M1212 237 C1294 178 1386 176 1458 222 C1526 269 1520 348 1570 385 C1622 422 1672 406 1720 380" opacity="0.065" strokeWidth="0.65"/>
+
+        <path d="M1110 700 C1195 655 1268 660 1340 708 C1410 755 1475 770 1540 730 C1600 694 1655 690 1720 718" opacity="0.08" strokeWidth="0.7"/>
+        <path d="M1092 720 C1180 675 1256 680 1328 728 C1398 775 1465 790 1532 750 C1594 714 1652 710 1720 738" opacity="0.065" strokeWidth="0.65"/>
+        <path d="M1075 741 C1165 696 1243 701 1316 749 C1386 796 1455 811 1524 771 C1588 735 1648 731 1720 759" opacity="0.05" strokeWidth="0.6"/>
       </g>
 
-      {/* Edge contour fragments keep the center readable */}
-      <g fill="none" stroke="rgba(212,160,23,0.055)" strokeWidth="0.7">
-        <path d="M0 120 C90 85 180 90 265 125 C330 152 360 205 420 226" />
-        <path d="M0 145 C95 110 185 115 270 150 C335 177 370 225 430 248" />
-        <path d="M1600 105 C1515 82 1430 92 1360 132 C1305 164 1275 210 1210 232" />
-        <path d="M1600 132 C1518 110 1440 118 1370 158 C1315 190 1285 232 1220 255" />
-      </g>
-
-      <rect width="1600" height="1000" fill="url(#terrainFade)" />
+      <rect width="1600" height="900" fill="url(#fwAmbient)" opacity="0.45" />
     </svg>
   </div>
 );
