@@ -1,185 +1,612 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * DashboardBackground
- * ---------------------------------------------------------------
- * Full-bleed, fixed, hand-coded dotted world map for the FARWATCH
- * dashboard. No external map assets, no built-in color gradients —
- * just a monochrome dot field shaped like continents at low opacity,
- * sitting behind the dashboard content.
- *
- * Drop this in once, mount it at the top of your dashboard layout,
- * and make the dashboard's own root background transparent (see
- * bottom of this file for the one-line change).
- * ---------------------------------------------------------------
- */
+const supabase = createClient(
+  'https://bnristmagxfutjgthgpd.supabase.co',
+  'sb_publishable_ifLgjBC5vTtV7BJBfCNmyA_Sm54QueW'
+);
 
-// Simplified, hand-coded continent outlines (lon/lat degrees).
-// These are deliberately rough — the goal is a map that's "felt, not
-// seen," not cartographic accuracy.
-const CONTINENTS = [
-  // North America
-  [
-    [-160, 70], [-140, 72], [-100, 75], [-80, 72], [-60, 60], [-55, 50],
-    [-65, 45], [-75, 35], [-80, 25], [-97, 18], [-105, 20], [-115, 30],
-    [-125, 40], [-130, 50], [-140, 55], [-150, 60], [-160, 65],
-  ],
-  // South America
-  [
-    [-80, 10], [-70, 10], [-60, 5], [-50, 0], [-35, -5], [-35, -15],
-    [-40, -25], [-55, -35], [-65, -40], [-70, -45], [-73, -50], [-70, -55],
-    [-65, -50], [-60, -40], [-58, -30], [-60, -20], [-65, -10], [-75, 0],
-    [-80, 5],
-  ],
-  // Europe
-  [
-    [-10, 60], [0, 62], [20, 65], [30, 60], [40, 55], [35, 48], [20, 45],
-    [10, 45], [0, 43], [-5, 45], [-10, 50],
-  ],
-  // Africa
-  [
-    [-15, 35], [0, 37], [10, 33], [20, 32], [35, 30], [40, 15], [50, 10],
-    [45, 0], [40, -10], [35, -25], [25, -34], [18, -34], [12, -18],
-    [10, -5], [0, 5], [-10, 10], [-17, 15], [-15, 25],
-  ],
-  // Asia
-  [
-    [40, 55], [60, 60], [90, 70], [130, 72], [150, 65], [160, 60],
-    [170, 65], [180, 68], [180, 50], [150, 45], [140, 40], [130, 35],
-    [122, 30], [110, 20], [105, 10], [100, 5], [95, 15], [90, 22],
-    [80, 10], [75, 15], [70, 25], [60, 25], [55, 30], [45, 35], [35, 40],
-    [30, 45], [40, 50],
-  ],
-  // Australia
-  [
-    [113, -22], [120, -18], [130, -12], [140, -11], [145, -15],
-    [150, -25], [145, -38], [138, -35], [130, -32], [120, -34], [113, -30],
-  ],
-];
+const COLORS = {
+  price: '#E85D24',
+  product: '#378ADD',
+  category: '#D4A017'
+};
 
-const VIEW_W = 1000;
-const VIEW_H = 500;
-const GRID_SPACING = 9; // density of the dot field, in viewBox units
-const DOT_RADIUS = 1.1;
-const DOT_OPACITY = 0.12;
-
-function lonLatToXY([lon, lat]) {
-  const x = ((lon + 180) / 360) * VIEW_W;
-  const y = ((90 - lat) / 180) * VIEW_H;
-  return [x, y];
+function getPriceIntel(pct) {
+  if (pct <= -20) return {
+    strategic: "An aggressive drop of this size signals either a major clearance event or a competitive attack. They are sacrificing margin deliberately — this is not routine.",
+    strategicNote: "Based on e-commerce patterns — drops over 20% on hero products typically precede collection changes, not permanent repositioning.",
+    tactical: "Do not match immediately. Run a value-focused campaign in the next 48 hours reminding customers why your product justifies full price.",
+    tacticalNote: "Matching a competitor price cut costs margin immediately. Most cuts under 25% reverse within 14 days in fashion and apparel.",
+    action: "Launch a value campaign now. Do not match their price — you will lose margin for nothing.",
+    tags: ["High urgency", "Likely clearance", "Respond in 48h"]
+  };
+  if (pct <= -10) return {
+    strategic: "A drop of this size typically signals end-of-season inventory clearance, not a permanent reprice. They need cash flow before the next collection drops.",
+    strategicNote: "Based on seasonal pricing patterns — mid-range drops of 10–20% most commonly occur 4–6 weeks before a new collection launch.",
+    tactical: "Hold your price for 14 days. If they revert, you maintained margin. If they hold the cut, reassess then — not now.",
+    tacticalNote: "Historical data shows 68% of seasonal price cuts in apparel reverse within 21 days. Patience protects margin.",
+    action: "Hold your price. Monitor for 14 days before deciding.",
+    tags: ["Likely temporary", "Monitor 14 days", "Hold price"]
+  };
+  if (pct < 0) return {
+    strategic: "A minor price adjustment — likely testing price elasticity or running a quiet promotional test. Not a signal of strategic repositioning.",
+    strategicNote: "Small adjustments under 10% are consistent with A/B price testing — a common practice among Shopify stores optimising conversion.",
+    tactical: "No action needed yet. Watch whether this spreads to other products in their catalog.",
+    tacticalNote: "Price elasticity tests rarely spread across a full catalog. If it stays isolated to one product, it is not a strategic signal.",
+    action: "No action needed. Watch if this spreads across their catalog.",
+    tags: ["Low urgency", "Testing elasticity", "Watch only"]
+  };
+  return {
+    strategic: "A price increase signals confidence in demand or rising costs being passed to customers. This is an opportunity for you to compete on value.",
+    strategicNote: "Price increases on established products signal brand confidence. Customers who stay despite the rise are high-loyalty — worth targeting.",
+    tactical: "If your price is now lower, highlight it. Run a targeted comparison campaign while the gap exists.",
+    tacticalNote: "Price gaps between competitors typically last 30–60 days before the market adjusts. Act while the window is open.",
+    action: "Opportunity — their price is now higher than yours. Highlight your value immediately.",
+    tags: ["Opportunity", "Compete on value", "Act now"]
+  };
 }
 
-// Ray-casting point-in-polygon test.
-function pointInPolygon(x, y, poly) {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [xi, yi] = poly[i];
-    const [xj, yj] = poly[j];
-    const intersect =
-      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
-  }
-  return inside;
+function getProductIntel(count) {
+  if (count >= 3) return {
+    strategic: "Multiple new launches in one week signals a coordinated collection drop — building momentum toward a paid campaign. This is deliberate, not ad hoc.",
+    strategicNote: "Coordinated multi-product launches typically precede paid ad campaigns by 10–14 days. Watch for ad spend to follow.",
+    tactical: "Watch their ad spend over the next 2 weeks. Multi-product drops backed by ads confirm a real strategic push.",
+    tacticalNote: "New products without immediate ad support are usually tests. Products backed by ads within 14 days are real strategic bets.",
+    action: "Check if any new products overlap your catalog. Prepare a response before their ads run.",
+    tags: ["Watch closely", "Ads likely in 2 weeks", `${count}-product drop`]
+  };
+  return {
+    strategic: "A single new launch suggests a targeted addition rather than a collection push. Lower urgency than a multi-product drop.",
+    strategicNote: "Solo product launches are often tests of demand before committing to a full collection. Watch for follow-up launches.",
+    tactical: "Monitor whether they follow with ads or more products in the next 7 days. One product alone is a test, not a commitment.",
+    tacticalNote: "If no follow-up products or ads appear within 7 days, this is likely a demand test — no response needed yet.",
+    action: "Watch for 7 days. If no follow-up appears, this is likely a test — no response needed yet.",
+    tags: ["Low urgency", "Likely a test", "Watch 7 days"]
+  };
 }
 
-const POLYGONS = CONTINENTS.map((poly) => poly.map(lonLatToXY));
+function getCategoryIntel(count) {
+  if (count >= 2) return {
+    strategic: "Multiple new categories in one week signals a major strategic pivot. They are betting on several new customer segments simultaneously.",
+    strategicNote: "Multiple category launches require significant inventory and budget commitment — a signal of aggressive expansion, not experimentation.",
+    tactical: "Prioritise which category overlaps most with your strengths. You cannot respond to all of them — pick the highest threat.",
+    tacticalNote: "Category authority sets within 60–90 days. Focus your response on the category where you have the strongest existing position.",
+    action: "Identify which new category threatens you most. Move into it first or cede the ground entirely.",
+    tags: ["High urgency", "Multiple bets", "Prioritise response"]
+  };
+  return {
+    strategic: "A new category is a long-term bet on a customer segment. They have committed inventory and budget — this is not a test, it is a deliberate strategic move.",
+    strategicNote: "New category launches require inventory investment and catalog restructuring — a signal of deliberate strategic commitment.",
+    tactical: "You have a narrow window before they establish authority. Category dominance sets within 60–90 days. Acting in the first 30 days maximises your position.",
+    tacticalNote: "Category authority is typically established within 60–90 days of launch. Acting in the first 30 days maximises your competitive position.",
+    action: "Decide fast. They just proved demand exists. Move first or let them own it.",
+    tags: ["Strategic move", "Narrow window", "30 days to act"]
+  };
+}
 
-export default function DashboardBackground() {
-  const dots = useMemo(() => {
-    const pts = [];
-    for (let y = 0; y <= VIEW_H; y += GRID_SPACING) {
-      for (let x = 0; x <= VIEW_W; x += GRID_SPACING) {
-        for (const poly of POLYGONS) {
-          if (pointInPolygon(x, y, poly)) {
-            pts.push([x, y]);
-            break;
-          }
-        }
-      }
-    }
-    return pts;
+function parsePriceChange(detail) {
+  if (!detail) return null;
+  const match = detail.match(/From \$?([\d.]+) to \$?([\d.]+)/i);
+  if (!match) return null;
+  const oldPrice = parseFloat(match[1]);
+  const newPrice = parseFloat(match[2]);
+  const pct = ((newPrice - oldPrice) / oldPrice) * 100;
+  return { oldPrice, newPrice, pct: Math.round(pct) };
+}
+
+const NoteBox = ({ text, color }) => (
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '7px 9px', background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '5px', marginTop: '8px' }}>
+    <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: `0.5px solid ${color ? color + '44' : 'rgba(255,255,255,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: color ? color + '88' : 'rgba(255,255,255,0.3)', lineHeight: 1 }}>i</span>
+    </div>
+    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>{text}</span>
+  </div>
+);
+
+const DashboardBackground = () => (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    pointerEvents: 'none',
+    zIndex: 0,
+    overflow: 'hidden'
+  }}>
+    <svg
+      style={{ width: '100%', height: '100%' }}
+      viewBox="0 0 1400 900"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <defs>
+        <radialGradient id="gL" cx="15%" cy="40%" r="40%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gR" cx="85%" cy="35%" r="40%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.1)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gC" cx="50%" cy="60%" r="35%">
+          <stop offset="0%" stopColor="rgba(40,80,255,0.06)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gAmberL" cx="10%" cy="50%" r="30%">
+          <stop offset="0%" stopColor="rgba(212,160,23,0.06)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <radialGradient id="gAmberR" cx="90%" cy="50%" r="30%">
+          <stop offset="0%" stopColor="rgba(212,160,23,0.05)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+      </defs>
+
+      <rect width="1400" height="900" fill="url(#gL)" />
+      <rect width="1400" height="900" fill="url(#gR)" />
+      <rect width="1400" height="900" fill="url(#gC)" />
+      <rect width="1400" height="900" fill="url(#gAmberL)" />
+      <rect width="1400" height="900" fill="url(#gAmberR)" />
+
+      {/* LEFT network */}
+      <line x1="80" y1="200" x2="180" y2="320" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
+      <line x1="180" y1="320" x2="120" y2="450" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="80" y1="200" x2="200" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="200" y1="180" x2="280" y2="300" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="280" y1="300" x2="180" y2="320" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="120" y1="450" x2="220" y2="520" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="220" y1="520" x2="300" y2="420" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="300" y1="420" x2="280" y2="300" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="60" y1="600" x2="150" y2="650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="150" y1="650" x2="220" y2="720" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="220" y1="720" x2="100" y2="780" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="150" y1="650" x2="280" y2="600" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+
+      {/* LEFT nodes */}
+      <circle cx="80" cy="200" r="4" fill="#E85D24" opacity="0.85" />
+      <circle cx="80" cy="200" r="10" fill="rgba(232,93,36,0.15)" />
+      <circle cx="180" cy="320" r="5" fill="rgba(60,120,255,0.6)" />
+      <circle cx="180" cy="320" r="12" fill="rgba(60,120,255,0.1)" />
+      <circle cx="200" cy="180" r="3.5" fill="#378ADD" opacity="0.85" />
+      <circle cx="200" cy="180" r="9" fill="rgba(55,138,221,0.12)" />
+      <circle cx="280" cy="300" r="3" fill="rgba(60,120,255,0.5)" />
+      <circle cx="120" cy="450" r="3.5" fill="#D4A017" opacity="0.85" />
+      <circle cx="120" cy="450" r="9" fill="rgba(212,160,23,0.12)" />
+      <circle cx="220" cy="520" r="2.5" fill="rgba(60,120,255,0.4)" />
+      <circle cx="300" cy="420" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="60" cy="600" r="3" fill="rgba(60,120,255,0.45)" />
+      <circle cx="150" cy="650" r="4" fill="rgba(60,120,255,0.5)" />
+      <circle cx="150" cy="650" r="10" fill="rgba(60,120,255,0.08)" />
+      <circle cx="220" cy="720" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="100" cy="780" r="2" fill="rgba(60,120,255,0.25)" />
+      <circle cx="280" cy="600" r="2" fill="rgba(60,120,255,0.3)" />
+
+      {/* LEFT pulse rings */}
+      <circle cx="180" cy="320" r="40" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
+      <circle cx="180" cy="320" r="75" stroke="rgba(60,120,255,0.08)" strokeWidth="0.8" fill="none" />
+      <circle cx="150" cy="650" r="35" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
+      <circle cx="150" cy="650" r="65" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
+
+      {/* RIGHT network */}
+      <line x1="1200" y1="150" x2="1300" y2="280" stroke="rgba(60,120,255,0.25)" strokeWidth="0.6" />
+      <line x1="1300" y1="280" x2="1350" y2="180" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="1300" y1="280" x2="1250" y2="400" stroke="rgba(60,120,255,0.2)" strokeWidth="0.6" />
+      <line x1="1200" y1="150" x2="1120" y2="260" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="1120" y1="260" x2="1250" y2="400" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1250" y1="400" x2="1320" y2="500" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1320" y1="500" x2="1380" y2="420" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1100" y1="550" x2="1200" y2="620" stroke="rgba(60,120,255,0.18)" strokeWidth="0.5" />
+      <line x1="1200" y1="620" x2="1320" y2="580" stroke="rgba(60,120,255,0.15)" strokeWidth="0.5" />
+      <line x1="1320" y1="580" x2="1350" y2="700" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1200" y1="620" x2="1150" y2="720" stroke="rgba(60,120,255,0.12)" strokeWidth="0.5" />
+      <line x1="1150" y1="720" x2="1280" y2="780" stroke="rgba(60,120,255,0.1)" strokeWidth="0.5" />
+
+      {/* RIGHT nodes */}
+      <circle cx="1200" cy="150" r="4" fill="#E85D24" opacity="0.85" />
+      <circle cx="1200" cy="150" r="10" fill="rgba(232,93,36,0.15)" />
+      <circle cx="1300" cy="280" r="5" fill="rgba(60,120,255,0.6)" />
+      <circle cx="1300" cy="280" r="12" fill="rgba(60,120,255,0.1)" />
+      <circle cx="1350" cy="180" r="3" fill="rgba(60,120,255,0.4)" />
+      <circle cx="1120" cy="260" r="3.5" fill="#378ADD" opacity="0.85" />
+      <circle cx="1120" cy="260" r="9" fill="rgba(55,138,221,0.12)" />
+      <circle cx="1250" cy="400" r="4" fill="rgba(60,120,255,0.5)" />
+      <circle cx="1320" cy="500" r="3" fill="#D4A017" opacity="0.85" />
+      <circle cx="1320" cy="500" r="8" fill="rgba(212,160,23,0.12)" />
+      <circle cx="1380" cy="420" r="2" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1100" cy="550" r="3" fill="rgba(60,120,255,0.4)" />
+      <circle cx="1200" cy="620" r="4.5" fill="rgba(60,120,255,0.55)" />
+      <circle cx="1200" cy="620" r="11" fill="rgba(60,120,255,0.08)" />
+      <circle cx="1320" cy="580" r="3" fill="rgba(60,120,255,0.35)" />
+      <circle cx="1350" cy="700" r="2.5" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1150" cy="720" r="2.5" fill="rgba(60,120,255,0.3)" />
+      <circle cx="1280" cy="780" r="2" fill="rgba(60,120,255,0.2)" />
+
+      {/* RIGHT pulse rings */}
+      <circle cx="1300" cy="280" r="50" stroke="rgba(60,120,255,0.15)" strokeWidth="0.8" fill="none" />
+      <circle cx="1300" cy="280" r="95" stroke="rgba(60,120,255,0.09)" strokeWidth="0.8" fill="none" />
+      <circle cx="1300" cy="280" r="140" stroke="rgba(60,120,255,0.05)" strokeWidth="0.8" fill="none" />
+      <circle cx="1200" cy="620" r="40" stroke="rgba(60,120,255,0.12)" strokeWidth="0.8" fill="none" />
+      <circle cx="1200" cy="620" r="75" stroke="rgba(60,120,255,0.07)" strokeWidth="0.8" fill="none" />
+
+      {/* BOTTOM streams */}
+      <path d="M0 750 Q200 700 350 720 Q500 740 650 700 Q800 660 950 680 Q1100 700 1250 660 Q1350 640 1400 650" stroke="rgba(60,120,255,0.18)" strokeWidth="0.8" fill="none" />
+      <path d="M0 800 Q200 760 350 780 Q500 800 650 760 Q800 720 950 740 Q1100 760 1250 720 Q1350 700 1400 710" stroke="rgba(60,120,255,0.12)" strokeWidth="0.6" fill="none" />
+      <path d="M0 850 Q200 820 400 840 Q600 860 800 830 Q1000 800 1200 820 Q1350 835 1400 830" stroke="rgba(212,160,23,0.08)" strokeWidth="0.5" fill="none" />
+
+      {/* BOTTOM nodes */}
+      <circle cx="350" cy="720" r="2.5" fill="rgba(60,120,255,0.4)" />
+      <circle cx="650" cy="700" r="2" fill="rgba(60,120,255,0.35)" />
+      <circle cx="950" cy="680" r="2.5" fill="rgba(60,120,255,0.35)" />
+      <circle cx="1250" cy="660" r="2" fill="rgba(60,120,255,0.3)" />
+      <circle cx="500" cy="840" r="1.5" fill="rgba(60,120,255,0.25)" />
+      <circle cx="800" cy="830" r="1.5" fill="rgba(60,120,255,0.2)" />
+      <circle cx="1100" cy="820" r="1.5" fill="rgba(60,120,255,0.2)" />
+
+      {/* CENTER ambient dots */}
+      <circle cx="450" cy="200" r="1.5" fill="rgba(60,120,255,0.25)" />
+      <circle cx="600" cy="150" r="1" fill="rgba(60,120,255,0.2)" />
+      <circle cx="750" cy="250" r="1.5" fill="rgba(60,120,255,0.2)" />
+      <circle cx="900" cy="180" r="1" fill="rgba(60,120,255,0.18)" />
+      <circle cx="550" cy="400" r="1" fill="rgba(60,120,255,0.18)" />
+      <circle cx="700" cy="500" r="1.5" fill="rgba(60,120,255,0.15)" />
+      <circle cx="850" cy="450" r="1" fill="rgba(60,120,255,0.15)" />
+      <circle cx="650" cy="600" r="1" fill="rgba(60,120,255,0.15)" />
+      <circle cx="750" cy="700" r="1.5" fill="rgba(60,120,255,0.12)" />
+
+      {/* Dashed cross connections */}
+      <line x1="280" y1="300" x2="500" y2="250" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="300" y1="420" x2="550" y2="380" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="1100" y1="550" x2="900" y2="500" stroke="rgba(60,120,255,0.1)" strokeWidth="0.4" strokeDasharray="4 4" />
+      <line x1="1120" y1="260" x2="900" y2="220" stroke="rgba(60,120,255,0.08)" strokeWidth="0.4" strokeDasharray="4 4" />
+    </svg>
+  </div>
+);
+
+export default function Dashboard() {
+  const [competitors, setCompetitors] = useState([]);
+  const [signals, setSignals] = useState([]);
+  const [isPremium, setIsPremium] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [activeCounter, setActiveCounter] = useState('price');
+  const [focusedId, setFocusedId] = useState(null);
+  const [focusType, setFocusType] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = '/login'; return; }
+      const { data: profile } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
+      setIsPremium(profile?.is_premium || false);
+      const { data: comps } = await supabase.from('competitors').select('*').eq('user_email', user.email);
+      setCompetitors(comps || []);
+      const { data: sigs } = await supabase.from('signals').select('*').eq('user_email', user.email).order('detected_at', { ascending: false });
+      setSignals(sigs || []);
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
+  if (loading) return (
+    <div style={{ background: '#080808', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace", fontSize: '12px' }}>
+      Loading your dashboard...
+    </div>
+  );
+
+  const maxAllowed = isPremium ? 7 : 2;
+  const pricingSignals = signals.filter(s => s.signal_type === 'pricing');
+  const productSignals = signals.filter(s => s.signal_type === 'new_product');
+  const categorySignals = signals.filter(s => s.signal_type === 'new_category');
+  const trackedWithPrice = competitors.filter(c => c.last_snapshot && c.last_snapshot.price);
+
+  const getCompName = (url) => url ? url.replace('https://', '').replace('www.', '') : '';
+  const getCompById = (id) => competitors.find(c => c.id === id);
+
+  const focusedPriceComp = activeCounter === 'price' && focusedId
+    ? trackedWithPrice.find(c => c.id === focusedId) || trackedWithPrice[0]
+    : trackedWithPrice[0];
+
+  const focusedPriceSignal = activeCounter === 'price' && focusedId
+    ? pricingSignals.find(s => s.competitor_id === focusedId) || pricingSignals[0]
+    : pricingSignals[0];
+
+  const focusedProductSignal = activeCounter === 'product' && focusedId && focusType === 'signal'
+    ? productSignals.find(s => s.id === focusedId)
+    : productSignals[0];
+
+  const focusedCategorySignal = activeCounter === 'category' && focusedId && focusType === 'signal'
+    ? categorySignals.find(s => s.id === focusedId)
+    : categorySignals[0];
+
+  const topPriceChange = focusedPriceSignal ? parsePriceChange(focusedPriceSignal.detail) : null;
+  const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
+
+  const focusedProductComp = focusedProductSignal ? getCompById(focusedProductSignal.competitor_id) : null;
+  const compProductCount = focusedProductComp ? productSignals.filter(s => s.competitor_id === focusedProductComp.id).length : productSignals.length;
+  const productIntel = getProductIntel(compProductCount);
+
+  const focusedCategoryComp = focusedCategorySignal ? getCompById(focusedCategorySignal.competitor_id) : null;
+  const compCategoryCount = focusedCategoryComp ? categorySignals.filter(s => s.competitor_id === focusedCategoryComp.id).length : categorySignals.length;
+  const categoryIntel = getCategoryIntel(compCategoryCount);
+
+  const activePriceColor = activeCounter === 'price' && topPriceChange
+    ? (topPriceChange.pct < 0 ? '#E85D24' : '#00C896')
+    : COLORS.price;
+  const activeColor = activeCounter === 'price' ? activePriceColor : COLORS[activeCounter];
+
+  const focusedPriceIndex = trackedWithPrice.findIndex(c => c.id === (focusedId || trackedWithPrice[0]?.id));
+  const focusedProductIndex = productSignals.findIndex(s => s.id === (focusedProductSignal?.id));
+  const focusedCategoryIndex = categorySignals.findIndex(s => s.id === (focusedCategorySignal?.id));
+
+  const counterBadge = activeCounter === 'price'
+    ? `${focusedPriceIndex + 1} of ${trackedWithPrice.length} tracked`
+    : activeCounter === 'product'
+      ? `${focusedProductIndex + 1} of ${productSignals.length} launch${productSignals.length !== 1 ? 'es' : ''}`
+      : `${focusedCategoryIndex + 1} of ${categorySignals.length} categor${categorySignals.length !== 1 ? 'ies' : 'y'}`;
+
+  const handleCounterClick = (type) => { setActiveCounter(type); setFocusedId(null); setFocusType(null); };
+  const handlePriceCompClick = (comp) => { setFocusedId(focusedId === comp.id ? null : comp.id); setFocusType('competitor'); };
+  const handleSignalClick = (sig) => { setFocusedId(focusedId === sig.id ? null : sig.id); setFocusType('signal'); };
+
+  const counterStyle = (type) => ({
+    background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(8,8,8,0.7)',
+    border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
+    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
+    backdropFilter: 'blur(8px)'
+  });
+
+  const groupByCompetitor = (sigs) => {
+    const groups = {};
+    competitors.forEach(c => { groups[c.id] = { comp: c, signals: [] }; });
+    sigs.forEach(s => { if (groups[s.competitor_id]) groups[s.competitor_id].signals.push(s); });
+    return Object.values(groups);
+  };
+
+  const productGroups = groupByCompetitor(productSignals);
+  const categoryGroups = groupByCompetitor(categorySignals);
+
+  const heroStrategic = activeCounter === 'price' ? (priceIntel?.strategic || "Baseline prices set. Alerts fire when prices change.") : activeCounter === 'product' ? productIntel.strategic : categoryIntel.strategic;
+  const heroStrategicNote = activeCounter === 'price' ? (priceIntel?.strategicNote || "FARWATCH monitors price changes and alerts you within 24 hours.") : activeCounter === 'product' ? productIntel.strategicNote : categoryIntel.strategicNote;
+  const heroTactical = activeCounter === 'price' ? (priceIntel?.tactical || "No action needed yet — monitoring is active.") : activeCounter === 'product' ? productIntel.tactical : categoryIntel.tactical;
+  const heroTacticalNote = activeCounter === 'price' ? (priceIntel?.tacticalNote || "Price baselines refreshed every 24 hours.") : activeCounter === 'product' ? productIntel.tacticalNote : categoryIntel.tacticalNote;
+  const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
+  const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
+
   return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "#080808",
-        zIndex: -1,
-        overflow: "hidden",
-        pointerEvents: "none",
-      }}
-    >
-      <svg
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        preserveAspectRatio="xMidYMid slice"
-        style={{ width: "100%", height: "100%", display: "block" }}
-      >
-        <rect x="0" y="0" width={VIEW_W} height={VIEW_H} fill="#080808" />
-        {dots.map(([x, y], i) => (
-          <circle
-            key={i}
-            cx={x}
-            cy={y}
-            r={DOT_RADIUS}
-            fill="#ffffff"
-            opacity={DOT_OPACITY}
-          />
+    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative' }}>
+
+      <DashboardBackground />
+
+      <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+
+        {/* Top bar */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
+          <div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff', lineHeight: 1 }}>
+              FARWATCH<span style={{ color: '#D4A017' }}>.</span>
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(0,200,150,0.7)', letterSpacing: '0.07em', marginTop: '3px' }}>
+              See further. Move first.
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#00C896' }}>
+              Watching {competitors.length} competitor{competitors.length !== 1 ? 's' : ''} live
+            </span>
+          </div>
+        </div>
+
+        {/* Hero card */}
+        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
+            {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
+            {focusedId && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ flex: 1 }}>
+              {activeCounter === 'price' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '38px', fontWeight: 800, color: activeColor, lineHeight: 1 }}>
+                    {topPriceChange ? `${topPriceChange.pct > 0 ? '+' : ''}${topPriceChange.pct}%` : focusedPriceComp ? `$${focusedPriceComp.last_snapshot.price}` : '—'}
+                  </div>
+                  {topPriceChange && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '6px', background: topPriceChange.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${topPriceChange.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '13px', fontWeight: 500, color: topPriceChange.pct < 0 ? '#E85D24' : '#00C896' }}>
+                      <span>{topPriceChange.pct < 0 ? '↓' : '↑'}</span>
+                      <span>{topPriceChange.pct < 0 ? 'Price dropped' : 'Price raised'}</span>
+                    </div>
+                  )}
+                </div>
+              ) : activeCounter === 'product' ? (
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.product, lineHeight: 1.2 }}>
+                  {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : '—'}
+                </div>
+              ) : (
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.category, lineHeight: 1.2 }}>
+                  {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : '—'}
+                </div>
+              )}
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
+              {counterBadge}
+            </div>
+          </div>
+
+          <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '5px' }}>
+            {activeCounter === 'price' && topPriceChange ? (
+              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
+            ) : activeCounter === 'price' && focusedPriceComp ? (
+              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceComp.last_snapshot.product_title}</strong> — ${focusedPriceComp.last_snapshot.price} tracked on {getCompName(focusedPriceComp.url)}</>
+            ) : activeCounter === 'product' && focusedProductSignal ? (
+              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url)}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
+            ) : activeCounter === 'category' && focusedCategorySignal ? (
+              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url)}</strong> — their first move into this segment</>
+            ) : 'No signals detected yet — monitoring is active.'}
+          </div>
+
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '12px' }}>
+            {activeCounter === 'price' ? 'Tap a competitor below to focus its price here' : activeCounter === 'product' ? 'Tap any product below to focus it here' : 'Tap any category below to focus it here'}
+          </div>
+
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+            <div style={{ background: 'rgba(8,8,8,0.6)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
+              <NoteBox text={heroStrategicNote} color={activeColor} />
+            </div>
+            <div style={{ background: 'rgba(8,8,8,0.6)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
+              <NoteBox text={heroTacticalNote} color={activeColor} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${activeColor}33`, borderRadius: '6px', marginBottom: '12px' }}>
+            <span style={{ color: activeColor, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
+              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{heroAction}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {heroTags.map((tag, i) => (
+              <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em', background: i === 0 ? `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)', color: i === 0 ? activeColor : 'rgba(255,255,255,0.5)', border: `0.5px solid ${i === 0 ? activeColor + '44' : 'rgba(255,255,255,0.1)'}` }}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Counters */}
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+          This week, at a glance
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
+          {[
+            { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
+            { type: 'product', num: productSignals.length, label: 'new products' },
+            { type: 'category', num: categorySignals.length, label: 'new categories' }
+          ].map(item => (
+            <div key={item.type} style={counterStyle(item.type)} onClick={() => handleCounterClick(item.type)}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '24px', fontWeight: 800, color: COLORS[item.type], lineHeight: 1, marginBottom: '5px' }}>{item.num}</div>
+              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}>{item.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* By competitor */}
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          By competitor
+        </div>
+        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '10px' }}>
+          {activeCounter === 'price' ? 'Tap a competitor to focus it in the hero card' : activeCounter === 'product' ? 'Tap any product to focus it in the hero card' : 'Tap any category to focus it in the hero card'}
+        </p>
+
+        {/* PRICE VIEW */}
+        {activeCounter === 'price' && competitors.map((comp, i) => {
+          const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
+          const isSelected = focusedId === comp.id;
+          return (
+            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                  {getCompName(comp.url)}
+                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                </span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
+                  {compPriceSignals.length > 0 ? `${compPriceSignals.length} price change${compPriceSignals.length !== 1 ? 's' : ''}` : comp.last_snapshot?.price ? '1 price tracked' : '0 signals yet'}
+                </span>
+              </div>
+              {comp.last_snapshot?.price ? (
+                compPriceSignals.length > 0 ? compPriceSignals.map((sig, j) => {
+                  const change = parsePriceChange(sig.detail);
+                  const sigColor = change ? (change.pct < 0 ? '#E85D24' : '#00C896') : COLORS.price;
+                  return (
+                    <div key={j} style={{ marginBottom: j < compPriceSignals.length - 1 ? '6px' : 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: sigColor, flexShrink: 0 }} />
+                        <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace(' price changed', '')}</span>
+                        {change && <span style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 7px', borderRadius: '4px', background: change.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${change.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '10px', fontWeight: 500, color: sigColor }}>{change.pct < 0 ? '↓' : '↑'}{Math.abs(change.pct)}%</span>}
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                      </div>
+                      {change && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>Was <span style={{ textDecoration: 'line-through' }}>${change.oldPrice}</span> → <strong style={{ color: sigColor }}>${change.newPrice}</strong></p>}
+                    </div>
+                  );
+                }) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
+                    <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong></span>
+                  </div>
+                )
+              ) : <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No price tracked yet.</p>}
+            </div>
+          );
+        })}
+
+        {/* PRODUCT VIEW */}
+        {activeCounter === 'product' && productGroups.map((group, i) => (
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
+            </div>
+            {group.signals.length > 0 ? group.signals.map((sig, j) => {
+              const isSelected = focusedId === sig.id;
+              return (
+                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(55,138,221,0.06)' : 'transparent', transition: 'background 0.1s' }}>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.product, flexShrink: 0 }} />
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New product launched: ', '')}</span>
+                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.product, border: '0.5px solid rgba(55,138,221,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.product : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
+                </div>
+              );
+            }) : (
+              <div style={{ padding: '9px 14px' }}>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new products detected yet.</p>
+              </div>
+            )}
+          </div>
         ))}
-        {/*
-          Phase 2: real competitor-signal glow accents get rendered
-          here as extra <circle>/<radialGradient> elements at actual
-          lat/lon coordinates, using the same lonLatToXY() projection.
-          Colors: burnt orange #E85D24, blue #378ADD, amber #D4A017.
-          Left out for now per the "neutral ambient texture only" scope.
-        */}
-      </svg>
+
+        {/* CATEGORY VIEW */}
+        {activeCounter === 'category' && categoryGroups.map((group, i) => (
+          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
+            </div>
+            {group.signals.length > 0 ? group.signals.map((sig, j) => {
+              const isSelected = focusedId === sig.id;
+              return (
+                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(212,160,23,0.06)' : 'transparent', transition: 'background 0.1s' }}>
+                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.category, flexShrink: 0 }} />
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New category launched: ', '')}</span>
+                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.category, border: '0.5px solid rgba(212,160,23,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.category : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
+                </div>
+              );
+            }) : (
+              <div style={{ padding: '9px 14px' }}>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new categories detected yet.</p>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Upgrade bar */}
+        {!isPremium && (
+          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(8px)' }}>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
+              Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
+            </span>
+            <button style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+              Upgrade
+            </button>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
-
-/**
- * INTEGRATION — the only two changes needed on your existing dashboard
- * ---------------------------------------------------------------
- * 1. Mount the background once, as a sibling before your existing
- *    dashboard content (position:fixed means DOM order doesn't affect
- *    layout, but keep it first for clean stacking):
- *
- *      import DashboardBackground from "./DashboardBackground";
- *
- *      export default function Dashboard() {
- *        return (
- *          <>
- *            <DashboardBackground />
- *            <div className="dashboard-root"> ... your existing JSX ... </div>
- *          </>
- *        );
- *      }
- *
- * 2. Make your existing dashboard root transparent so the new layer
- *    shows through — this is the one-line change. Find wherever your
- *    root container currently sets the dark background and swap it:
- *
- *      Before: <div className="min-h-screen bg-[#0a0a0a] ...">
- *      After:  <div className="min-h-screen bg-transparent ...">
- *
- *    (Or if it's inline style: background: "#0a0a0a" -> background: "transparent")
- *
- * Cards floating above the map need backdrop blur to read cleanly.
- * If you're on Tailwind, add to each card:
- *
- *      className="backdrop-blur-xl bg-black/40 border border-white/10"
- *
- * Plain CSS equivalent:
- *
- *      background: rgba(0, 0, 0, 0.4);
- *      backdrop-filter: blur(20px);
- *      -webkit-backdrop-filter: blur(20px);
- *      border: 1px solid rgba(255, 255, 255, 0.1);
- */
