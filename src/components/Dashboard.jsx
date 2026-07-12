@@ -105,18 +105,8 @@ const NoteBox = ({ text, color }) => (
 );
 
 const DashboardBackground = () => (
-  <div style={{
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    pointerEvents: 'none',
-    zIndex: 0,
-    overflow: 'hidden'
-  }}>
-    <svg
-      style={{ width: '100%', height: '100%' }}
-      viewBox="0 0 1400 900"
-      preserveAspectRatio="xMidYMid slice"
-    >
+  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+    <svg style={{ width: '100%', height: '100%' }} viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
       <defs>
         <radialGradient id="focalAmber" cx="28%" cy="50%" r="45%">
           <stop offset="0%" stopColor="rgba(212,160,23,0.09)" />
@@ -128,12 +118,8 @@ const DashboardBackground = () => (
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
       </defs>
-
-      {/* Glows */}
       <rect width="1400" height="900" fill="url(#focalAmber)" />
       <rect width="1400" height="900" fill="url(#blueRight)" />
-
-      {/* Contour lines — flowing full width organic terrain */}
       <path d="M-40 860 Q180 848 360 854 Q540 860 720 850 Q900 840 1080 846 Q1240 851 1440 847" stroke="rgba(40,80,220,0.1)" strokeWidth="0.7" fill="none" />
       <path d="M-40 830 Q160 817 338 823 Q515 829 692 818 Q868 807 1044 813 Q1210 818 1440 813" stroke="rgba(40,80,220,0.12)" strokeWidth="0.7" fill="none" />
       <path d="M-40 798 Q148 784 322 791 Q495 798 668 786 Q840 774 1012 780 Q1180 786 1440 780" stroke="rgba(40,80,220,0.14)" strokeWidth="0.7" fill="none" />
@@ -151,22 +137,16 @@ const DashboardBackground = () => (
       <path d="M-40 258 Q52 232 178 241 Q303 250 428 226 Q552 202 676 216 Q868 231 1440 216" stroke="rgba(40,80,220,0.06)" strokeWidth="0.5" fill="none" />
       <path d="M-40 200 Q44 173 166 182 Q287 191 408 166 Q528 141 648 156 Q842 172 1440 156" stroke="rgba(40,80,220,0.05)" strokeWidth="0.5" fill="none" />
       <path d="M-40 140 Q36 113 154 122 Q271 131 388 106 Q504 81 620 96 Q816 113 1440 96" stroke="rgba(40,80,220,0.04)" strokeWidth="0.5" fill="none" />
-
-      {/* Tighter contours right side — steep competitive terrain */}
       <path d="M1100 900 Q1160 878 1220 862 Q1270 849 1320 838 Q1370 827 1440 820" stroke="rgba(40,80,220,0.22)" strokeWidth="0.7" fill="none" />
       <path d="M1120 900 Q1178 880 1236 864 Q1284 851 1333 840 Q1382 829 1440 823" stroke="rgba(40,80,220,0.18)" strokeWidth="0.7" fill="none" />
       <path d="M1140 900 Q1196 881 1252 866 Q1299 853 1347 842 Q1394 831 1440 826" stroke="rgba(40,80,220,0.14)" strokeWidth="0.6" fill="none" />
       <path d="M1160 900 Q1214 883 1268 868 Q1314 856 1361 845 Q1406 834 1440 829" stroke="rgba(40,80,220,0.1)" strokeWidth="0.6" fill="none" />
-
-      {/* Signal marker dots — sitting on terrain */}
       <circle cx="1150" cy="340" r="6" fill="#E85D24" opacity="0.9" />
       <circle cx="1150" cy="340" r="16" fill="rgba(232,93,36,0.14)" />
       <circle cx="1150" cy="340" r="28" fill="rgba(232,93,36,0.05)" />
-
       <circle cx="1060" cy="520" r="5.5" fill="#378ADD" opacity="0.9" />
       <circle cx="1060" cy="520" r="14" fill="rgba(55,138,221,0.14)" />
       <circle cx="1060" cy="520" r="25" fill="rgba(55,138,221,0.05)" />
-
       <circle cx="1240" cy="440" r="5.5" fill="#D4A017" opacity="0.9" />
       <circle cx="1240" cy="440" r="14" fill="rgba(212,160,23,0.14)" />
       <circle cx="1240" cy="440" r="25" fill="rgba(212,160,23,0.05)" />
@@ -182,11 +162,16 @@ export default function Dashboard() {
   const [activeCounter, setActiveCounter] = useState('price');
   const [focusedId, setFocusedId] = useState(null);
   const [focusType, setFocusType] = useState(null);
+  const [activeNav, setActiveNav] = useState('overview');
+  const [userEmail, setUserEmail] = useState('');
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = '/login'; return; }
+      setUserEmail(user.email || '');
       const { data: profile } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
       setIsPremium(profile?.is_premium || false);
       const { data: comps } = await supabase.from('competitors').select('*').eq('user_email', user.email);
@@ -197,6 +182,12 @@ export default function Dashboard() {
     };
     loadData();
   }, []);
+
+  const scrollToSection = (id) => {
+    setActiveNav(id);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   if (loading) return (
     <div style={{ background: '#080808', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace", fontSize: '12px' }}>
@@ -213,21 +204,10 @@ export default function Dashboard() {
   const getCompName = (url) => url ? url.replace('https://', '').replace('www.', '') : '';
   const getCompById = (id) => competitors.find(c => c.id === id);
 
-  const focusedPriceComp = activeCounter === 'price' && focusedId
-    ? trackedWithPrice.find(c => c.id === focusedId) || trackedWithPrice[0]
-    : trackedWithPrice[0];
-
-  const focusedPriceSignal = activeCounter === 'price' && focusedId
-    ? pricingSignals.find(s => s.competitor_id === focusedId) || pricingSignals[0]
-    : pricingSignals[0];
-
-  const focusedProductSignal = activeCounter === 'product' && focusedId && focusType === 'signal'
-    ? productSignals.find(s => s.id === focusedId)
-    : productSignals[0];
-
-  const focusedCategorySignal = activeCounter === 'category' && focusedId && focusType === 'signal'
-    ? categorySignals.find(s => s.id === focusedId)
-    : categorySignals[0];
+  const focusedPriceComp = activeCounter === 'price' && focusedId ? trackedWithPrice.find(c => c.id === focusedId) || trackedWithPrice[0] : trackedWithPrice[0];
+  const focusedPriceSignal = activeCounter === 'price' && focusedId ? pricingSignals.find(s => s.competitor_id === focusedId) || pricingSignals[0] : pricingSignals[0];
+  const focusedProductSignal = activeCounter === 'product' && focusedId && focusType === 'signal' ? productSignals.find(s => s.id === focusedId) : productSignals[0];
+  const focusedCategorySignal = activeCounter === 'category' && focusedId && focusType === 'signal' ? categorySignals.find(s => s.id === focusedId) : categorySignals[0];
 
   const topPriceChange = focusedPriceSignal ? parsePriceChange(focusedPriceSignal.detail) : null;
   const priceIntel = topPriceChange ? getPriceIntel(topPriceChange.pct) : null;
@@ -240,9 +220,7 @@ export default function Dashboard() {
   const compCategoryCount = focusedCategoryComp ? categorySignals.filter(s => s.competitor_id === focusedCategoryComp.id).length : categorySignals.length;
   const categoryIntel = getCategoryIntel(compCategoryCount);
 
-  const activePriceColor = activeCounter === 'price' && topPriceChange
-    ? (topPriceChange.pct < 0 ? '#E85D24' : '#00C896')
-    : COLORS.price;
+  const activePriceColor = activeCounter === 'price' && topPriceChange ? (topPriceChange.pct < 0 ? '#E85D24' : '#00C896') : COLORS.price;
   const activeColor = activeCounter === 'price' ? activePriceColor : COLORS[activeCounter];
 
   const focusedPriceIndex = trackedWithPrice.findIndex(c => c.id === (focusedId || trackedWithPrice[0]?.id));
@@ -262,8 +240,7 @@ export default function Dashboard() {
   const counterStyle = (type) => ({
     background: activeCounter === type ? `rgba(${type === 'price' ? '232,93,36' : type === 'product' ? '55,138,221' : '212,160,23'},0.08)` : 'rgba(8,8,8,0.7)',
     border: `0.5px solid ${activeCounter === type ? COLORS[type] : 'rgba(255,255,255,0.07)'}`,
-    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
-    backdropFilter: 'blur(8px)'
+    borderRadius: '8px', padding: '13px 10px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)'
   });
 
   const groupByCompetitor = (sigs) => {
@@ -283,230 +260,477 @@ export default function Dashboard() {
   const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
   const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
 
+  const navItem = (id, label, color = null, soon = false) => (
+    <div
+      key={id}
+      onClick={() => !soon && scrollToSection(id)}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '7px 8px', borderRadius: '6px', cursor: soon ? 'default' : 'pointer',
+        background: activeNav === id ? 'rgba(212,160,23,0.08)' : 'transparent',
+        border: activeNav === id ? '0.5px solid rgba(212,160,23,0.2)' : '0.5px solid transparent',
+        transition: 'all 0.15s', marginBottom: '1px'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{
+          width: '4px', height: '4px', borderRadius: '50%',
+          background: activeNav === id ? '#D4A017' : soon ? 'transparent' : 'rgba(255,255,255,0.2)',
+          border: soon ? '0.5px solid rgba(255,255,255,0.15)' : 'none',
+          flexShrink: 0
+        }} />
+        <span style={{
+          fontSize: '11px',
+          color: activeNav === id ? '#D4A017' : soon ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.55)',
+          fontWeight: activeNav === id ? 500 : 300
+        }}>{label}</span>
+      </div>
+      {soon && (
+        <span style={{
+          fontFamily: "'DM Mono', monospace", fontSize: '7px',
+          color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
+          padding: '1px 5px', borderRadius: '3px', flexShrink: 0
+        }}>soon</span>
+      )}
+    </div>
+  );
+
+  const userInitial = userEmail ? userEmail[0].toUpperCase() : 'U';
+  const userName = userEmail ? userEmail.split('@')[0] : 'User';
+
   return (
-    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", padding: '24px 32px', position: 'relative' }}>
+    <div style={{ background: '#080808', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", display: 'flex', position: 'relative' }}>
 
       <DashboardBackground />
 
-      <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-
-        {/* Top bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
-          <div>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '15px', letterSpacing: '0.15em', color: '#fff', lineHeight: 1 }}>
-              FARWATCH<span style={{ color: '#D4A017' }}>.</span>
+      {/* UPGRADE MODAL */}
+      {showUpgradeModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => setShowUpgradeModal(false)}>
+          <div style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '28px', maxWidth: '400px', width: '90%' }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Your plan</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>You are on Free Trial</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '20px', lineHeight: 1.6 }}>
+              Tracking {competitors.length} of {maxAllowed} competitors. Upgrade to watch more and unlock all features.
             </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(0,200,150,0.7)', letterSpacing: '0.07em', marginTop: '3px' }}>
-              See further. Move first.
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '20px' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ background: '#0f0f0f', border: '0.5px solid rgba(212,160,23,0.2)', borderRadius: '8px', padding: '14px' }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: '6px' }}>Growth</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#D4A017', marginBottom: '6px' }}>$49<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>5 competitors · all signals · email alerts</div>
+                <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Growth'} style={{ width: '100%', background: 'transparent', border: '0.5px solid rgba(212,160,23,0.4)', color: '#D4A017', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Get Growth</button>
+              </div>
+              <div style={{ background: 'rgba(212,160,23,0.04)', border: '0.5px solid rgba(212,160,23,0.35)', borderRadius: '8px', padding: '14px' }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#D4A017', textTransform: 'uppercase', marginBottom: '6px' }}>Premium</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#D4A017', marginBottom: '6px' }}>$119<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>7 competitors · weekly report · priority alerts</div>
+                <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Premium'} style={{ width: '100%', background: '#D4A017', border: 'none', color: '#080808', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Get Premium</button>
+              </div>
             </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#00C896' }}>
-              Watching {competitors.length} competitor{competitors.length !== 1 ? 's' : ''} live
-            </span>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>Questions? yagya@farwatchsignals.com</div>
           </div>
         </div>
+      )}
 
-        {/* Hero card */}
-        <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
-            {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
-            {focusedId && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+      {/* LEFT SIDEBAR */}
+      <div style={{
+        width: '175px', flexShrink: 0, borderRight: '0.5px solid rgba(255,255,255,0.07)',
+        display: 'flex', flexDirection: 'column', position: 'fixed',
+        top: 0, left: 0, bottom: 0, zIndex: 10,
+        background: 'rgba(8,8,8,0.85)', backdropFilter: 'blur(12px)'
+      }}>
+
+        {/* Brand */}
+        <div style={{ padding: '18px 14px 14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
+            <span style={{ color: '#D4A017', fontSize: '8px', lineHeight: 1 }}>▲</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.12em' }}>FARWATCH</span>
+          </div>
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)' }} />
+        </div>
+
+        {/* Nav */}
+        <div style={{ flex: 1, padding: '0 8px', overflowY: 'auto' }}>
+
+          {/* Main nav */}
+          {navItem('overview', 'Overview')}
+          {navItem('price', 'Price monitor')}
+          {navItem('product', 'New products')}
+          {navItem('category', 'Categories')}
+          {navItem('reports', 'Reports')}
+
+          {/* More signals */}
+          <div style={{ padding: '12px 8px 4px' }}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>More signals</div>
+          </div>
+          {navItem('website', 'Website monitor', null, true)}
+          {navItem('promotions', 'Promotions', null, true)}
+          {navItem('customer', 'Customer intel', null, true)}
+          {navItem('advertising', 'Advertising intel', null, true)}
+
+          {/* Divider */}
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '10px 0' }} />
+
+          {navItem('alerts', 'Alerts')}
+          {navItem('settings', 'Settings')}
+        </div>
+
+        {/* User bottom */}
+        <div
+          onClick={() => setShowUpgradeModal(true)}
+          style={{ padding: '12px 14px', borderTop: '0.5px solid rgba(255,255,255,0.06)', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(212,160,23,0.15)', border: '0.5px solid rgba(212,160,23,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '10px', fontWeight: 800, color: '#D4A017' }}>{userInitial}</span>
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: 500, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: isPremium ? '#D4A017' : 'rgba(255,255,255,0.25)', marginTop: '2px' }}>
+                {isPremium ? 'Premium' : 'Free trial'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ marginLeft: '175px', flex: 1, padding: '24px 28px', position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+
+        {/* OVERVIEW SECTION */}
+        <div id="overview" style={{ scrollMarginTop: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '16px', color: '#fff', lineHeight: 1 }}>Overview</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>Intelligence summary · all signals</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: '#00C896' }}>
+                Watching {competitors.length} competitor{competitors.length !== 1 ? 's' : ''} live
+              </span>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <div style={{ flex: 1 }}>
-              {activeCounter === 'price' ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '38px', fontWeight: 800, color: activeColor, lineHeight: 1 }}>
-                    {topPriceChange ? `${topPriceChange.pct > 0 ? '+' : ''}${topPriceChange.pct}%` : focusedPriceComp ? `$${focusedPriceComp.last_snapshot.price}` : '—'}
-                  </div>
-                  {topPriceChange && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '6px', background: topPriceChange.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${topPriceChange.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '13px', fontWeight: 500, color: topPriceChange.pct < 0 ? '#E85D24' : '#00C896' }}>
-                      <span>{topPriceChange.pct < 0 ? '↓' : '↑'}</span>
-                      <span>{topPriceChange.pct < 0 ? 'Price dropped' : 'Price raised'}</span>
+          {/* Hero card */}
+          <div style={{ background: `radial-gradient(ellipse at top left, ${activeColor}11, transparent 60%)`, border: `0.5px solid ${activeColor}44`, borderRadius: '14px', padding: '20px', marginBottom: '14px', transition: 'all 0.2s', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: activeColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '9px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeColor }} />
+              {activeCounter === 'price' ? 'Price movement detected' : activeCounter === 'product' ? 'New launch detected' : 'New territory detected'}
+              {focusedId && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ flex: 1 }}>
+                {activeCounter === 'price' ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '38px', fontWeight: 800, color: activeColor, lineHeight: 1 }}>
+                      {topPriceChange ? `${topPriceChange.pct > 0 ? '+' : ''}${topPriceChange.pct}%` : focusedPriceComp ? `$${focusedPriceComp.last_snapshot.price}` : '—'}
                     </div>
-                  )}
-                </div>
-              ) : activeCounter === 'product' ? (
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.product, lineHeight: 1.2 }}>
-                  {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : '—'}
-                </div>
-              ) : (
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.category, lineHeight: 1.2 }}>
-                  {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : '—'}
-                </div>
-              )}
+                    {topPriceChange && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '6px', background: topPriceChange.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${topPriceChange.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '13px', fontWeight: 500, color: topPriceChange.pct < 0 ? '#E85D24' : '#00C896' }}>
+                        <span>{topPriceChange.pct < 0 ? '↓' : '↑'}</span>
+                        <span>{topPriceChange.pct < 0 ? 'Price dropped' : 'Price raised'}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : activeCounter === 'product' ? (
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.product, lineHeight: 1.2 }}>
+                    {focusedProductSignal ? focusedProductSignal.title.replace('New product launched: ', '') : '—'}
+                  </div>
+                ) : (
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '26px', fontWeight: 800, color: COLORS.category, lineHeight: 1.2 }}>
+                    {focusedCategorySignal ? focusedCategorySignal.title.replace('New category launched: ', '') : '—'}
+                  </div>
+                )}
+              </div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
+                {counterBadge}
+              </div>
             </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : activePriceColor === '#00C896' ? '0,200,150' : '232,93,36') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)`, color: activeColor, border: `0.5px solid ${activeColor}25`, flexShrink: 0, marginLeft: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>
-              {counterBadge}
+
+            <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '5px' }}>
+              {activeCounter === 'price' && topPriceChange ? (
+                <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
+              ) : activeCounter === 'price' && focusedPriceComp ? (
+                <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceComp.last_snapshot.product_title}</strong> — ${focusedPriceComp.last_snapshot.price} tracked on {getCompName(focusedPriceComp.url)}</>
+              ) : activeCounter === 'product' && focusedProductSignal ? (
+                <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url)}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
+              ) : activeCounter === 'category' && focusedCategorySignal ? (
+                <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url)}</strong> — their first move into this segment</>
+              ) : 'No signals detected yet — monitoring is active.'}
+            </div>
+
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '12px' }}>
+              {activeCounter === 'price' ? 'Tap a competitor below to focus its price here' : activeCounter === 'product' ? 'Tap any product below to focus it here' : 'Tap any category below to focus it here'}
+            </div>
+
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ background: 'rgba(8,8,8,0.6)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
+                <NoteBox text={heroStrategicNote} color={activeColor} />
+              </div>
+              <div style={{ background: 'rgba(8,8,8,0.6)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
+                <NoteBox text={heroTacticalNote} color={activeColor} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${activeColor}33`, borderRadius: '6px', marginBottom: '12px' }}>
+              <span style={{ color: activeColor, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
+                <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{heroAction}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {heroTags.map((tag, i) => (
+                <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em', background: i === 0 ? `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)', color: i === 0 ? activeColor : 'rgba(255,255,255,0.5)', border: `0.5px solid ${i === 0 ? activeColor + '44' : 'rgba(255,255,255,0.1)'}` }}>{tag}</span>
+              ))}
             </div>
           </div>
 
-          <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', fontWeight: 300, marginBottom: '5px' }}>
-            {activeCounter === 'price' && topPriceChange ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceSignal.title.replace(' price changed', '')}</strong> on {getCompName(getCompById(focusedPriceSignal.competitor_id)?.url)} — was <span style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>${topPriceChange.oldPrice}</span> → <strong style={{ color: activeColor }}>${topPriceChange.newPrice}</strong></>
-            ) : activeCounter === 'price' && focusedPriceComp ? (
-              <><strong style={{ color: 'rgba(255,255,255,0.85)' }}>{focusedPriceComp.last_snapshot.product_title}</strong> — ${focusedPriceComp.last_snapshot.price} tracked on {getCompName(focusedPriceComp.url)}</>
-            ) : activeCounter === 'product' && focusedProductSignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedProductSignal.competitor_id)?.url)}</strong> — {compProductCount > 1 ? `part of a ${compProductCount}-product drop this week` : 'single product launch this week'}</>
-            ) : activeCounter === 'category' && focusedCategorySignal ? (
-              <>Launched by <strong style={{ color: 'rgba(255,255,255,0.85)' }}>{getCompName(getCompById(focusedCategorySignal.competitor_id)?.url)}</strong> — their first move into this segment</>
-            ) : 'No signals detected yet — monitoring is active.'}
+          {/* Counters */}
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+            This week, at a glance
           </div>
-
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '12px' }}>
-            {activeCounter === 'price' ? 'Tap a competitor below to focus its price here' : activeCounter === 'product' ? 'Tap any product below to focus it here' : 'Tap any category below to focus it here'}
-          </div>
-
-          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.08)', marginBottom: '14px' }} />
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-            <div style={{ background: 'rgba(8,8,8,0.6)', border: `0.5px solid ${activeColor}33`, borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Strategic view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroStrategic}</div>
-              <NoteBox text={heroStrategicNote} color={activeColor} />
-            </div>
-            <div style={{ background: 'rgba(8,8,8,0.6)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', backdropFilter: 'blur(8px)' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Tactical view</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, fontWeight: 300 }}>{heroTactical}</div>
-              <NoteBox text={heroTacticalNote} color={activeColor} />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', background: `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.08)`, border: `0.5px solid ${activeColor}33`, borderRadius: '6px', marginBottom: '12px' }}>
-            <span style={{ color: activeColor, fontFamily: "'DM Mono', monospace", fontSize: '10px', flexShrink: 0, marginTop: '1px' }}>→</span>
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, fontWeight: 300 }}>
-              <strong style={{ color: '#fff', fontWeight: 500 }}>Action: </strong>{heroAction}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {heroTags.map((tag, i) => (
-              <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', padding: '4px 10px', borderRadius: '99px', letterSpacing: '0.04em', background: i === 0 ? `rgba(${activeCounter === 'price' ? (topPriceChange?.pct < 0 ? '232,93,36' : '0,200,150') : activeCounter === 'product' ? '55,138,221' : '212,160,23'},0.1)` : 'rgba(255,255,255,0.05)', color: i === 0 ? activeColor : 'rgba(255,255,255,0.5)', border: `0.5px solid ${i === 0 ? activeColor + '44' : 'rgba(255,255,255,0.1)'}` }}>{tag}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
+            {[
+              { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
+              { type: 'product', num: productSignals.length, label: 'new products' },
+              { type: 'category', num: categorySignals.length, label: 'new categories' }
+            ].map(item => (
+              <div key={item.type} style={counterStyle(item.type)} onClick={() => handleCounterClick(item.type)}>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '24px', fontWeight: 800, color: COLORS[item.type], lineHeight: 1, marginBottom: '5px' }}>{item.num}</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}>{item.label}</div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Counters */}
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
-          This week, at a glance
+        {/* PRICE SECTION */}
+        <div id="price" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E85D24' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Price monitor</div>
+          </div>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '10px' }}>Tap a competitor to focus it in the hero card</p>
+          {competitors.map((comp, i) => {
+            const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
+            const isSelected = focusedId === comp.id;
+            return (
+              <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? '#E85D24' + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    {getCompName(comp.url)}
+                    {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#E85D24', border: '0.5px solid rgba(232,93,36,0.44)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                  </span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
+                    {compPriceSignals.length > 0 ? `${compPriceSignals.length} price change${compPriceSignals.length !== 1 ? 's' : ''}` : comp.last_snapshot?.price ? '1 price tracked' : '0 signals yet'}
+                  </span>
+                </div>
+                {comp.last_snapshot?.price ? (
+                  compPriceSignals.length > 0 ? compPriceSignals.map((sig, j) => {
+                    const change = parsePriceChange(sig.detail);
+                    const sigColor = change ? (change.pct < 0 ? '#E85D24' : '#00C896') : COLORS.price;
+                    return (
+                      <div key={j} style={{ marginBottom: j < compPriceSignals.length - 1 ? '6px' : 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: sigColor, flexShrink: 0 }} />
+                          <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace(' price changed', '')}</span>
+                          {change && <span style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 7px', borderRadius: '4px', background: change.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${change.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '10px', fontWeight: 500, color: sigColor }}>{change.pct < 0 ? '↓' : '↑'}{Math.abs(change.pct)}%</span>}
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                        </div>
+                        {change && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>Was <span style={{ textDecoration: 'line-through' }}>${change.oldPrice}</span> → <strong style={{ color: sigColor }}>${change.newPrice}</strong></p>}
+                      </div>
+                    );
+                  }) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
+                      <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong></span>
+                    </div>
+                  )
+                ) : <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No price tracked yet.</p>}
+              </div>
+            );
+          })}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
-          {[
-            { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
-            { type: 'product', num: productSignals.length, label: 'new products' },
-            { type: 'category', num: categorySignals.length, label: 'new categories' }
-          ].map(item => (
-            <div key={item.type} style={counterStyle(item.type)} onClick={() => handleCounterClick(item.type)}>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '24px', fontWeight: 800, color: COLORS[item.type], lineHeight: 1, marginBottom: '5px' }}>{item.num}</div>
-              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}>{item.label}</div>
+
+        {/* PRODUCTS SECTION */}
+        <div id="product" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#378ADD' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>New products</div>
+          </div>
+          {productGroups.map((group, i) => (
+            <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
+              </div>
+              {group.signals.length > 0 ? group.signals.map((sig, j) => {
+                const isSelected = focusedId === sig.id;
+                return (
+                  <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(55,138,221,0.06)' : 'transparent', transition: 'background 0.1s' }}>
+                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.product, flexShrink: 0 }} />
+                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New product launched: ', '')}</span>
+                    {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.product, border: '0.5px solid rgba(55,138,221,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                    <span style={{ fontSize: '10px', color: isSelected ? COLORS.product : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
+                  </div>
+                );
+              }) : (
+                <div style={{ padding: '9px 14px' }}>
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new products detected yet.</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-        {/* By competitor */}
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
-          By competitor
-        </div>
-        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginBottom: '10px' }}>
-          {activeCounter === 'price' ? 'Tap a competitor to focus it in the hero card' : activeCounter === 'product' ? 'Tap any product to focus it in the hero card' : 'Tap any category to focus it in the hero card'}
-        </p>
-
-        {/* PRICE VIEW */}
-        {activeCounter === 'price' && competitors.map((comp, i) => {
-          const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
-          const isSelected = focusedId === comp.id;
-          return (
-            <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? activeColor + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  {getCompName(comp.url)}
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: activeColor, border: `0.5px solid ${activeColor}44`, padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                </span>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
-                  {compPriceSignals.length > 0 ? `${compPriceSignals.length} price change${compPriceSignals.length !== 1 ? 's' : ''}` : comp.last_snapshot?.price ? '1 price tracked' : '0 signals yet'}
-                </span>
+        {/* CATEGORIES SECTION */}
+        <div id="category" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D4A017' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Categories</div>
+          </div>
+          {categoryGroups.map((group, i) => (
+            <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
               </div>
-              {comp.last_snapshot?.price ? (
-                compPriceSignals.length > 0 ? compPriceSignals.map((sig, j) => {
-                  const change = parsePriceChange(sig.detail);
-                  const sigColor = change ? (change.pct < 0 ? '#E85D24' : '#00C896') : COLORS.price;
-                  return (
-                    <div key={j} style={{ marginBottom: j < compPriceSignals.length - 1 ? '6px' : 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '3px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: sigColor, flexShrink: 0 }} />
-                        <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace(' price changed', '')}</span>
-                        {change && <span style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 7px', borderRadius: '4px', background: change.pct < 0 ? 'rgba(232,93,36,0.12)' : 'rgba(0,200,150,0.12)', border: `0.5px solid ${change.pct < 0 ? 'rgba(232,93,36,0.3)' : 'rgba(0,200,150,0.3)'}`, fontFamily: "'DM Mono', monospace", fontSize: '10px', fontWeight: 500, color: sigColor }}>{change.pct < 0 ? '↓' : '↑'}{Math.abs(change.pct)}%</span>}
-                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                      </div>
-                      {change && <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.4)', paddingLeft: '15px' }}>Was <span style={{ textDecoration: 'line-through' }}>${change.oldPrice}</span> → <strong style={{ color: sigColor }}>${change.newPrice}</strong></p>}
-                    </div>
-                  );
-                }) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS.price, flexShrink: 0 }} />
-                    <span style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{comp.last_snapshot.product_title} — <strong style={{ color: '#fff' }}>${comp.last_snapshot.price}</strong></span>
+              {group.signals.length > 0 ? group.signals.map((sig, j) => {
+                const isSelected = focusedId === sig.id;
+                return (
+                  <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(212,160,23,0.06)' : 'transparent', transition: 'background 0.1s' }}>
+                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.category, flexShrink: 0 }} />
+                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New category launched: ', '')}</span>
+                    {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.category, border: '0.5px solid rgba(212,160,23,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
+                    <span style={{ fontSize: '10px', color: isSelected ? COLORS.category : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
                   </div>
-                )
-              ) : <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>No price tracked yet.</p>}
-            </div>
-          );
-        })}
-
-        {/* PRODUCT VIEW */}
-        {activeCounter === 'product' && productGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new product${group.signals.length !== 1 ? 's' : ''}` : 'no new products'}</span>
-            </div>
-            {group.signals.length > 0 ? group.signals.map((sig, j) => {
-              const isSelected = focusedId === sig.id;
-              return (
-                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(55,138,221,0.06)' : 'transparent', transition: 'background 0.1s' }}>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.product, flexShrink: 0 }} />
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New product launched: ', '')}</span>
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.product, border: '0.5px solid rgba(55,138,221,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.product : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
+                );
+              }) : (
+                <div style={{ padding: '9px 14px' }}>
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new categories detected yet.</p>
                 </div>
-              );
-            }) : (
-              <div style={{ padding: '9px 14px' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new products detected yet.</p>
-              </div>
-            )}
-          </div>
-        ))}
-
-        {/* CATEGORY VIEW */}
-        {activeCounter === 'category' && categoryGroups.map((group, i) => (
-          <div key={i} style={{ marginBottom: '10px', background: 'rgba(8,8,8,0.7)', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden', backdropFilter: 'blur(8px)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: group.signals.length > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff' }}>{getCompName(group.comp.url)}</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{group.signals.length > 0 ? `${group.signals.length} new categor${group.signals.length !== 1 ? 'ies' : 'y'}` : 'no new categories'}</span>
+              )}
             </div>
-            {group.signals.length > 0 ? group.signals.map((sig, j) => {
-              const isSelected = focusedId === sig.id;
-              return (
-                <div key={j} onClick={() => handleSignalClick(sig)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 14px', cursor: 'pointer', borderBottom: j < group.signals.length - 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none', background: isSelected ? 'rgba(212,160,23,0.06)' : 'transparent', transition: 'background 0.1s' }}>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: COLORS.category, flexShrink: 0 }} />
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 300, flex: 1 }}>{sig.title.replace('New category launched: ', '')}</span>
-                  {isSelected && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: COLORS.category, border: '0.5px solid rgba(212,160,23,0.3)', padding: '2px 6px', borderRadius: '99px' }}>focused</span>}
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>{new Date(sig.detected_at).toLocaleDateString()}</span>
-                  <span style={{ fontSize: '10px', color: isSelected ? COLORS.category : 'rgba(255,255,255,0.2)' }}>{isSelected ? '←' : '›'}</span>
-                </div>
-              );
-            }) : (
-              <div style={{ padding: '9px 14px' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>No new categories detected yet.</p>
-              </div>
-            )}
+          ))}
+        </div>
+
+        {/* REPORTS SECTION */}
+        <div id="reports" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Reports</div>
           </div>
-        ))}
+          {isPremium ? (
+            <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '24px', backdropFilter: 'blur(8px)', textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '14px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>Weekly Intelligence Report</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7, marginBottom: '12px' }}>Your weekly competitive intelligence report will be delivered every Monday to {userEmail}.</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(0,200,150,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00C896' }} />
+                Active — next report Monday
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(212,160,23,0.2)', borderRadius: '10px', padding: '24px', backdropFilter: 'blur(8px)' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(212,160,23,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Premium feature</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '14px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>Weekly Intelligence Reports</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7, marginBottom: '16px' }}>Every Monday, receive a full competitive intelligence briefing — price movements, new launches, category expansions, and strategic recommendations across all your competitors.</div>
+              <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '9px 20px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+                Upgrade to Premium — $119/month
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ALERTS SECTION */}
+        <div id="alerts" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Alerts</div>
+          </div>
+          <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '20px', backdropFilter: 'blur(8px)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div>
+                <div style={{ fontSize: '12px', color: '#fff', fontWeight: 500, marginBottom: '4px' }}>Email alerts</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{userEmail}</div>
+              </div>
+              <div
+                onClick={() => setAlertsEnabled(!alertsEnabled)}
+                style={{ width: '36px', height: '20px', borderRadius: '10px', background: alertsEnabled ? '#00C896' : 'rgba(255,255,255,0.1)', border: `0.5px solid ${alertsEnabled ? '#00C896' : 'rgba(255,255,255,0.15)'}`, cursor: 'pointer', position: 'relative', transition: 'all 0.2s', flexShrink: 0 }}>
+                <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: alertsEnabled ? '19px' : '3px', transition: 'left 0.2s' }} />
+              </div>
+            </div>
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '14px' }} />
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7 }}>
+              {alertsEnabled
+                ? 'You will receive an email alert within 24 hours of any signal being detected across your tracked competitors.'
+                : 'Email alerts are currently disabled. Signals will still appear in your dashboard but you will not receive email notifications.'}
+            </div>
+          </div>
+        </div>
+
+        {/* SETTINGS SECTION */}
+        <div id="settings" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Settings</div>
+          </div>
+          <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '20px', backdropFilter: 'blur(8px)' }}>
+
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Account email</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>{userEmail}</div>
+            </div>
+
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
+
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Plan</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>{isPremium ? 'Premium — $119/month' : 'Free trial — 14 days'}</div>
+                {!isPremium && (
+                  <button onClick={() => setShowUpgradeModal(true)} style={{ background: 'transparent', border: '0.5px solid rgba(212,160,23,0.4)', color: '#D4A017', padding: '5px 12px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Upgrade</button>
+                )}
+              </div>
+            </div>
+
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
+
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Change password</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '8px' }}>An email with a password reset link will be sent to your account email.</div>
+              <button
+                onClick={async () => {
+                  await supabase.auth.resetPasswordForEmail(userEmail);
+                  alert('Password reset email sent to ' + userEmail);
+                }}
+                style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                Send reset email
+              </button>
+            </div>
+
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
+
+            <div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Delete account</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '8px' }}>To delete your account and all associated data, email us at yagya@farwatchsignals.com with the subject line "Delete Account".</div>
+              <a href="mailto:yagya@farwatchsignals.com?subject=Delete Account" style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(232,93,36,0.6)', textDecoration: 'none' }}>
+                yagya@farwatchsignals.com →
+              </a>
+            </div>
+
+          </div>
+        </div>
 
         {/* Upgrade bar */}
         {!isPremium && (
@@ -514,7 +738,7 @@ export default function Dashboard() {
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
               Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
             </span>
-            <button style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+            <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
               Upgrade
             </button>
           </div>
