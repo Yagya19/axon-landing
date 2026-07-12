@@ -260,7 +260,7 @@ export default function Dashboard() {
   const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
   const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
 
-  const navItem = (id, label, color = null, soon = false) => (
+  const navItem = (id, label, soon = false) => (
     <div
       key={id}
       onClick={() => !soon && scrollToSection(id)}
@@ -287,10 +287,11 @@ export default function Dashboard() {
       </div>
       {soon && (
         <span style={{
-          fontFamily: "'DM Mono', monospace", fontSize: '7px',
+          fontFamily: "'DM Mono', monospace", fontSize: '6px',
           color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
-          padding: '1px 5px', borderRadius: '3px', flexShrink: 0
-        }}>soon</span>
+          padding: '1px 5px', borderRadius: '3px', flexShrink: 0,
+          whiteSpace: 'nowrap'
+        }}>Coming Soon</span>
       )}
     </div>
   );
@@ -353,26 +354,21 @@ export default function Dashboard() {
 
         {/* Nav */}
         <div style={{ flex: 1, padding: '0 8px', overflowY: 'auto' }}>
-
-          {/* Main nav */}
           {navItem('overview', 'Overview')}
           {navItem('price', 'Price monitor')}
           {navItem('product', 'New products')}
           {navItem('category', 'Categories')}
           {navItem('reports', 'Reports')}
 
-          {/* More signals */}
           <div style={{ padding: '12px 8px 4px' }}>
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>More signals</div>
           </div>
-          {navItem('website', 'Website monitor', null, true)}
-          {navItem('promotions', 'Promotions', null, true)}
-          {navItem('customer', 'Customer intel', null, true)}
-          {navItem('advertising', 'Advertising intel', null, true)}
+          {navItem('website', 'Website monitor', true)}
+          {navItem('promotions', 'Promotions', true)}
+          {navItem('customer', 'Customer intel', true)}
+          {navItem('advertising', 'Advertising intel', true)}
 
-          {/* Divider */}
           <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '10px 0' }} />
-
           {navItem('alerts', 'Alerts')}
           {navItem('settings', 'Settings')}
         </div>
@@ -499,7 +495,7 @@ export default function Dashboard() {
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
             This week, at a glance
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '32px' }}>
             {[
               { type: 'price', num: trackedWithPrice.length, label: 'prices tracked' },
               { type: 'product', num: productSignals.length, label: 'new products' },
@@ -524,7 +520,7 @@ export default function Dashboard() {
             const compPriceSignals = pricingSignals.filter(s => s.competitor_id === comp.id);
             const isSelected = focusedId === comp.id;
             return (
-              <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? `rgba(${activePriceColor === '#E85D24' ? '232,93,36' : '0,200,150'},0.04)` : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? '#E85D24' + '55' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
+              <div key={i} onClick={() => handlePriceCompClick(comp)} style={{ marginBottom: '10px', padding: '13px 14px', background: isSelected ? 'rgba(232,93,36,0.04)' : 'rgba(8,8,8,0.7)', borderRadius: '8px', border: `0.5px solid ${isSelected ? 'rgba(232,93,36,0.55)' : 'rgba(255,255,255,0.06)'}`, cursor: 'pointer', transition: 'all 0.15s', backdropFilter: 'blur(8px)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ fontSize: '12px', fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: '7px' }}>
                     {getCompName(comp.url)}
@@ -686,14 +682,11 @@ export default function Dashboard() {
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Settings</div>
           </div>
           <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '20px', backdropFilter: 'blur(8px)' }}>
-
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Account email</div>
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>{userEmail}</div>
             </div>
-
             <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
-
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Plan</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -703,9 +696,7 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-
             <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
-
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Change password</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '8px' }}>An email with a password reset link will be sent to your account email.</div>
@@ -718,9 +709,7 @@ export default function Dashboard() {
                 Send reset email
               </button>
             </div>
-
             <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '16px' }} />
-
             <div>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Delete account</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '8px' }}>To delete your account and all associated data, email us at yagya@farwatchsignals.com with the subject line "Delete Account".</div>
@@ -728,7 +717,6 @@ export default function Dashboard() {
                 yagya@farwatchsignals.com →
               </a>
             </div>
-
           </div>
         </div>
 
