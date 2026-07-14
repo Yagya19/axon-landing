@@ -125,7 +125,7 @@ export default function Footer() {
           >Refund Policy</span>
 
           <span
-            onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=FARWATCH%20%E2%80%94%20Question&body=Hi%20Yagya%2C%20'}
+            onClick={() => window.open('mailto:yagya@farwatchsignals.com?subject=FARWATCH — Question&body=Hi Yagya, ')}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
