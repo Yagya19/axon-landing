@@ -63,6 +63,7 @@ export default function Footer() {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
+
         {/* Logo */}
         <div
           onClick={() => window.location.href = '/'}
@@ -89,34 +90,51 @@ export default function Footer() {
 
         {/* Links */}
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-          {[
-            { label: 'Privacy', path: '/privacy' },
-            { label: 'Terms', path: '/terms' },
-            { label: 'Refund Policy', path: '/refund' },
-          ].map(link => (
-            <span
-              key={link.label}
-              onClick={() => window.location.href = link.path}
-              style={{
-                fontFamily: "'DM Mono', monospace", fontSize: '9px',
-                color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-                transition: 'color 0.15s'
-              }}
-              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-            >{link.label}</span>
-          ))}
 
-          
-            href="mailto:yagya@farwatchsignals.com?subject=FARWATCH%20%E2%80%94%20Question&body=Hi%20Yagya%2C%20"
+          <span
+            onClick={() => window.location.href = '/privacy'}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              textDecoration: 'none', transition: 'color 0.15s'
+              transition: 'color 0.15s'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-          >Contact</a>
+          >Privacy</span>
+
+          <span
+            onClick={() => window.location.href = '/terms'}
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+              transition: 'color 0.15s'
+            }}
+            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+          >Terms</span>
+
+          <span
+            onClick={() => window.location.href = '/refund'}
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+              transition: 'color 0.15s'
+            }}
+            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+          >Refund Policy</span>
+
+          <span
+            onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=FARWATCH%20%E2%80%94%20Question&body=Hi%20Yagya%2C%20'}
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '9px',
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
+              transition: 'color 0.15s'
+            }}
+            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
+          >Contact</span>
+
         </div>
       </div>
     </>
