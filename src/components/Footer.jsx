@@ -1,14 +1,6 @@
 import React from 'react';
 
 export default function Footer() {
-  const handleContact = () => {
-    const a = document.createElement('a');
-    a.href = 'mailto:yagya@farwatchsignals.com?subject=FARWATCH — Question&body=Hi Yagya, ';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   return (
     <>
       <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
@@ -103,8 +95,7 @@ export default function Footer() {
             onClick={() => window.location.href = '/privacy'}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
@@ -114,8 +105,7 @@ export default function Footer() {
             onClick={() => window.location.href = '/terms'}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
@@ -125,23 +115,22 @@ export default function Footer() {
             onClick={() => window.location.href = '/refund'}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
+              color: 'rgba(255,255,255,0.18)', cursor: 'pointer'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
           >Refund Policy</span>
 
-          <span
-            onClick={handleContact}
+          
+            href="mailto:yagya@farwatchsignals.com"
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
+              textDecoration: 'none'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-          >Contact</span>
+          >Contact</a>
 
         </div>
       </div>
