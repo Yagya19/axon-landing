@@ -1,6 +1,14 @@
 import React from 'react';
 
 export default function Footer() {
+  const handleContact = () => {
+    const a = document.createElement('a');
+    a.href = 'mailto:yagya@farwatchsignals.com?subject=FARWATCH — Question&body=Hi Yagya, ';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <>
       <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
@@ -125,7 +133,7 @@ export default function Footer() {
           >Refund Policy</span>
 
           <span
-            onClick={() => window.open('mailto:yagya@farwatchsignals.com?subject=FARWATCH — Question&body=Hi Yagya, ')}
+            onClick={handleContact}
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
