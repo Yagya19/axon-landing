@@ -55,6 +55,107 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Founder contact section */}
+      <div style={{
+        padding: '44px 48px',
+        position: 'relative',
+        overflow: 'hidden',
+        borderTop: '0.5px solid rgba(255,255,255,0.05)'
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at 20% 50%, rgba(212,160,23,0.07), transparent 55%)',
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at 85% 50%, rgba(40,80,220,0.04), transparent 50%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{
+          position: 'relative', zIndex: 1,
+          maxWidth: '680px', margin: '0 auto',
+          display: 'flex', alignItems: 'flex-start', gap: '24px'
+        }}>
+
+          {/* Avatar */}
+          <div style={{ flexShrink: 0, marginTop: '4px' }}>
+            <div style={{
+              width: '54px', height: '54px', borderRadius: '50%',
+              background: 'rgba(212,160,23,0.1)',
+              border: '1px solid rgba(212,160,23,0.35)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <span style={{
+                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontSize: '20px', color: '#D4A017'
+              }}>Y</span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1 }}>
+
+            {/* Name */}
+            <div style={{
+              fontFamily: "'Syne', sans-serif", fontSize: '15px',
+              fontWeight: 800, color: '#fff', lineHeight: 1, marginBottom: '4px'
+            }}>Yagya</div>
+            <div style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '8px',
+              color: 'rgba(0,200,150,0.7)', letterSpacing: '0.08em', marginBottom: '20px'
+            }}>Founder, FARWATCH</div>
+
+            {/* Headline */}
+            <div style={{
+              fontFamily: "'Syne', sans-serif", fontSize: '16px',
+              fontWeight: 800, color: '#ffffff', lineHeight: 1.35, marginBottom: '14px'
+            }}>
+              I built FARWATCH so you never find out from a customer.
+            </div>
+
+            {/* Body */}
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif", fontSize: '12.5px',
+              color: 'rgba(255,255,255,0.75)', fontWeight: 300,
+              lineHeight: 1.9, marginBottom: '20px'
+            }}>
+              My name is Yagya. I am a solo builder and this product is deeply personal to me. Every signal FARWATCH sends you is something I wish founders had access to years ago. If you have a question, a thought, or just want to talk about your store write to me. I read everything and I write back personally.
+            </p>
+
+            {/* Divider */}
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.07)', marginBottom: '16px' }} />
+
+            {/* Email + reply promise */}
+            <div style={{
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'
+            }}>
+              <div style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '11px',
+                color: '#D4A017', background: 'rgba(212,160,23,0.07)',
+                border: '0.5px solid rgba(212,160,23,0.28)',
+                padding: '10px 16px', borderRadius: '6px', letterSpacing: '0.04em'
+              }}>
+                yagya@farwatchsignals.com
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <div style={{
+                  width: '6px', height: '6px', borderRadius: '50%',
+                  background: '#00C896', flexShrink: 0
+                }} />
+                <span style={{
+                  fontFamily: "'DM Mono', monospace", fontSize: '9px',
+                  color: 'rgba(0,200,150,0.7)'
+                }}>Writing back personally · always within 24 hours</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       {/* Footer bar */}
       <div style={{
         borderTop: '0.5px solid rgba(255,255,255,0.05)',
@@ -120,17 +221,6 @@ export default function Footer() {
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
           >Refund Policy</span>
-
-          
-            href="mailto:yagya@farwatchsignals.com"
-            style={{
-              fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              textDecoration: 'none'
-            }}
-            onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
-            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-          >Contact</a>
 
         </div>
       </div>
