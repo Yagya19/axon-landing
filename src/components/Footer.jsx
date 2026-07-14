@@ -63,6 +63,7 @@ export default function Footer() {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
+        {/* Logo */}
         <div
           onClick={() => window.location.href = '/'}
           style={{ cursor: 'pointer' }}>
@@ -80,12 +81,14 @@ export default function Footer() {
           }}>See further. Move first.</div>
         </div>
 
+        {/* Copyright */}
         <span style={{
           fontFamily: "'DM Mono', monospace", fontSize: '9px',
           color: 'rgba(255,255,255,0.18)'
         }}>© 2026 FARWATCH — See further. Move first.</span>
 
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        {/* Links */}
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           {[
             { label: 'Privacy', path: '/privacy' },
             { label: 'Terms', path: '/terms' },
@@ -103,16 +106,17 @@ export default function Footer() {
               onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
             >{link.label}</span>
           ))}
-          <span
-            onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com'}
+
+          
+            href="mailto:yagya@farwatchsignals.com?subject=FARWATCH%20%E2%80%94%20Question&body=Hi%20Yagya%2C%20"
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.18)', cursor: 'pointer',
-              transition: 'color 0.15s'
+              textDecoration: 'none', transition: 'color 0.15s'
             }}
             onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
             onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.18)'}
-          >Contact</span>
+          >Contact</a>
         </div>
       </div>
     </>
