@@ -19,7 +19,7 @@ export default function Pricing() {
           color: '#fff', marginBottom: '6px', lineHeight: 1.2
         }}>
           No commitment.<br />
-          <span style={{ color: '#D4A017' }}>Full intelligence.</span>
+          <span style={{ color: '#D4A017' }}>See further. Move first.</span>
         </div>
 
         <p style={{
@@ -29,24 +29,27 @@ export default function Pricing() {
           Start free. See real signals on real competitors. Upgrade when you see the value. No contracts, no hidden fees.
         </p>
 
-        {/* Pricing cards */}
+        {/* Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', maxWidth: '980px' }}>
 
-          {/* SCOUT */}
+          {/* SCOUT — Blue */}
           <div style={{
             background: '#0a0a0a',
-            border: '0.5px solid rgba(255,255,255,0.07)',
-            borderRadius: '10px',
-            padding: '22px',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
+            border: '0.5px solid rgba(55,138,221,0.25)',
+            borderRadius: '10px', padding: '22px',
+            position: 'relative', display: 'flex', flexDirection: 'column'
           }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+              background: 'linear-gradient(90deg, #378ADD, transparent 80%)',
+              borderRadius: '10px 10px 0 0'
+            }} />
+
             <div style={{ height: '22px', marginBottom: '10px' }} />
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em',
+              color: '#378ADD', letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: '4px'
             }}>Scout</div>
 
@@ -61,18 +64,14 @@ export default function Pricing() {
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
               color: 'rgba(255,255,255,0.25)', marginBottom: '6px'
-            }}>No credit card needed. Ever.</div>
+            }}>No credit card. Ever.</div>
 
             <div style={{
               fontSize: '11px', color: 'rgba(255,255,255,0.35)',
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
-            }}>
-              "See what you have been missing"
-            </div>
+            }}>"See what you have been missing"</div>
 
-            {/* Active features */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '20px' }}>
-
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
                 '2 competitors tracked',
                 'Competitor price drops and increases — instant detection',
@@ -80,37 +79,21 @@ export default function Pricing() {
                 'New category expansions — 30 days to move first',
                 'Full dashboard access',
               ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                  <div style={{
-                    width: '14px', height: '14px', borderRadius: '50%', marginTop: '1px',
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '0.5px solid rgba(255,255,255,0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                  }}>
-                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
-                  </div>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+                  <span style={{ color: '#378ADD', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.4 }}>{f}</span>
                 </div>
               ))}
 
-              {/* Divider */}
-              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '4px 0' }} />
+              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '2px 0' }} />
 
-              {/* Locked features */}
               {[
                 'Email alerts within 24h',
-                'What the signal means',
-                'Exactly what to do about it',
+                'What every signal means — strategic view',
+                'Exactly what to do — tactical view',
               ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                  <div style={{
-                    width: '14px', height: '14px', borderRadius: '50%', marginTop: '1px',
-                    border: '0.5px solid rgba(255,255,255,0.08)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    background: 'transparent'
-                  }}>
-                    <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.15)', lineHeight: 1 }}>🔒</span>
-                  </div>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+                  <span style={{ fontSize: '9px', marginTop: '1px', flexShrink: 0 }}>🔒</span>
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', fontWeight: 300, lineHeight: 1.4 }}>{f}</span>
                 </div>
               ))}
@@ -123,8 +106,8 @@ export default function Pricing() {
                 fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 500, cursor: 'pointer',
                 background: 'transparent',
-                border: '0.5px solid rgba(255,255,255,0.12)',
-                color: 'rgba(255,255,255,0.5)'
+                border: '0.5px solid rgba(55,138,221,0.4)',
+                color: '#378ADD'
               }}>
               Start free — no card ever
             </button>
@@ -135,33 +118,30 @@ export default function Pricing() {
             }}>Free forever · upgrade anytime</div>
           </div>
 
-          {/* OPERATOR */}
+          {/* OPERATOR — Green */}
           <div style={{
-            background: 'rgba(212,160,23,0.02)',
-            border: '0.5px solid rgba(212,160,23,0.3)',
-            borderRadius: '10px',
-            padding: '22px',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
+            background: 'rgba(0,200,150,0.02)',
+            border: '0.5px solid rgba(0,200,150,0.3)',
+            borderRadius: '10px', padding: '22px',
+            position: 'relative', display: 'flex', flexDirection: 'column'
           }}>
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-              background: 'linear-gradient(90deg, #D4A017, transparent 80%)',
+              background: 'linear-gradient(90deg, #00C896, transparent 80%)',
               borderRadius: '10px 10px 0 0'
             }} />
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '8px',
-              color: '#D4A017', border: '0.5px solid rgba(212,160,23,0.3)',
-              background: 'rgba(212,160,23,0.08)', padding: '2px 8px',
+              color: '#00C896', border: '0.5px solid rgba(0,200,150,0.3)',
+              background: 'rgba(0,200,150,0.08)', padding: '2px 8px',
               borderRadius: '99px', display: 'inline-block',
               marginBottom: '10px', alignSelf: 'flex-start'
             }}>Most popular</div>
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: '#D4A017', letterSpacing: '0.08em',
+              color: '#00C896', letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: '4px'
             }}>Operator</div>
 
@@ -181,11 +161,9 @@ export default function Pricing() {
             <div style={{
               fontSize: '11px', color: 'rgba(255,255,255,0.45)',
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
-            }}>
-              "Now you know what to do"
-            </div>
+            }}>"Now you know what to do"</div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '20px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
                 { text: '5 competitors tracked', highlight: false },
                 { text: 'Competitor price drops and increases — instant detection', highlight: false },
@@ -196,15 +174,8 @@ export default function Pricing() {
                 { text: 'Exactly what to do — tactical view', highlight: true },
                 { text: 'Full intelligence dashboard', highlight: false },
               ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                  <div style={{
-                    width: '14px', height: '14px', borderRadius: '50%', marginTop: '1px',
-                    background: f.highlight ? 'rgba(212,160,23,0.15)' : 'rgba(212,160,23,0.08)',
-                    border: `0.5px solid ${f.highlight ? 'rgba(212,160,23,0.5)' : 'rgba(212,160,23,0.25)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                  }}>
-                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#D4A017' }} />
-                  </div>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+                  <span style={{ color: '#00C896', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
                   <span style={{
                     fontSize: '11px',
                     color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
@@ -222,8 +193,8 @@ export default function Pricing() {
                 fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 500, cursor: 'pointer',
                 background: 'transparent',
-                border: '0.5px solid rgba(212,160,23,0.5)',
-                color: '#D4A017'
+                border: '0.5px solid rgba(0,200,150,0.5)',
+                color: '#00C896'
               }}>
               Start watching — $49/month
             </button>
@@ -234,19 +205,16 @@ export default function Pricing() {
             }}>Cancel anytime · no contracts</div>
           </div>
 
-          {/* COMMANDER */}
+          {/* COMMANDER — Orange */}
           <div style={{
-            background: 'rgba(212,160,23,0.04)',
-            border: '0.5px solid rgba(212,160,23,0.45)',
-            borderRadius: '10px',
-            padding: '22px',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
+            background: 'rgba(232,93,36,0.03)',
+            border: '0.5px solid rgba(232,93,36,0.35)',
+            borderRadius: '10px', padding: '22px',
+            position: 'relative', display: 'flex', flexDirection: 'column'
           }}>
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-              background: 'linear-gradient(90deg, #D4A017, rgba(212,160,23,0.2) 100%)',
+              background: 'linear-gradient(90deg, #E85D24, transparent 80%)',
               borderRadius: '10px 10px 0 0'
             }} />
 
@@ -254,7 +222,7 @@ export default function Pricing() {
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: '#D4A017', letterSpacing: '0.08em',
+              color: '#E85D24', letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: '4px'
             }}>Commander</div>
 
@@ -274,50 +242,43 @@ export default function Pricing() {
             <div style={{
               fontSize: '11px', color: 'rgba(255,255,255,0.45)',
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
-            }}>
-              "Nothing gets past you"
-            </div>
+            }}>"Nothing gets past you"</div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '20px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
-                { text: '10 competitors tracked', highlight: false, soon: false },
-                { text: 'Competitor price drops and increases — instant detection', highlight: false, soon: false },
-                { text: 'New product launches — before their ads run', highlight: false, soon: false },
-                { text: 'New category expansions — 30 days to move first', highlight: false, soon: false },
-                { text: 'Priority alerts within 6 hours', highlight: true, soon: false },
-                { text: 'What every signal means — strategic view', highlight: false, soon: false },
-                { text: 'Exactly what to do — tactical view', highlight: false, soon: false },
-                { text: 'Weekly Monday intelligence briefing', highlight: true, soon: false },
-                { text: 'Website changes — first access', highlight: true, soon: true },
-                { text: 'Promotions and discounts — first access', highlight: true, soon: true },
-                { text: 'Customer sentiment intel — first access', highlight: true, soon: true },
-                { text: 'Advertising intelligence — first access', highlight: true, soon: true },
+                { text: '10 competitors tracked', highlight: false },
+                { text: 'Competitor price drops and increases — instant detection', highlight: false },
+                { text: 'New product launches — before their ads run', highlight: false },
+                { text: 'New category expansions — 30 days to move first', highlight: false },
+                { text: 'Priority alerts within 6 hours', highlight: true },
+                { text: 'What every signal means — strategic view', highlight: false },
+                { text: 'Exactly what to do — tactical view', highlight: false },
+                { text: 'Weekly Monday intelligence briefing', highlight: true },
               ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                  <div style={{
-                    width: '14px', height: '14px', borderRadius: '50%', marginTop: '1px',
-                    background: f.highlight ? 'rgba(212,160,23,0.2)' : 'rgba(212,160,23,0.08)',
-                    border: `0.5px solid ${f.highlight ? 'rgba(212,160,23,0.6)' : 'rgba(212,160,23,0.2)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                  }}>
-                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#D4A017' }} />
-                  </div>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+                  <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
                   <span style={{
                     fontSize: '11px',
                     color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
                     fontWeight: f.highlight ? 400 : 300,
-                    lineHeight: 1.4, flex: 1
+                    lineHeight: 1.4
                   }}>{f.text}</span>
-                  {f.soon && (
-                    <span style={{
-                      fontFamily: "'DM Mono', monospace", fontSize: '6px',
-                      color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
-                      padding: '1px 4px', borderRadius: '3px', flexShrink: 0,
-                      whiteSpace: 'nowrap', marginTop: '2px'
-                    }}>Coming Soon</span>
-                  )}
                 </div>
               ))}
+
+              {/* Coming soon — combined */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+                <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
+                <span style={{ fontSize: '11px', color: '#fff', fontWeight: 400, lineHeight: 1.4, flex: 1 }}>
+                  Website changes · Promotions · Customer intel · Advertising intel — first access
+                </span>
+                <span style={{
+                  fontFamily: "'DM Mono', monospace", fontSize: '6px',
+                  color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
+                  padding: '1px 4px', borderRadius: '3px', flexShrink: 0,
+                  whiteSpace: 'nowrap', marginTop: '3px'
+                }}>Coming Soon</span>
+              </div>
             </div>
 
             <button
@@ -326,9 +287,9 @@ export default function Pricing() {
                 width: '100%', padding: '10px', borderRadius: '4px',
                 fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 500, cursor: 'pointer',
-                background: '#D4A017',
+                background: '#E85D24',
                 border: 'none',
-                color: '#080808'
+                color: '#fff'
               }}>
               Get full intelligence — $119/month
             </button>
