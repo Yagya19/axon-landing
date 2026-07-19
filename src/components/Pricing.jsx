@@ -207,30 +207,29 @@ export default function Pricing() {
 
           {/* COMMANDER — Orange — Coming Soon */}
           <div style={{
-            background: 'rgba(232,93,36,0.02)',
-            border: '0.5px solid rgba(232,93,36,0.2)',
+            background: 'rgba(232,93,36,0.04)',
+            border: '0.5px solid rgba(232,93,36,0.45)',
             borderRadius: '10px', padding: '22px',
-            position: 'relative', display: 'flex', flexDirection: 'column',
-            opacity: 0.75
+            position: 'relative', display: 'flex', flexDirection: 'column'
           }}>
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-              background: 'linear-gradient(90deg, rgba(232,93,36,0.5), transparent 80%)',
+              background: 'linear-gradient(90deg, #E85D24, transparent 80%)',
               borderRadius: '10px 10px 0 0'
             }} />
 
             {/* Coming Soon badge */}
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '8px',
-              color: 'rgba(232,93,36,0.8)', border: '0.5px solid rgba(232,93,36,0.3)',
-              background: 'rgba(232,93,36,0.08)', padding: '2px 8px',
+              color: '#E85D24', border: '0.5px solid rgba(232,93,36,0.4)',
+              background: 'rgba(232,93,36,0.1)', padding: '2px 8px',
               borderRadius: '99px', display: 'inline-block',
               marginBottom: '10px', alignSelf: 'flex-start'
             }}>Coming Soon</div>
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(232,93,36,0.7)', letterSpacing: '0.08em',
+              color: '#E85D24', letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: '4px'
             }}>Commander</div>
 
@@ -248,7 +247,7 @@ export default function Pricing() {
             }}>Cancel anytime</div>
 
             <div style={{
-              fontSize: '11px', color: 'rgba(255,255,255,0.35)',
+              fontSize: '11px', color: 'rgba(255,255,255,0.45)',
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
             }}>"Nothing gets past you"</div>
 
@@ -264,10 +263,10 @@ export default function Pricing() {
                 { text: 'Weekly Monday intelligence briefing', highlight: true },
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: 'rgba(232,93,36,0.6)', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
+                  <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
                   <span style={{
                     fontSize: '11px',
-                    color: f.highlight ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.45)',
+                    color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
                     fontWeight: f.highlight ? 400 : 300,
                     lineHeight: 1.4
                   }}>{f.text}</span>
@@ -275,7 +274,7 @@ export default function Pricing() {
               ))}
 
               {/* Coming soon signals — each on own line */}
-              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '4px 0' }} />
+              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
 
               {[
                 'Website changes',
@@ -284,12 +283,13 @@ export default function Pricing() {
                 'Advertising intelligence',
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  <span style={{ color: 'rgba(232,93,36,0.4)', fontSize: '8px', flexShrink: 0 }}>●</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: 300, lineHeight: 1.4, flex: 1 }}>{f}</span>
+                  <span style={{ color: '#E85D24', fontSize: '8px', flexShrink: 0, opacity: 0.5 }}>●</span>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: 300, lineHeight: 1.4, flex: 1 }}>{f}</span>
                   <span style={{
                     fontFamily: "'DM Mono', monospace", fontSize: '6px',
-                    color: 'rgba(212,160,23,0.6)', border: '0.5px solid rgba(212,160,23,0.2)',
-                    padding: '1px 4px', borderRadius: '3px', flexShrink: 0,
+                    color: 'rgba(212,160,23,0.8)', border: '0.5px solid rgba(212,160,23,0.3)',
+                    background: 'rgba(212,160,23,0.06)',
+                    padding: '1px 5px', borderRadius: '3px', flexShrink: 0,
                     whiteSpace: 'nowrap'
                   }}>Soon</span>
                 </div>
@@ -297,24 +297,23 @@ export default function Pricing() {
             </div>
 
             {/* Non-responsive button */}
-            <div
-              style={{
-                width: '100%', padding: '10px', borderRadius: '4px',
-                fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 500, textAlign: 'center',
-                background: 'rgba(232,93,36,0.08)',
-                border: '0.5px solid rgba(232,93,36,0.2)',
-                color: 'rgba(232,93,36,0.4)',
-                cursor: 'not-allowed',
-                boxSizing: 'border-box'
-              }}>
+            <div style={{
+              width: '100%', padding: '10px', borderRadius: '4px',
+              fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 500, textAlign: 'center',
+              background: 'rgba(232,93,36,0.1)',
+              border: '0.5px solid rgba(232,93,36,0.3)',
+              color: 'rgba(232,93,36,0.6)',
+              cursor: 'not-allowed',
+              boxSizing: 'border-box'
+            }}>
               Coming Soon
             </div>
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.15)', textAlign: 'center', marginTop: '8px'
-            }}>Notify me when available</div>
+              color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: '8px'
+            }}>Launching soon · get notified</div>
           </div>
 
         </div>
