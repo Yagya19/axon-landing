@@ -195,7 +195,7 @@ export default function Dashboard() {
     </div>
   );
 
-  const maxAllowed = isPremium ? 7 : 2;
+  const maxAllowed = isPremium ? 10 : 2;
   const pricingSignals = signals.filter(s => s.signal_type === 'pricing');
   const productSignals = signals.filter(s => s.signal_type === 'new_product');
   const categorySignals = signals.filter(s => s.signal_type === 'new_category');
@@ -260,41 +260,46 @@ export default function Dashboard() {
   const heroAction = activeCounter === 'price' ? (priceIntel?.action || "Monitoring active. Alerts fire automatically.") : activeCounter === 'product' ? productIntel.action : categoryIntel.action;
   const heroTags = activeCounter === 'price' ? (priceIntel?.tags || ["Monitoring active", "No changes yet"]) : activeCounter === 'product' ? productIntel.tags : categoryIntel.tags;
 
-  const navItem = (id, label, soon = false) => (
-    <div
-      key={id}
-      onClick={() => !soon && scrollToSection(id)}
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '7px 8px', borderRadius: '6px', cursor: soon ? 'default' : 'pointer',
-        background: activeNav === id ? 'rgba(212,160,23,0.08)' : 'transparent',
-        border: activeNav === id ? '0.5px solid rgba(212,160,23,0.2)' : '0.5px solid transparent',
-        transition: 'all 0.15s', marginBottom: '1px'
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <div style={{
-          width: '4px', height: '4px', borderRadius: '50%',
-          background: activeNav === id ? '#D4A017' : soon ? 'transparent' : 'rgba(255,255,255,0.2)',
-          border: soon ? '0.5px solid rgba(255,255,255,0.15)' : 'none',
-          flexShrink: 0
-        }} />
-        <span style={{
-          fontSize: '11px',
-          color: activeNav === id ? '#D4A017' : soon ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.55)',
-          fontWeight: activeNav === id ? 500 : 300
-        }}>{label}</span>
+  const navItem = (id, label, badge = null) => {
+    const isActive = activeNav === id;
+    const isLocked = badge !== null;
+    return (
+      <div
+        key={id}
+        onClick={() => !isLocked && scrollToSection(id)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '7px 8px', borderRadius: '6px',
+          cursor: isLocked ? 'default' : 'pointer',
+          background: isActive ? 'rgba(212,160,23,0.08)' : 'transparent',
+          border: isActive ? '0.5px solid rgba(212,160,23,0.2)' : '0.5px solid transparent',
+          transition: 'all 0.15s', marginBottom: '1px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '4px', height: '4px', borderRadius: '50%',
+            background: isActive ? '#D4A017' : isLocked ? 'transparent' : 'rgba(255,255,255,0.2)',
+            border: isLocked ? '0.5px solid rgba(255,255,255,0.15)' : 'none',
+            flexShrink: 0
+          }} />
+          <span style={{
+            fontSize: '11px',
+            color: isActive ? '#D4A017' : isLocked ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.55)',
+            fontWeight: isActive ? 500 : 300
+          }}>{label}</span>
+        </div>
+        {badge && (
+          <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: '6px',
+            color: badge === 'Building' ? 'rgba(232,93,36,0.7)' : badge === 'Premium' ? 'rgba(212,160,23,0.7)' : 'rgba(212,160,23,0.7)',
+            border: `0.5px solid ${badge === 'Building' ? 'rgba(232,93,36,0.25)' : 'rgba(212,160,23,0.25)'}`,
+            padding: '1px 5px', borderRadius: '3px', flexShrink: 0, whiteSpace: 'nowrap'
+          }}>{badge}</span>
+        )}
       </div>
-      {soon && (
-        <span style={{
-          fontFamily: "'DM Mono', monospace", fontSize: '6px',
-          color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
-          padding: '1px 5px', borderRadius: '3px', flexShrink: 0,
-          whiteSpace: 'nowrap'
-        }}>Coming Soon</span>
-      )}
-    </div>
-  );
+    );
+  };
 
   const userInitial = userEmail ? userEmail[0].toUpperCase() : 'U';
   const userName = userEmail ? userEmail.split('@')[0] : 'User';
@@ -311,25 +316,29 @@ export default function Dashboard() {
           <div style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '28px', maxWidth: '400px', width: '90%' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Your plan</div>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>You are on Free Trial</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+              {isPremium ? 'You are on Commander' : 'You are on Scout — Free forever'}
+            </div>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, marginBottom: '20px', lineHeight: 1.6 }}>
-              Tracking {competitors.length} of {maxAllowed} competitors. Upgrade to watch more and unlock all features.
+              {isPremium ? 'You have full access to all FARWATCH features.' : `Tracking ${competitors.length} of ${maxAllowed} competitors. Upgrade to watch more and unlock the full intelligence layer.`}
             </div>
             <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '20px' }} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-              <div style={{ background: '#0f0f0f', border: '0.5px solid rgba(212,160,23,0.2)', borderRadius: '8px', padding: '14px' }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: '6px' }}>Growth</div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#D4A017', marginBottom: '6px' }}>$49<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>5 competitors · all signals · email alerts</div>
-                <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Growth'} style={{ width: '100%', background: 'transparent', border: '0.5px solid rgba(212,160,23,0.4)', color: '#D4A017', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Get Growth</button>
+            {!isPremium && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <div style={{ background: '#0f0f0f', border: '0.5px solid rgba(0,200,150,0.25)', borderRadius: '8px', padding: '14px' }}>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#00C896', textTransform: 'uppercase', marginBottom: '6px' }}>Operator</div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>$49<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>5 competitors · all signals · email alerts · intelligence layer</div>
+                  <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Operator'} style={{ width: '100%', background: 'transparent', border: '0.5px solid rgba(0,200,150,0.4)', color: '#00C896', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Get Operator</button>
+                </div>
+                <div style={{ background: 'rgba(232,93,36,0.04)', border: '0.5px solid rgba(232,93,36,0.3)', borderRadius: '8px', padding: '14px' }}>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#E85D24', textTransform: 'uppercase', marginBottom: '6px' }}>Commander</div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>$119<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>10 competitors · priority alerts · weekly briefing</div>
+                  <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Commander'} style={{ width: '100%', background: '#E85D24', border: 'none', color: '#fff', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Get Commander</button>
+                </div>
               </div>
-              <div style={{ background: 'rgba(212,160,23,0.04)', border: '0.5px solid rgba(212,160,23,0.35)', borderRadius: '8px', padding: '14px' }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: '#D4A017', textTransform: 'uppercase', marginBottom: '6px' }}>Premium</div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#D4A017', marginBottom: '6px' }}>$119<span style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.3)' }}>/mo</span></div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>7 competitors · weekly report · priority alerts</div>
-                <button onClick={() => window.location.href = 'mailto:yagya@farwatchsignals.com?subject=Upgrade to Premium'} style={{ width: '100%', background: '#D4A017', border: 'none', color: '#080808', padding: '7px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Get Premium</button>
-              </div>
-            </div>
+            )}
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>Questions? yagya@farwatchsignals.com</div>
           </div>
         </div>
@@ -342,7 +351,6 @@ export default function Dashboard() {
         top: 0, left: 0, bottom: 0, zIndex: 10,
         background: 'rgba(8,8,8,0.85)', backdropFilter: 'blur(12px)'
       }}>
-
         {/* Brand */}
         <div style={{ padding: '18px 14px 14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
@@ -358,17 +366,21 @@ export default function Dashboard() {
           {navItem('price', 'Price monitor')}
           {navItem('product', 'New products')}
           {navItem('category', 'Categories')}
-          {navItem('reports', 'Reports')}
 
-          <div style={{ padding: '12px 8px 4px' }}>
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '8px 0' }} />
+
+          {navItem('intelligence', 'Intelligence', 'Building')}
+          {navItem('reports', 'Reports', isPremium ? null : 'Premium')}
+
+          <div style={{ padding: '10px 8px 4px' }}>
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>More signals</div>
           </div>
-          {navItem('website', 'Website monitor', true)}
-          {navItem('promotions', 'Promotions', true)}
-          {navItem('customer', 'Customer intel', true)}
-          {navItem('advertising', 'Advertising intel', true)}
+          {navItem('website', 'Website monitor', 'Coming Soon')}
+          {navItem('promotions', 'Promotions', 'Coming Soon')}
+          {navItem('customer', 'Customer intel', 'Coming Soon')}
+          {navItem('advertising', 'Advertising intel', 'Coming Soon')}
 
-          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '10px 0' }} />
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '8px 0' }} />
           {navItem('alerts', 'Alerts')}
           {navItem('settings', 'Settings')}
         </div>
@@ -383,8 +395,8 @@ export default function Dashboard() {
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: 500, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: isPremium ? '#D4A017' : 'rgba(255,255,255,0.25)', marginTop: '2px' }}>
-                {isPremium ? 'Premium' : 'Free trial'}
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: isPremium ? '#E85D24' : 'rgba(255,255,255,0.25)', marginTop: '2px' }}>
+                {isPremium ? 'Commander' : 'Scout — Free forever'}
               </div>
             </div>
           </div>
@@ -621,6 +633,57 @@ export default function Dashboard() {
           ))}
         </div>
 
+        {/* INTELLIGENCE SECTION */}
+        <div id="intelligence" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(232,93,36,0.6)' }} />
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Intelligence</div>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '7px', color: 'rgba(232,93,36,0.7)', border: '0.5px solid rgba(232,93,36,0.25)', padding: '1px 6px', borderRadius: '3px' }}>Building</span>
+          </div>
+
+          <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(232,93,36,0.15)', borderRadius: '10px', padding: '28px', backdropFilter: 'blur(8px)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, rgba(232,93,36,0.4), transparent 70%)', borderRadius: '10px 10px 0 0' }} />
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(232,93,36,0.08)', border: '0.5px solid rgba(232,93,36,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: '18px' }}>🔭</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '14px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
+                  Deep Intelligence Workspace
+                </div>
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 300, lineHeight: 1.8, marginBottom: '16px' }}>
+                  We are building something significant here. Pattern detection across all your competitors. Competitive pressure scores. Predicted moves based on historical signals. Weekly synthesis of everything your market did and what it means for your store.
+                </p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: 300, lineHeight: 1.7, marginBottom: '20px' }}>
+                  Every signal you generate right now is building the data foundation for this workspace. By the time it opens, your intelligence will already be weeks deep.
+                </p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {['Pattern detection', 'Competitive pressure score', 'Predicted moves', 'Weekly market synthesis'].map((f, i) => (
+                    <span key={i} style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(232,93,36,0.6)', border: '0.5px solid rgba(232,93,36,0.2)', background: 'rgba(232,93,36,0.05)', padding: '3px 8px', borderRadius: '4px' }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '20px 0' }} />
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#E85D24', opacity: 0.6 }} />
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
+                  Available first to Commander members when launched
+                </span>
+              </div>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                style={{ background: 'transparent', border: '0.5px solid rgba(232,93,36,0.35)', color: 'rgba(232,93,36,0.8)', padding: '6px 14px', borderRadius: '4px', fontSize: '10px', fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+                Get early access — Commander
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* REPORTS SECTION */}
         <div id="reports" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -638,11 +701,11 @@ export default function Dashboard() {
             </div>
           ) : (
             <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(212,160,23,0.2)', borderRadius: '10px', padding: '24px', backdropFilter: 'blur(8px)' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(212,160,23,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Premium feature</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(212,160,23,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Commander feature</div>
               <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '14px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>Weekly Intelligence Reports</div>
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7, marginBottom: '16px' }}>Every Monday, receive a full competitive intelligence briefing — price movements, new launches, category expansions, and strategic recommendations across all your competitors.</div>
-              <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '9px 20px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
-                Upgrade to Premium — $119/month
+              <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#E85D24', color: '#fff', border: 'none', padding: '9px 20px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+                Upgrade to Commander — $119/month
               </button>
             </div>
           )}
@@ -690,9 +753,9 @@ export default function Dashboard() {
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Plan</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>{isPremium ? 'Premium — $119/month' : 'Free trial — 14 days'}</div>
+                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>{isPremium ? 'Commander — $119/month' : 'Scout — Free forever'}</div>
                 {!isPremium && (
-                  <button onClick={() => setShowUpgradeModal(true)} style={{ background: 'transparent', border: '0.5px solid rgba(212,160,23,0.4)', color: '#D4A017', padding: '5px 12px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Upgrade</button>
+                  <button onClick={() => setShowUpgradeModal(true)} style={{ background: 'transparent', border: '0.5px solid rgba(0,200,150,0.4)', color: '#00C896', padding: '5px 12px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Upgrade</button>
                 )}
               </div>
             </div>
@@ -722,12 +785,12 @@ export default function Dashboard() {
 
         {/* Upgrade bar */}
         {!isPremium && (
-          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(212,160,23,0.06)', border: '0.5px solid rgba(212,160,23,0.25)', borderRadius: '8px', backdropFilter: 'blur(8px)' }}>
+          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(0,200,150,0.05)', border: '0.5px solid rgba(0,200,150,0.2)', borderRadius: '8px', backdropFilter: 'blur(8px)' }}>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>
-              Free trial — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> possible competitors
+              Scout — tracking <strong style={{ color: '#fff', fontWeight: 500 }}>{competitors.length} of {maxAllowed}</strong> competitors. Upgrade to watch more.
             </span>
-            <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#D4A017', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
-              Upgrade
+            <button onClick={() => setShowUpgradeModal(true)} style={{ background: '#00C896', color: '#080808', border: 'none', padding: '7px 14px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>
+              Upgrade to Operator
             </button>
           </div>
         )}
