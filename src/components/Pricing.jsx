@@ -74,9 +74,9 @@ export default function Pricing() {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
                 '2 competitors tracked',
-                'Competitor price drops and increases — instant detection',
-                'New product launches — before their ads run',
-                'New category expansions — 30 days to move first',
+                'Competitor price drops and increases',
+                'New product launches',
+                'New category expansions',
                 'Full dashboard access',
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
@@ -89,8 +89,8 @@ export default function Pricing() {
 
               {[
                 'Email alerts within 24h',
-                'What every signal means — strategic view',
-                'Exactly what to do — tactical view',
+                'What every signal means',
+                'Exactly what to do',
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
                   <span style={{ fontSize: '9px', marginTop: '1px', flexShrink: 0 }}>🔒</span>
@@ -166,12 +166,12 @@ export default function Pricing() {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
                 { text: '5 competitors tracked', highlight: false },
-                { text: 'Competitor price drops and increases — instant detection', highlight: false },
-                { text: 'New product launches — before their ads run', highlight: false },
-                { text: 'New category expansions — 30 days to move first', highlight: false },
-                { text: 'Email alerts within 24h', highlight: true },
-                { text: 'What every signal means — strategic view', highlight: true },
-                { text: 'Exactly what to do — tactical view', highlight: true },
+                { text: 'Competitor price drops and increases', highlight: false },
+                { text: 'New product launches', highlight: false },
+                { text: 'New category expansions', highlight: false },
+                { text: 'Email alerts within 24 hours', highlight: true },
+                { text: 'What every signal means', highlight: true },
+                { text: 'Exactly what to do', highlight: true },
                 { text: 'Full intelligence dashboard', highlight: false },
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
@@ -205,24 +205,32 @@ export default function Pricing() {
             }}>Cancel anytime · no contracts</div>
           </div>
 
-          {/* COMMANDER — Orange */}
+          {/* COMMANDER — Orange — Coming Soon */}
           <div style={{
-            background: 'rgba(232,93,36,0.03)',
-            border: '0.5px solid rgba(232,93,36,0.35)',
+            background: 'rgba(232,93,36,0.02)',
+            border: '0.5px solid rgba(232,93,36,0.2)',
             borderRadius: '10px', padding: '22px',
-            position: 'relative', display: 'flex', flexDirection: 'column'
+            position: 'relative', display: 'flex', flexDirection: 'column',
+            opacity: 0.75
           }}>
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-              background: 'linear-gradient(90deg, #E85D24, transparent 80%)',
+              background: 'linear-gradient(90deg, rgba(232,93,36,0.5), transparent 80%)',
               borderRadius: '10px 10px 0 0'
             }} />
 
-            <div style={{ height: '22px', marginBottom: '10px' }} />
+            {/* Coming Soon badge */}
+            <div style={{
+              fontFamily: "'DM Mono', monospace", fontSize: '8px',
+              color: 'rgba(232,93,36,0.8)', border: '0.5px solid rgba(232,93,36,0.3)',
+              background: 'rgba(232,93,36,0.08)', padding: '2px 8px',
+              borderRadius: '99px', display: 'inline-block',
+              marginBottom: '10px', alignSelf: 'flex-start'
+            }}>Coming Soon</div>
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: '#E85D24', letterSpacing: '0.08em',
+              color: 'rgba(232,93,36,0.7)', letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: '4px'
             }}>Commander</div>
 
@@ -240,64 +248,73 @@ export default function Pricing() {
             }}>Cancel anytime</div>
 
             <div style={{
-              fontSize: '11px', color: 'rgba(255,255,255,0.45)',
+              fontSize: '11px', color: 'rgba(255,255,255,0.35)',
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
             }}>"Nothing gets past you"</div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {[
                 { text: '10 competitors tracked', highlight: false },
-                { text: 'Competitor price drops and increases — instant detection', highlight: false },
-                { text: 'New product launches — before their ads run', highlight: false },
-                { text: 'New category expansions — 30 days to move first', highlight: false },
+                { text: 'Competitor price drops and increases', highlight: false },
+                { text: 'New product launches', highlight: false },
+                { text: 'New category expansions', highlight: false },
                 { text: 'Priority alerts within 6 hours', highlight: true },
-                { text: 'What every signal means — strategic view', highlight: false },
-                { text: 'Exactly what to do — tactical view', highlight: false },
+                { text: 'What every signal means', highlight: false },
+                { text: 'Exactly what to do', highlight: false },
                 { text: 'Weekly Monday intelligence briefing', highlight: true },
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
+                  <span style={{ color: 'rgba(232,93,36,0.6)', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
                   <span style={{
                     fontSize: '11px',
-                    color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
+                    color: f.highlight ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.45)',
                     fontWeight: f.highlight ? 400 : 300,
                     lineHeight: 1.4
                   }}>{f.text}</span>
                 </div>
               ))}
 
-              {/* Coming soon — combined */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
-                <span style={{ fontSize: '11px', color: '#fff', fontWeight: 400, lineHeight: 1.4, flex: 1 }}>
-                  Website changes · Promotions · Customer intel · Advertising intel — first access
-                </span>
-                <span style={{
-                  fontFamily: "'DM Mono', monospace", fontSize: '6px',
-                  color: 'rgba(212,160,23,0.7)', border: '0.5px solid rgba(212,160,23,0.25)',
-                  padding: '1px 4px', borderRadius: '3px', flexShrink: 0,
-                  whiteSpace: 'nowrap', marginTop: '3px'
-                }}>Coming Soon</span>
-              </div>
+              {/* Coming soon signals — each on own line */}
+              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '4px 0' }} />
+
+              {[
+                'Website changes',
+                'Promotions and discounts',
+                'Customer sentiment intel',
+                'Advertising intelligence',
+              ].map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                  <span style={{ color: 'rgba(232,93,36,0.4)', fontSize: '8px', flexShrink: 0 }}>●</span>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: 300, lineHeight: 1.4, flex: 1 }}>{f}</span>
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace", fontSize: '6px',
+                    color: 'rgba(212,160,23,0.6)', border: '0.5px solid rgba(212,160,23,0.2)',
+                    padding: '1px 4px', borderRadius: '3px', flexShrink: 0,
+                    whiteSpace: 'nowrap'
+                  }}>Soon</span>
+                </div>
+              ))}
             </div>
 
-            <button
-              onClick={() => window.location.href = '/signup'}
+            {/* Non-responsive button */}
+            <div
               style={{
                 width: '100%', padding: '10px', borderRadius: '4px',
                 fontSize: '11px', fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 500, cursor: 'pointer',
-                background: '#E85D24',
-                border: 'none',
-                color: '#fff'
+                fontWeight: 500, textAlign: 'center',
+                background: 'rgba(232,93,36,0.08)',
+                border: '0.5px solid rgba(232,93,36,0.2)',
+                color: 'rgba(232,93,36,0.4)',
+                cursor: 'not-allowed',
+                boxSizing: 'border-box'
               }}>
-              Get full intelligence — $119/month
-            </button>
+              Coming Soon
+            </div>
 
             <div style={{
               fontFamily: "'DM Mono', monospace", fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)', textAlign: 'center', marginTop: '8px'
-            }}>Cancel anytime · no contracts</div>
+              color: 'rgba(255,255,255,0.15)', textAlign: 'center', marginTop: '8px'
+            }}>Notify me when available</div>
           </div>
 
         </div>
@@ -308,7 +325,7 @@ export default function Pricing() {
           color: 'rgba(255,255,255,0.2)', marginTop: '16px', maxWidth: '980px',
           lineHeight: 1.6
         }}>
-          Scout is free forever — no card, no commitment, no expiry. Upgrade to Operator or Commander when you are ready. Cancel anytime.
+          Scout is free forever — no card, no commitment, no expiry. Upgrade to Operator when you are ready. Commander launching soon.
         </p>
 
       </div>
