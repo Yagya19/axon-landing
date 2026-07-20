@@ -1,5 +1,20 @@
 import React from 'react';
 
+// Renders a feature line as: bold label — muted benefit (or label only if no benefit)
+function FeatureLine({ label, benefit, dotColor, textColor = 'rgba(255,255,255,0.65)', highlight = false }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
+      <span style={{ color: dotColor, fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
+      <span style={{ fontSize: '11px', lineHeight: 1.4 }}>
+        <span style={{ color: highlight ? '#fff' : textColor, fontWeight: highlight ? 500 : 400 }}>{label}</span>
+        {benefit && (
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}> — {benefit}</span>
+        )}
+      </span>
+    </div>
+  );
+}
+
 export default function Pricing() {
   return (
     <>
@@ -72,25 +87,18 @@ export default function Pricing() {
             }}>"See what you have been missing"</div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-              {[
-                '2 competitors tracked',
-                'Competitor price drops and increases',
-                'New product launches',
-                'New category expansions',
-                'Full dashboard access',
-              ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: '#378ADD', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.4 }}>{f}</span>
-                </div>
-              ))}
+              <FeatureLine label="2 competitors tracked" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
+              <FeatureLine label="Price tracking" benefit="catch every move the second it happens" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
+              <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
+              <FeatureLine label="New category expansions" benefit="spot them 30 days before they scale" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
+              <FeatureLine label="Full dashboard access" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
 
               <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '2px 0' }} />
 
               {[
                 'Email alerts within 24h',
-                'What every signal means',
-                'Exactly what to do',
+                'Strategic & Tactical View',
+                'Intelligence Dashboard',
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
                   <span style={{ fontSize: '9px', marginTop: '1px', flexShrink: 0 }}>🔒</span>
@@ -163,27 +171,15 @@ export default function Pricing() {
               fontStyle: 'italic', marginBottom: '18px', lineHeight: 1.5, fontWeight: 300
             }}>"Now you know what to do"</div>
 
+            {/* NOTE: "Full intelligence dashboard" intentionally removed — not built yet,
+                and Operator should only list what's live and tested today. */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-              {[
-                { text: '5 competitors tracked', highlight: false },
-                { text: 'Competitor price drops and increases', highlight: false },
-                { text: 'New product launches', highlight: false },
-                { text: 'New category expansions', highlight: false },
-                { text: 'Email alerts within 24 hours', highlight: true },
-                { text: 'What every signal means', highlight: true },
-                { text: 'Exactly what to do', highlight: true },
-                { text: 'Full intelligence dashboard', highlight: false },
-              ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: '#00C896', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
-                  <span style={{
-                    fontSize: '11px',
-                    color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
-                    fontWeight: f.highlight ? 400 : 300,
-                    lineHeight: 1.4
-                  }}>{f.text}</span>
-                </div>
-              ))}
+              <FeatureLine label="5 competitors tracked" dotColor="#00C896" />
+              <FeatureLine label="Price tracking" benefit="real-time intel, the second it shifts" dotColor="#00C896" />
+              <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#00C896" />
+              <FeatureLine label="New category expansions" benefit="move in 30 days before they scale" dotColor="#00C896" />
+              <FeatureLine label="Email alerts within 24h" benefit="never miss a move" dotColor="#00C896" highlight />
+              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#00C896" highlight />
             </div>
 
             <button
@@ -252,46 +248,51 @@ export default function Pricing() {
             }}>"Nothing gets past you"</div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+
+              {/* Live now */}
+              <div style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '8px',
+                color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em',
+                textTransform: 'uppercase', marginBottom: '2px'
+              }}>Live now</div>
+
+              <FeatureLine label="10 competitors tracked" dotColor="#E85D24" />
+              <FeatureLine label="Price tracking" benefit="real-time intel, the second it shifts" dotColor="#E85D24" />
+              <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#E85D24" />
+              <FeatureLine label="New category expansions" benefit="move in 30 days before they scale" dotColor="#E85D24" />
+              <FeatureLine label="Priority email alerts within 6h" benefit="react within hours, not days" dotColor="#E85D24" highlight />
+              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#E85D24" highlight />
+
+              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '6px 0 2px' }} />
+
+              {/* Coming soon */}
+              <div style={{
+                fontFamily: "'DM Mono', monospace", fontSize: '8px',
+                color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em',
+                textTransform: 'uppercase', marginBottom: '2px'
+              }}>Coming soon</div>
+
               {[
-                { text: '10 competitors tracked', highlight: false },
-                { text: 'Competitor price drops and increases', highlight: false },
-                { text: 'New product launches', highlight: false },
-                { text: 'New category expansions', highlight: false },
-                { text: 'Priority alerts within 6 hours', highlight: true },
-                { text: 'What every signal means', highlight: false },
-                { text: 'Exactly what to do', highlight: false },
-                { text: 'Weekly Monday intelligence briefing', highlight: true },
+                { label: 'Weekly Monday Intelligence Report', benefit: 'your entire competitive week, decoded every Monday morning' },
+                { label: 'Dedicated Intelligence Dashboard', benefit: 'one glance, total market command' },
+                { label: 'Website Watch', benefit: 'catch every redesign and message shift before your customers do' },
+                { label: 'Promotion Radar', benefit: "know they're running a sale before their own list does" },
+                { label: 'Customer Intelligence', benefit: "read their audience like it's your own" },
+                { label: 'Ad Intelligence', benefit: "see exactly where their money's going" },
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
-                  <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
+                  <span style={{ color: '#E85D24', fontSize: '8px', marginTop: '3px', flexShrink: 0, opacity: 0.55 }}>●</span>
+                  <span style={{ fontSize: '11px', lineHeight: 1.4, flex: 1 }}>
+                    <span style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 400 }}>{f.label}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 300 }}> — {f.benefit}</span>
+                  </span>
                   <span style={{
-                    fontSize: '11px',
-                    color: f.highlight ? '#fff' : 'rgba(255,255,255,0.65)',
-                    fontWeight: f.highlight ? 400 : 300,
-                    lineHeight: 1.4
-                  }}>{f.text}</span>
-                </div>
-              ))}
-
-              {/* Coming soon signals — each on own line */}
-              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
-
-              {[
-                'Website changes',
-                'Promotions and discounts',
-                'Customer sentiment intel',
-                'Advertising intelligence',
-              ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  <span style={{ color: '#E85D24', fontSize: '8px', flexShrink: 0, opacity: 0.5 }}>●</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: 300, lineHeight: 1.4, flex: 1 }}>{f}</span>
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: '6px',
-                    color: 'rgba(212,160,23,0.8)', border: '0.5px solid rgba(212,160,23,0.3)',
-                    background: 'rgba(212,160,23,0.06)',
-                    padding: '1px 5px', borderRadius: '3px', flexShrink: 0,
-                    whiteSpace: 'nowrap'
-                  }}>Soon</span>
+                    fontFamily: "'DM Mono', monospace", fontSize: '7px',
+                    color: 'rgba(212,160,23,0.85)', border: '0.5px solid rgba(212,160,23,0.35)',
+                    background: 'rgba(212,160,23,0.08)',
+                    padding: '2px 6px', borderRadius: '3px', flexShrink: 0,
+                    whiteSpace: 'nowrap', marginTop: '1px'
+                  }}>Coming Soon</span>
                 </div>
               ))}
             </div>
