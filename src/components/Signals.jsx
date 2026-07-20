@@ -4,7 +4,7 @@ export default function Signals() {
   return (
     <div id="signals" style={{ background: '#080808' }}>
       <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '0 32px' }} />
-
+      
       <div style={{ padding: '48px 32px', maxWidth: '1100px', margin: '0 auto' }}>
 
         {/* Section header */}
