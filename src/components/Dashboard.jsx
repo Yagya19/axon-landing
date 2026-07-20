@@ -711,32 +711,41 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* ALERTS SECTION */}
+       {/* ALERTS SECTION */}
         <div id="alerts" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Alerts</div>
-          </div>
-          <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '20px', backdropFilter: 'blur(8px)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div>
-                <div style={{ fontSize: '12px', color: '#fff', fontWeight: 500, marginBottom: '4px' }}>Email alerts</div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{userEmail}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Alerts</div>
+            </div>
+            <div style={{ background: 'rgba(8,8,8,0.7)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '20px', backdropFilter: 'blur(8px)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#fff', fontWeight: 500, marginBottom: '4px' }}>Email alerts</div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{userEmail}</div>
+                </div>
+                <div
+                  onClick={() => isPremium && setAlertsEnabled(!alertsEnabled)}
+                  style={{
+                    width: '36px', height: '20px', borderRadius: '10px',
+                    background: alertsEnabled && isPremium ? '#00C896' : 'rgba(255,255,255,0.1)',
+                    border: `0.5px solid ${alertsEnabled && isPremium ? '#00C896' : 'rgba(255,255,255,0.15)'}`,
+                    cursor: isPremium ? 'pointer' : 'not-allowed',
+                    opacity: isPremium ? 1 : 0.5,
+                    position: 'relative', transition: 'all 0.2s', flexShrink: 0
+                  }}>
+                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: alertsEnabled && isPremium ? '19px' : '3px', transition: 'left 0.2s' }} />
+                </div>
               </div>
-              <div
-                onClick={() => setAlertsEnabled(!alertsEnabled)}
-                style={{ width: '36px', height: '20px', borderRadius: '10px', background: alertsEnabled ? '#00C896' : 'rgba(255,255,255,0.1)', border: `0.5px solid ${alertsEnabled ? '#00C896' : 'rgba(255,255,255,0.15)'}`, cursor: 'pointer', position: 'relative', transition: 'all 0.2s', flexShrink: 0 }}>
-                <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: alertsEnabled ? '19px' : '3px', transition: 'left 0.2s' }} />
+              <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '14px' }} />
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7 }}>
+                {!isPremium
+                  ? 'Email alerts are part of Operator and Commander. Upgrade to get notified the moment a signal fires.'
+                  : alertsEnabled
+                    ? 'You will receive an email alert within 24 hours of any signal being detected across your tracked competitors.'
+                    : 'Email alerts are currently disabled. Signals will still appear in your dashboard but you will not receive email notifications.'}
               </div>
             </div>
-            <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', marginBottom: '14px' }} />
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300, lineHeight: 1.7 }}>
-              {alertsEnabled
-                ? 'You will receive an email alert within 24 hours of any signal being detected across your tracked competitors.'
-                : 'Email alerts are currently disabled. Signals will still appear in your dashboard but you will not receive email notifications.'}
-            </div>
           </div>
-        </div>
 
         {/* SETTINGS SECTION */}
         <div id="settings" style={{ scrollMarginTop: '20px', marginBottom: '32px' }}>
