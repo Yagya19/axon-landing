@@ -1,14 +1,17 @@
 import React from 'react';
 
-// Renders a feature line as: bold label — muted benefit (or label only if no benefit)
-function FeatureLine({ label, benefit, dotColor, textColor = 'rgba(255,255,255,0.65)', highlight = false }) {
+// Renders a LIVE feature line: bright white label — muted benefit.
+// Brightness = "this is live and included." Dullness is reserved exclusively
+// for locked (Scout) and Coming Soon (Commander) items, which use their own
+// separate render blocks below — never mix the two treatments.
+function FeatureLine({ label, benefit, dotColor }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px' }}>
       <span style={{ color: dotColor, fontSize: '8px', marginTop: '3px', flexShrink: 0 }}>●</span>
       <span style={{ fontSize: '11px', lineHeight: 1.4 }}>
-        <span style={{ color: highlight ? '#fff' : textColor, fontWeight: highlight ? 500 : 400 }}>{label}</span>
+        <span style={{ color: '#fff', fontWeight: 500 }}>{label}</span>
         {benefit && (
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}> — {benefit}</span>
+          <span style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}> — {benefit}</span>
         )}
       </span>
     </div>
@@ -87,11 +90,11 @@ export default function Pricing() {
             }}>"See what you have been missing"</div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-              <FeatureLine label="2 competitors tracked" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
-              <FeatureLine label="Price tracking" benefit="catch every move the second it happens" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
-              <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
-              <FeatureLine label="New category expansions" benefit="spot them 30 days before they scale" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
-              <FeatureLine label="Full dashboard access" dotColor="#378ADD" textColor="rgba(255,255,255,0.55)" />
+              <FeatureLine label="2 competitors tracked" dotColor="#378ADD" />
+              <FeatureLine label="Price tracking" benefit="catch every move the second it happens" dotColor="#378ADD" />
+              <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#378ADD" />
+              <FeatureLine label="New category expansions" benefit="spot them 30 days before they scale" dotColor="#378ADD" />
+              <FeatureLine label="Full dashboard access" dotColor="#378ADD" />
 
               <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.05)', margin: '2px 0' }} />
 
@@ -178,8 +181,8 @@ export default function Pricing() {
               <FeatureLine label="Price tracking" benefit="real-time intel, the second it shifts" dotColor="#00C896" />
               <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#00C896" />
               <FeatureLine label="New category expansions" benefit="move in 30 days before they scale" dotColor="#00C896" />
-              <FeatureLine label="Email alerts within 24h" benefit="never miss a move" dotColor="#00C896" highlight />
-              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#00C896" highlight />
+              <FeatureLine label="Email alerts within 24h" benefit="never miss a move" dotColor="#00C896" />
+              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#00C896" />
             </div>
 
             <button
@@ -260,8 +263,8 @@ export default function Pricing() {
               <FeatureLine label="Price tracking" benefit="real-time intel, the second it shifts" dotColor="#E85D24" />
               <FeatureLine label="New product launches" benefit="see them before their ads even run" dotColor="#E85D24" />
               <FeatureLine label="New category expansions" benefit="move in 30 days before they scale" dotColor="#E85D24" />
-              <FeatureLine label="Priority email alerts within 6h" benefit="react within hours, not days" dotColor="#E85D24" highlight />
-              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#E85D24" highlight />
+              <FeatureLine label="Priority email alerts within 6h" benefit="react within hours, not days" dotColor="#E85D24" />
+              <FeatureLine label="Strategic & Tactical View" benefit="know why it matters and exactly what to do" dotColor="#E85D24" />
 
               <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '6px 0 2px' }} />
 
